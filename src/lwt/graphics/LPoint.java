@@ -1,6 +1,7 @@
 package lwt.graphics;
 
-import org.eclipse.swt.graphics.Point;
+import java.awt.Dimension;
+import java.awt.Point;
 
 public class LPoint {
 	
@@ -19,6 +20,11 @@ public class LPoint {
 		this.x = x;
 		this.y = y;
 		//this.z = 0;
+	}
+	
+	public LPoint(Dimension p) {
+		x = p.width;
+		y = p.height;
 	}
 	
 	public LPoint(Point p) {

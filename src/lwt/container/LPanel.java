@@ -1,164 +1,135 @@
 package lwt.container;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Layout;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 
 import lwt.LFlags;
-import lwt.dialog.LShell;
-import lwt.event.LMouseEvent;
-import lwt.event.listener.LMouseListener;
+import lbase.event.LMouseEvent;
+import lbase.event.listener.LMouseListener;
 import lwt.graphics.LPoint;
 
-public class LPanel extends Composite implements LContainer {
+public class LPanel extends JPanel implements LContainer {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private GridBagConstraints gridData;
+	private int minWidth, minHeight;
+	private int spacingH, spacingV;
 
 	private ArrayList<LMouseListener> mouseListeners = null;
 	
 	//////////////////////////////////////////////////
-	// {{ Internal Constructors
+	// {{ Constructors
 	
 	/**
 	 * Internal, no layout.
 	 */
-	LPanel(Composite parent, int style) {
-		super(parent, style);
+	LPanel(JComponent parent) {
+		super();
+		parent.add(this);
 	}
 	
 	/**
-	 * Internal, with fill layout.
+	 * Internal, no layout.
 	 */
-	LPanel(Composite parent, boolean horizontal, int style) {
-		super(parent, style);
-		setFillLayout(horizontal);
+	protected LPanel(JFrame parent) {
+		super();
+		parent.add(this);
 	}
-
+	
 	/**
-	 * Internal, with grid layout.
+	 * Internal, no layout.
 	 */
-	LPanel(Composite parent, int columns, boolean equalCols, int style) {
-		super(parent, style);
-		setGridLayout(columns, equalCols);
-	}
-
-	/**
-	 * Internal, with fill or row layout.
-	 */
-	LPanel(Composite parent, boolean horizontal, boolean equalCells, int style) {
-		super(parent, style);
-		setLinearLayout(horizontal, equalCells);
-	}
-
-	// }}
-	
-	//////////////////////////////////////////////////
-	// {{ Public Constructors
-	
-	/** Grid layout.
-	 */
-	public LPanel(LContainer parent, int columns, boolean equalCols) {
-		this(parent.getComposite(), columns, equalCols, SWT.NONE);
+	protected LPanel(JDialog parent) {
+		super();
+		parent.add(this);
 	}
 	
-	/** Grid layout with unequal columns.
-	 */
-	public LPanel(LContainer parent, int columns) {
-		this(parent, columns, false);
-	}
-	
-	/** Fill/row layout.
-	 */
-	public LPanel(LContainer parent, boolean horizontal, boolean equalCells) {
-		this(parent.getComposite(), horizontal, equalCells, SWT.NONE);
-	}
-	
-	/** Fill layout with no margin.
-	 * @wbp.parser.constructor
-	 * @wbp.eval.method.parameter parent new LShell(800, 600)
-	 * @wbp.eval.method.parameter horizontal true
-	 */
-	public LPanel(LContainer parent, boolean horizontal) {
-		this(parent.getComposite(), horizontal, SWT.NONE);
-	}
-
 	/** No layout.
 	 * @param parent
 	 */
 	public LPanel(LContainer parent) {
-		this(parent.getComposite(), SWT.NONE);
+		this(parent.getContentComposite());
 	}
 
 	// }}
 	
 	//////////////////////////////////////////////////
 	// {{ Inner Layout
-	
+
+	/**
+	 * Fill layout (spacing = 0).
+	 */
 	public void setFillLayout(boolean horizontal) {
-		if (horizontal) {
-			setLayout(new FillLayout(SWT.HORIZONTAL));
-		} else {
-			setLayout(new FillLayout(SWT.VERTICAL));
-		}
-	}
-	
-	public void setGridLayout(int columns, boolean equalCols) {
-		GridLayout gl = new GridLayout(columns, equalCols);
-		gl.marginWidth = 0;
-		gl.marginHeight = 0;
+		GridLayout gl = horizontal ? 
+				new GridLayout(0, 1) : new GridLayout(1, 0);
+		gl.setHgap(0);
+		gl.setVgap(0);
 		setLayout(gl);
+		super.setBorder(new EmptyBorder(0, 0, 0, 0));
 	}
 	
-	public void setLinearLayout(boolean horizontal, boolean equalCells) {
-		int dir = horizontal ? SWT.HORIZONTAL : SWT.VERTICAL;
-		if (equalCells) {
-			FillLayout layout = new FillLayout(dir);
-			layout.spacing = 5;
-			setLayout(layout);
+	/** 
+	 * Grid layout (spacing = 5).
+	 */
+	public void setGridLayout(int columns) {
+		GridBagLayout gbl = new GridBagLayout();
+		gbl.columnWeights = new double[columns];
+		spacingH = 5;
+		spacingV = 5;
+		setLayout(gbl);
+	}
+	
+	/*
+	 * Column/row layout (spacing = 5).
+	 */
+	public void setSequentialLayout(boolean horizontal) {
+		if (horizontal) {
+			FlowLayout fl = new FlowLayout();
+			fl.setHgap(5);
+			fl.setVgap(5);
+			setLayout(fl);
 		} else {
-			RowLayout layout = new RowLayout(dir);
-			layout.spacing = 5;
-			setLayout(layout);
+			setGridLayout(1);
 		}
 	}
 	
 	public void setMargins(int h, int v) {
-		Layout l = getLayout();
-		if (l instanceof GridLayout) {
-			GridLayout gl = (GridLayout) l;
-			gl.marginWidth = h;
-			gl.marginHeight = v;
-		} else if (l instanceof RowLayout) {
-			RowLayout rl = (RowLayout) l;
-			rl.marginWidth = h;
-			rl.marginHeight = v;
-		} else {
-			FillLayout fl = (FillLayout) l;
-			fl.marginWidth = h;
-			fl.marginHeight = v;
-		}
+		super.setBorder(new EmptyBorder(v, h, v, h));
+		doLayout();
 	}
 	
 	public void setSpacing(int h, int v) {
-		Layout l = getLayout();
+		spacingH = h;
+		spacingV = v;
+		LayoutManager l = getLayout();
 		if (l instanceof GridLayout) {
 			GridLayout gl = (GridLayout) l;
-			gl.horizontalSpacing = h;
-			gl.verticalSpacing = v;
-		} else if (l instanceof RowLayout) {
-			RowLayout rl = (RowLayout) l;
-			rl.spacing = h;
-		} else {
-			FillLayout fl = (FillLayout) l;
-			fl.spacing = h;
+			gl.setHgap(h);
+			gl.setVgap(v);
+		} else if (l instanceof FlowLayout) {
+			FlowLayout fl = (FlowLayout) l;
+			fl.setHgap(h);
+			fl.setVgap(v);
 		}
+		refreshLayout();
 	}
 	
 	public void setSpacing(int s) {
@@ -169,64 +140,106 @@ public class LPanel extends Composite implements LContainer {
 	
 	//////////////////////////////////////////////////
 	// {{ Parent Layout
-
-	GridData initGridData() {
-		Object ld = getLayoutData();
-		if (ld != null) {
-			return (GridData) ld;
-		} else {
-			GridData gd = new GridData(SWT.FILL, SWT.FILL, false, false, 1, 1);
-			setLayoutData(gd);
-			return gd;
-		}
+	
+	private void initGridData() {
+		if (gridData != null)
+			return;
+		GridBagLayout gbl = (GridBagLayout) getParent().getLayout();
+		int n = getParent().getComponentCount() - 1;
+		int cols = gbl.columnWeights.length;
+		gridData = new GridBagConstraints(
+				n % cols, n / cols, 
+				1, 1, 
+				0, 0, 
+				GridBagConstraints.CENTER, 
+				GridBagConstraints.NONE, 
+				new Insets(0, 0, 0, 0),
+				0, 0);
+		gbl.setConstraints(this, gridData);
 	}
 	
 	public void setSpread(int cols, int rows) {
-		GridData gridData = initGridData();
-		gridData.horizontalSpan = cols;
-		gridData.verticalSpan = rows;
+		initGridData();
+		gridData.gridwidth = cols;
+		gridData.gridheight = rows;
+		((GridBagLayout) getParent().getLayout()).setConstraints(this, gridData);
 	}
 	
 	public void setAlignment(int a) {
-		GridData gridData = initGridData();
-		int h = SWT.FILL;
-		if ((a & LFlags.LEFT) > 0)
-			h = SWT.LEFT;
-		if ((a & LFlags.RIGHT) > 0)
-			h = SWT.RIGHT;
-		if ((a & LFlags.MIDDLE) > 0)
-			h = SWT.CENTER;
-		gridData.horizontalAlignment = h;
-		int v = SWT.FILL;
-		if ((a & LFlags.TOP) > 0)
-			v = SWT.TOP;
-		if ((a & LFlags.BOTTOM) > 0)
-			v = SWT.BOTTOM;
-		if ((a & LFlags.CENTER) > 0)
-			v = SWT.CENTER;		
-		gridData.verticalAlignment = v;
+		initGridData();
+		gridData.fill = 0;
+		if ((a & LFlags.LEFT) > 0) {
+			if ((a & LFlags.TOP) > 0)
+				gridData.anchor = GridBagConstraints.NORTHWEST;
+			else if ((a & LFlags.BOTTOM) > 0)
+				gridData.anchor = GridBagConstraints.SOUTHWEST;
+			else {
+				gridData.anchor = GridBagConstraints.WEST;
+				if ((a & LFlags.CENTER) == 0)
+					gridData.fill = GridBagConstraints.VERTICAL;
+			}
+		} else if ((a & LFlags.RIGHT) > 0) {
+			if ((a & LFlags.TOP) > 0)
+				gridData.anchor = GridBagConstraints.NORTHEAST;
+			else if ((a & LFlags.BOTTOM) > 0)
+				gridData.anchor = GridBagConstraints.SOUTHEAST;
+			else {
+				gridData.anchor = GridBagConstraints.EAST;
+				if ((a & LFlags.CENTER) == 0)
+					gridData.fill = GridBagConstraints.VERTICAL;
+			}
+		} else if ((a & LFlags.MIDDLE) > 0) {
+			if ((a & LFlags.TOP) > 0)
+				gridData.anchor = GridBagConstraints.NORTH;
+			else if ((a & LFlags.BOTTOM) > 0)
+				gridData.anchor = GridBagConstraints.SOUTH;
+			else {
+				gridData.anchor = GridBagConstraints.CENTER;
+				if ((a & LFlags.CENTER) == 0)
+					gridData.fill = GridBagConstraints.VERTICAL;
+			}
+		} else {
+			gridData.fill = GridBagConstraints.HORIZONTAL;
+			if ((a & LFlags.TOP) > 0)
+				gridData.anchor = GridBagConstraints.NORTH;
+			else if ((a & LFlags.BOTTOM) > 0)
+				gridData.anchor = GridBagConstraints.SOUTH;
+			else {
+				gridData.anchor = GridBagConstraints.CENTER;
+				if ((a & LFlags.CENTER) == 0)
+					gridData.fill = GridBagConstraints.BOTH;
+			}
+		}
+		((GridBagLayout) getParent().getLayout()).setConstraints(this, gridData);
 	}
 
 	public void setExpand(boolean h, boolean v) {
-		GridData gridData = initGridData();
-		gridData.grabExcessHorizontalSpace = h;
-		gridData.grabExcessVerticalSpace = v;
-		if (h)
-			gridData.horizontalAlignment = SWT.FILL;
-		if (v)
-			gridData.verticalAlignment = SWT.FILL;
+		initGridData();
+		gridData.weightx = h ? 1 : 0;
+		gridData.weighty = v ? 1 : 0;
+		if (h) {
+			if (gridData.fill == GridBagConstraints.VERTICAL) 
+				gridData.fill = GridBagConstraints.BOTH;
+			else
+				gridData.fill = GridBagConstraints.HORIZONTAL;
+		}
+		if (v) {
+			if (gridData.fill == GridBagConstraints.HORIZONTAL) 
+				gridData.fill = GridBagConstraints.BOTH;
+			else
+				gridData.fill = GridBagConstraints.VERTICAL;
+		}
+		((GridBagLayout) getParent().getLayout()).setConstraints(this, gridData);
 	}
 	
 	public void setMinimumWidth(int w) {
-		GridData gridData = initGridData();
-		gridData.minimumWidth = w;
-		gridData.widthHint = w;
+		minWidth = w;
+		((LPanel) getParent()).refreshLayout();
 	}
 	
 	public void setMinimumHeight(int h) {
-		GridData gridData = initGridData();
-		gridData.minimumHeight = h;
-		gridData.heightHint = h;
+		minHeight = h;
+		((LPanel) getParent()).refreshLayout();
 	}
 	
 	// }}
@@ -247,34 +260,71 @@ public class LPanel extends Composite implements LContainer {
 	}
 	
 	private void setMouseListeners() {
-		addMouseListener(new MouseListener() {
+		super.addMouseListener(new MouseListener() {
 			@Override
-			public void mouseUp(MouseEvent e0) {
-				LMouseEvent e = new LMouseEvent(e0, true, false);
+			public void mouseClicked(MouseEvent e0) {
+				// Double click
+				if (e0.getClickCount() <= 1)
+					return;
+				LMouseEvent e = createMouseEvent(e0, true, true);
 				for (LMouseListener l : mouseListeners)
 					l.onMouseChange(e);
 			}
 			@Override
-			public void mouseDown(MouseEvent e0) {
-				LMouseEvent e = new LMouseEvent(e0, false, false);
+			public void mousePressed(MouseEvent e0) {
+				LMouseEvent e = createMouseEvent(e0, true, false);
 				for (LMouseListener l : mouseListeners)
 					l.onMouseChange(e);
 			}
 			@Override
-			public void mouseDoubleClick(MouseEvent e0) {
-				LMouseEvent e = new LMouseEvent(e0, true, true);
+			public void mouseReleased(MouseEvent e0) {
+				LMouseEvent e = createMouseEvent(e0, false, false);
+				for (LMouseListener l : mouseListeners)
+					l.onMouseChange(e);
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+			}
+		});
+		super.addMouseMotionListener(new MouseMotionListener() {
+			@Override
+			public void mouseDragged(MouseEvent e) {
+			}
+			@Override
+			public void mouseMoved(MouseEvent e0) {
+				LMouseEvent e = createMouseEvent(e0, false, false);
 				for (LMouseListener l : mouseListeners)
 					l.onMouseChange(e);
 			}
 		});
-		addMouseMoveListener(new MouseMoveListener() {
-			@Override
-			public void mouseMove(MouseEvent e0) {
-				LMouseEvent e = new LMouseEvent(e0, false, false);
-				for (LMouseListener l : mouseListeners)
-					l.onMouseChange(e);
-			}
-		});
+	}
+	
+	public LMouseEvent createMouseEvent(MouseEvent e, boolean release, boolean repeat) {
+		int x = e.getX();
+		int y = e.getY();
+		int button = 0;
+		if (e.getButton() == MouseEvent.BUTTON1)
+			button = LFlags.LEFT;
+		else if (e.getButton() == MouseEvent.BUTTON2)
+			button = LFlags.RIGHT;
+		else if (e.getButton() == MouseEvent.BUTTON3)
+			button = LFlags.MIDDLE;
+		int type;
+		if (release) {
+			if (repeat)
+				type = LFlags.DOUBLEPRESS;
+			else
+				type = LFlags.RELEASE;
+		} else {
+			if (repeat)
+				type = LFlags.REPEATPRESS;
+			else
+				type = LFlags.PRESS;
+		}
+		return new LMouseEvent(button, x, y, type);
 	}
 		
 	// }}
@@ -283,55 +333,78 @@ public class LPanel extends Composite implements LContainer {
 	// {{ Size
 	
 	public LPoint getCurrentSize() {
-		return new LPoint(getSize());
+		Dimension d = getSize();
+		return new LPoint(d.width, d.height);
 	}
 	
 	public void setCurrentSize(LPoint size) {
+		setPreferredSize(new Dimension(size.x, size.y));
 		setSize(size.x, size.y);
 	}
 	
 	public void setCurrentSize(int x, int y) {
+		setPreferredSize(new Dimension(x, y));
 		setSize(x, y);
+	}
+	
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension d = super.getPreferredSize();
+		d.width = Math.max(d.width, minWidth);
+		d.height = Math.max(d.height, minHeight);
+		return d;
+	}
+		
+	// }}
+	
+	//////////////////////////////////////////////////
+	// {{ User Data
+
+	public Object getData() {
+		return getClientProperty("");
+	}
+	
+	public Object getData(String key) {
+		return getClientProperty(key);
+	}
+	
+	public void setData(String key, Object data) {
+		putClientProperty(key, data);
+	}
+	
+	public void setData(Object data) {
+		putClientProperty("", data);
 	}
 	
 	// }}
 	
+	//////////////////////////////////////////////////
+	// {{ Container Methods
+
 	@Override
-	public Composite getComposite() {
+	public JComponent getContentComposite() {
 		return this;
-	}
-	
-	@Override
-	public Object getChild(int i) {
-		return getChildren()[i];
-	}
-	
-	@Override
-	public int getChildCount() {
-		return this.getChildren().length;
 	}
 
 	@Override
-	public Object getData() {
-		return super.getData();
+	public void refreshLayout() {
+		LayoutManager l = getLayout();
+		if (l instanceof GridBagLayout) {
+			GridBagLayout gbl = (GridBagLayout) l;
+			int n = getComponentCount();
+			int cols = gbl.columnWeights.length;
+			for (var c : getComponents()) {
+				GridBagConstraints gbc = gbl.getConstraints(c);
+				gbc.insets.bottom = gbc.insets.top = spacingV;
+				gbc.insets.left = gbc.insets.right = spacingH;
+				gbc.gridx = n * cols;
+				gbc.gridy = n / cols;
+				gbl.setConstraints(c, gbc);
+			}			
+		}
+		doLayout();
 	}
 	
-	@Override
-	public Object getData(String key) {
-		return super.getData(key);
-	}
-	
-	@Override
-	public LShell getShell() {
-		return (LShell) super.getShell();
-	}
-	
-	@Override
-	public void dispose() {
-		super.dispose();
-	}
-	
-	@Override
-	protected void checkSubclass() { }
-	
+	// }}
+
 }

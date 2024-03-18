@@ -1,28 +1,30 @@
 package lwt.widget;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.wb.swt.SWTResourceManager;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 
 import lwt.container.LContainer;
+import lwt.graphics.LTexture;
 
 public class LToggleButton extends LControlWidget<Boolean> {
+	private static final long serialVersionUID = 1L;
 
-	private Label icon;
-	private Image imgTrue;
-	private Image imgFalse;
+	private JLabel icon;
+	private LTexture imgTrue;
+	private LTexture imgFalse;
 	private boolean enabled = true;
 	
 	public LToggleButton(LContainer parent) {
 		super(parent);
-		icon.setAlignment(SWT.CENTER);
+		icon.setHorizontalAlignment(JLabel.CENTER);
+		icon.setVerticalAlignment(JLabel.CENTER);
 		icon.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseDown(MouseEvent arg0) {
+			public void mousePressed(MouseEvent arg0) {
 				newModifyAction(currentValue, !currentValue);
 				if (enabled) {
 					setValue(!currentValue);
@@ -33,17 +35,18 @@ public class LToggleButton extends LControlWidget<Boolean> {
 	
 	public LToggleButton(LContainer parent, String imgTrue, String imgFalse) {
 		this(parent);
-		this.imgFalse = SWTResourceManager.getImage(LToggleButton.class, imgFalse);
-		this.imgTrue = SWTResourceManager.getImage(LToggleButton.class, imgTrue);
-		icon.setImage(this.imgFalse);
+		this.imgFalse = new LTexture(imgFalse);
+		this.imgTrue = new LTexture(imgTrue);
+		icon.setIcon(new ImageIcon(this.imgFalse.convert()));
 	}
 
 	@Override
 	protected void createContent(int flags) {
-		icon = new Label(this, SWT.NONE);
+		icon = new JLabel();
+		add(icon);
 	}
 	
-	public void setImages(Image imgTrue, Image imgFalse) {
+	public void setImages(LTexture imgTrue, LTexture imgFalse) {
 		this.imgFalse = imgFalse;
 		this.imgTrue = imgTrue;
 	}
@@ -52,17 +55,17 @@ public class LToggleButton extends LControlWidget<Boolean> {
 		if (obj != null) {
 			enabled = true;
 			Boolean i = (Boolean) obj;
-			icon.setImage(i ? imgTrue : imgFalse);
+			icon.setIcon(new ImageIcon(i ? imgTrue.convert() : imgFalse.convert()));
 			currentValue = i;
 		} else {
 			enabled = false;
-			icon.setImage(imgFalse);
+			icon.setIcon(new ImageIcon(imgFalse.convert()));
 			currentValue = null;
 		}
 	}
 	
 	@Override
-	protected Control getControl() {
+	protected JComponent getControl() {
 		return icon;
 	}
 

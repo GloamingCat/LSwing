@@ -1,44 +1,41 @@
 package lwt.widget;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Menu;
+import javax.swing.JComponent;
 
 import lwt.container.LContainer;
+import lbase.event.LSelectionEvent;
+import lbase.event.listener.LSelectionListener;
+import lbase.gui.LMenu;
 
 public class LActionButton extends LControlWidget<Object> {
+	private static final long serialVersionUID = 1L;
 
-	private Button button;
+	private LButton button;
 	
 	public LActionButton(LContainer parent, String text) {
 		super(parent);
-		setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
 		button.setText(text);
-		button.addSelectionListener(new SelectionAdapter() {
+		button.onClick = new LSelectionListener() {
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
+			public void onSelect(LSelectionEvent arg0) {
 				notifyEmpty();
 			}
-		});
+		};
 	}
 
 	@Override
 	protected void createContent(int flags) {
-		button = new Button(this, SWT.NONE);
+		button = new LButton(this, "");
 	}
 
 	@Override
-	public void onCopyButton(Menu menu) {}
+	public void onCopyButton(LMenu menu) {}
 	
 	@Override
-	public void onPasteButton(Menu menu) {}
+	public void onPasteButton(LMenu menu) {}
 	
 	@Override
-	protected Control getControl() {
+	protected JComponent getControl() {
 		return button;
 	}
 

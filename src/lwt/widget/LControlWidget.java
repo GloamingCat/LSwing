@@ -1,19 +1,24 @@
 package lwt.widget;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.ArrayList;
 
-import lwt.LGlobals;
-import lwt.action.LControlAction;
-import lwt.container.LContainer;
-import lwt.event.LControlEvent;
-import lwt.event.listener.LControlListener;
+import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
 
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Menu;
+import lwt.LGlobals;
+import lwt.container.LContainer;
+import lbase.action.LControlAction;
+import lbase.event.LControlEvent;
+import lbase.event.listener.LControlListener;
+import lbase.gui.LControl;
+import lbase.gui.LMenu;
 
 public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
+	private static final long serialVersionUID = 1L;
 	
 	protected ArrayList<LControlListener<T>> modifyListeners = new ArrayList<>();
 	protected T currentValue;
@@ -23,7 +28,7 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	}
 	
 	public LControlWidget(LContainer parent, int flags) {
-		super(parent.getComposite(), flags);
+		super(parent, flags);
 	}
 	
 	public void modify(T newValue) {
@@ -47,7 +52,7 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	
 	public void setEnabled(boolean value) {}
 	
-	protected Control getControl() {
+	protected JComponent getControl() {
 		return this;
 	}
 	
@@ -57,9 +62,9 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	}
 	
 	@Override
-	public void setMenu(Menu menu) {
-		super.setMenu(menu);
-		getControl().setMenu(menu);
+	public void setComponentPopupMenu(JPopupMenu menu) {
+		super.setComponentPopupMenu(menu);
+		getControl().setComponentPopupMenu(menu);
 	}
 
 	
@@ -102,21 +107,25 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	// Copy / Paste
 	//-------------------------------------------------------------------------------------
 	
-	public void onCopyButton(Menu menu) {
+	@Override
+	public void onCopyButton(LMenu menu) {
 		String str = encodeData(currentValue);
-		LGlobals.clipboard.setContents(new Object[] { str },
-				new Transfer[] { TextTransfer.getInstance() });
+		LGlobals.clipboard.setContents(new StringSelection(str), null);
 	}
 	
-	public void onPasteButton(Menu menu) {
-		String str = (String) LGlobals.clipboard.getContents(TextTransfer.getInstance());
-		if (str == null)
+	@Override
+	public void onPasteButton(LMenu menu) {
+		DataFlavor dataFlavor = DataFlavor.stringFlavor;
+		if (!LGlobals.clipboard.isDataFlavorAvailable(dataFlavor))
 			return;
 		try {
+			String str = (String) LGlobals.clipboard.getData(dataFlavor);
+			if (str == null)
+				return;
 			T newValue = decodeData(str);
 			if (newValue != null && !newValue.equals(currentValue))
 				modify(newValue);	
-		} catch (ClassCastException e) {
+		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
 			System.err.println(e.getMessage());
 			return;
 		}

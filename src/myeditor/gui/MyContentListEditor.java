@@ -1,14 +1,15 @@
 package myeditor.gui;
 
 import lwt.container.LContainer;
-import lwt.container.LSashPanel;
+import lwt.container.LFlexPanel;
 import lwt.container.LView;
-import lwt.dataestructure.LDataList;
+import lbase.data.LDataList;
 import lwt.editor.LDefaultListEditor;
 import myeditor.data.MyContent;
 import myeditor.project.MyProject;
 
 public class MyContentListEditor extends LView {
+	private static final long serialVersionUID = 1L;
 
 	private LDefaultListEditor<MyContent> listEditor;
 	private MyContentEditor contentEditor;
@@ -19,11 +20,12 @@ public class MyContentListEditor extends LView {
 	 * @wbp.eval.method.parameter parent new lwt.dialog.LShell()
 	 */
 	public MyContentListEditor(LContainer parent) {
-		super(parent, true, false);
+		super(parent, false);
+		setFillLayout(true);
 		
 		createMenuInterface();
 		
-		LSashPanel sashForm = new LSashPanel(this, true);
+		LFlexPanel sashForm = new LFlexPanel(this, true);
 		
 		listEditor = new MyContentList(sashForm);
 		listEditor.getCollectionWidget().setInsertNewEnabled(true);
@@ -41,7 +43,8 @@ public class MyContentListEditor extends LView {
 		
 		sashForm.setWeights(1, 2);
 	}
-
+	
+	@SuppressWarnings("serial")
 	private class MyContentList extends LDefaultListEditor<MyContent> {
 		public MyContentList(LContainer parent) {
 			super(parent);

@@ -7,6 +7,7 @@ import lwt.widget.LControlWidget;
 
 public class LComboView extends LControlView<Integer> {
 
+	private static final long serialVersionUID = 1L;
 	protected LCombo combo;
 	
 	public LComboView(LContainer parent) {

@@ -1,26 +1,20 @@
 package lwt.widget;
 
-import lwt.LVocab;
 import lwt.container.LContainer;
-import lwt.dataestructure.LDataTree;
-import lwt.dataestructure.LPath;
-import lwt.event.LSelectionEvent;
-import lwt.event.listener.LSelectionListener;
+import lbase.LVocab;
+import lbase.data.LDataTree;
+import lbase.data.LPath;
+import lbase.event.LSelectionEvent;
+import lbase.event.listener.LSelectionListener;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.layout.GridData;
+import javax.swing.JComponent;
 
-public class LNodeSelector<T> extends LControlWidget<Integer> implements LContainer {
-
+public class LNodeSelector<T> extends LControlWidget<Integer> {
+	private static final long serialVersionUID = 1L;
+	
 	protected LDataTree<T> collection;
 	protected LTree<T, T> tree;
-	protected Button btnNull;
+	protected LButton btnNull;
 	
 	/**
 	 * Create the composite.
@@ -29,8 +23,8 @@ public class LNodeSelector<T> extends LControlWidget<Integer> implements LContai
 	 */
 	public LNodeSelector(LContainer parent, boolean optional) {
 		super(parent);
-		setLayout(new GridLayout(1, false));
-		tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		setGridLayout(1);
+		tree.setExpand(true, true);
 		tree.addSelectionListener(new LSelectionListener() {
 			@Override
 			public void onSelect(LSelectionEvent event) {
@@ -42,23 +36,20 @@ public class LNodeSelector<T> extends LControlWidget<Integer> implements LContai
 				newModifyAction(currentValue, id);
 			}
 		});
-		tree.dragEnabled = false;
-		
+		tree.setDragEnabled(false);
 		if (!optional)
 			return;
-		
-		btnNull = new Button(this, SWT.NONE);
-		btnNull.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-		btnNull.addSelectionListener(new SelectionAdapter() {
+		btnNull = new LButton(this, LVocab.instance.DESELECT);
+		btnNull.setExpand(true, false);
+		btnNull.onClick = new LSelectionListener() {
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
+			public void onSelect(LSelectionEvent event) {
 				selectNone();
 			}
-		});
-		btnNull.setText(LVocab.instance.DESELECT);
-		
+		};
 	}
 
+	@SuppressWarnings("serial")
 	@Override
 	protected void createContent(int flags) {
 		tree = new LTree<T, T>(this) {
@@ -171,23 +162,8 @@ public class LNodeSelector<T> extends LControlWidget<Integer> implements LContai
 	}
 
 	@Override
-	public Composite getComposite() {
-		return this;
-	}
-	
-	@Override
-	protected Control getControl() {
+	protected JComponent getControl() {
 		return tree;
-	}
-
-	@Override
-	public Object getChild(int i) {
-		return getChildren()[i];
-	}
-	
-	@Override
-	public int getChildCount() {
-		return this.getChildren().length;
 	}
 
 }

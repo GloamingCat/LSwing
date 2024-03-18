@@ -1,25 +1,19 @@
 package lwt.widget;
 
 import lwt.container.*;
-import lwt.graphics.LTexture;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusAdapter;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.TraverseEvent;
-import org.eclipse.swt.events.TraverseListener;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-
+import javax.swing.JComponent;
+import javax.swing.JTextField;
 public class LText extends LControlWidget<String> {
+	private static final long serialVersionUID = 1L;
 	
-	protected Text text;
+	protected JTextField text;
 
 	/**
 	 * @wbp.parser.constructor
@@ -38,22 +32,9 @@ public class LText extends LControlWidget<String> {
 	}
 	
 	public LText(LContainer parent, int columns, boolean readOnly) {
-		super(parent, readOnly ? SWT.READ_ONLY : SWT.NONE);
-		setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, columns, 1));
-	}
-	
-	protected void createContent(int flags) {
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.horizontalSpacing = 0;
-		gridLayout.marginHeight = 0;
-		gridLayout.marginWidth = 0;
-		gridLayout.verticalSpacing = 0;
-		setLayout(gridLayout);
-		text = new Text(this, SWT.BORDER | flags);
-		GridData gd_text = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-		if (!LTexture.onWindows)
-			gd_text.heightHint = 16;
-		text.setLayoutData(gd_text);
+		super(parent, readOnly ? 1 : 0);
+		setSpread(columns, 1);
+		setExpand(true, false);
 		text.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
@@ -63,27 +44,30 @@ public class LText extends LControlWidget<String> {
 		text.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.keyCode == 13) { // Enter
+				if (e.getKeyCode() == KeyEvent.VK_ENTER ||
+						e.getKeyCode() == KeyEvent.VK_TAB) {
 					updateCurrentText();
 				}
 			}
 		});
-		text.addMouseMoveListener(new MouseMoveListener() {
+		text.addMouseMotionListener(new MouseMotionListener() {
 			@Override
-			public void mouseMove(MouseEvent e) {
+			public void mouseDragged(MouseEvent e) {
 				updateCurrentText();
 			}
-		});
-		text.addTraverseListener(new TraverseListener() {
 			@Override
-			public void keyTraversed(TraverseEvent e) {
+			public void mouseMoved(MouseEvent e) {
 				updateCurrentText();
 			}
 		});
 	}
 	
-	protected Text createText() {
-		return new Text(this, SWT.BORDER);
+	@Override
+	protected void createContent(int flags) {
+		setFillLayout(true);
+		text = new JTextField();
+		text.setEditable(flags == 0);
+		add(text);
 	}
 	
 	public void updateCurrentText() {
@@ -108,7 +92,7 @@ public class LText extends LControlWidget<String> {
 	}
 	
 	@Override
-	protected Control getControl() {
+	protected JComponent getControl() {
 		return text;
 	}
 

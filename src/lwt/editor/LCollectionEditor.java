@@ -3,21 +3,21 @@ package lwt.editor;
 import lwt.LGlobals;
 import lwt.LMenuInterface;
 import lwt.container.LContainer;
-import lwt.dataestructure.LDataCollection;
-import lwt.dataestructure.LPath;
-import lwt.dialog.LObjectDialog;
+import lbase.data.LDataCollection;
+import lbase.data.LPath;
 import lwt.dialog.LShellFactory;
-import lwt.event.LDeleteEvent;
-import lwt.event.LEditEvent;
-import lwt.event.LInsertEvent;
-import lwt.event.LMoveEvent;
-import lwt.event.listener.LCollectionListener;
+import lbase.event.LDeleteEvent;
+import lbase.event.LEditEvent;
+import lbase.event.LInsertEvent;
+import lbase.event.LMoveEvent;
+import lbase.event.listener.LCollectionListener;
+import lbase.gui.LMenu;
 import lwt.widget.LCollection;
 
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Menu;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 
 /**
  * Edits the items in a list.
@@ -25,10 +25,10 @@ import org.eclipse.swt.widgets.Menu;
  */
 
 public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollection<T>> {
-
-	public String name = "";
+	private static final long serialVersionUID = 1L;
+	
 	public String fieldName = "";
-	protected LObjectDialog<ST> editDialog = null;
+	protected LShellFactory<ST> shellFactory;
 	
 	/**
 	 * Create the composite.
@@ -37,7 +37,7 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 	 */
 	public LCollectionEditor(LContainer parent) {
 		super(parent, false);
-		setLayout(new FillLayout());
+		setFillLayout(true);
 	}
 	
 	protected void setListeners() {
@@ -72,16 +72,14 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 	}
 	
 	public void setShellFactory(LShellFactory<ST> factory) {
-		editDialog = new LObjectDialog<ST>(getShell());
-		editDialog.setFactory(factory);
+		shellFactory = factory;
 	}
 	
 	public LEditEvent<ST> onEditItem(LPath path) {
-		if (editDialog == null)
+		if (shellFactory == null)
 			return null;
-		editDialog.setText(name);
 		ST oldData = getEditableData(path);
-		ST newData = editDialog.open(oldData);
+		ST newData = shellFactory.openShell(getWindow(), oldData);
 		if (newData != null) {
 			return new LEditEvent<ST>(path, oldData, newData);
 		}
@@ -111,17 +109,20 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 	}
 	
 	@Override
-	public void onCopyButton(Menu menu) {
-		LGlobals.clipboard.setContents(new Object[] { encodeData(getObject()) },
-				new Transfer[] { TextTransfer.getInstance() });
+	public void onCopyButton(LMenu menu) {
+		String str = encodeData(getObject());
+		LGlobals.clipboard.setContents(new StringSelection(str), null);
 	}
 	
 	@Override
-	public void onPasteButton(Menu menu) {
-		String str = (String) LGlobals.clipboard.getContents(TextTransfer.getInstance());
-		if (str == null)
+	public void onPasteButton(LMenu menu) {
+		DataFlavor dataFlavor = DataFlavor.stringFlavor;
+		if (!LGlobals.clipboard.isDataFlavorAvailable(dataFlavor))
 			return;
 		try {
+			String str = (String) LGlobals.clipboard.getData(dataFlavor);
+			if (str == null)
+				return;
 			LDataCollection<T> newValue = decodeData(str);
 			LDataCollection<T> oldValue = getObject();
 			if (newValue != null && !newValue.equals(oldValue)) {
@@ -129,9 +130,8 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 				getCollectionWidget().setDataCollection(newValue);
 				newModifyAction(oldValue, newValue);
 			}
-		} catch (ClassCastException e) {
+		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
 			System.err.println(e.getMessage());
-			return;
 		}
 	}
 	

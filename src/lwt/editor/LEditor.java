@@ -1,22 +1,23 @@
 package lwt.editor;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
-import lwt.LMenuInterface;
-import lwt.LVocab;
+import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
+
 import lwt.container.LContainer;
+import lwt.container.LPanel;
 import lwt.container.LView;
+import lbase.LVocab;
+import lbase.event.LSelectionEvent;
+import lbase.event.listener.LSelectionListener;
+import lbase.gui.LPastable;
+import lwt.widget.LButton;
 import lwt.widget.LWidget;
 
-public abstract class LEditor extends LView {
+public abstract class LEditor extends LView implements LPastable {
+	private static final long serialVersionUID = 1L;
 
 	//////////////////////////////////////////////////
 	// {{ Constructors
@@ -28,38 +29,6 @@ public abstract class LEditor extends LView {
 	 */
 	public LEditor(LContainer parent, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
-	}
-
-	/**
-	 * Fill/row layout.
-	 * @param parent
-	 * @param horizontal
-	 * @param equalCells
-	 * @param doubleBuffered
-	 */
-	public LEditor(LContainer parent, boolean horizontal, boolean equalCells, boolean doubleBuffered) {
-		super(parent, horizontal, equalCells, doubleBuffered);
-	}
-	
-	/**
-	 * Fill layout with no margin.
-	 * @param parent
-	 * @param horizontal
-	 * @param doubleBuffered
-	 */
-	public LEditor(LContainer parent, boolean horizontal, boolean doubleBuffered) {
-		super(parent, horizontal, doubleBuffered);
-	}
-	
-	/**
-	 * Grid layout.
-	 * @param parent
-	 * @param columns
-	 * @param equalCols
-	 * @param doubleBuffered
-	 */
-	public LEditor(LContainer parent, int columns, boolean equalCols, boolean doubleBuffered) {
-		super(parent, columns, equalCols, doubleBuffered);
 	}
 
 	// }}
@@ -75,40 +44,38 @@ public abstract class LEditor extends LView {
 	//////////////////////////////////////////////////
 	// {{ Menu
 	
-	private void addHeaderButtons(Composite parent) {
-		Button copyButton = new Button(parent, SWT.NONE);
-		copyButton.addSelectionListener(new SelectionAdapter() {
+	private void addHeaderButtons(LContainer parent) {
+		LButton copyButton = new LButton(parent, LVocab.instance.COPY);
+		copyButton.onClick = new LSelectionListener() {
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
+			public void onSelect(LSelectionEvent event) {
 				onCopyButton(null);
 			}
-		});
-		copyButton.setText(LVocab.instance.COPY);
-		Button pasteButton = new Button(parent, SWT.NONE);
-		pasteButton.addSelectionListener(new SelectionAdapter() {
+		};
+		LButton pasteButton = new LButton(parent, LVocab.instance.PASTE);
+		pasteButton.onClick = new LSelectionListener() {
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
+			public void onSelect(LSelectionEvent event) {
 				onPasteButton(null);
 			}
-		});
-		pasteButton.setText(LVocab.instance.PASTE);
+		};
 	}
 	
-	private Menu addMenu(Composite parent) {
-		Menu menu = new Menu(parent);
-		parent.setMenu(menu);
+	private LPopupMenu addMenu(JComponent parent) {
+		LPopupMenu menu = new LPopupMenu(parent);
 		setCopyEnabled(menu, true);
 		setPasteEnabled(menu, true);
 		addFocusOnClick(parent);
 		return menu;
 	}
 	
-	private void addFocusOnClick(Composite c) {
+	private void addFocusOnClick(JComponent c) {
 		LEditor editor = this;
 		c.setEnabled(true);
 		c.addMouseListener(new MouseAdapter() {
-			public void mouseUp(MouseEvent e) {
-				if (e.button == 1) { // Left button
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) { // Left button
 					getMenuInterface().setFocusEditor(editor);
 				}
 			}
@@ -116,30 +83,30 @@ public abstract class LEditor extends LView {
 	}
 	
 	public void addMenu() {
-		addMenu(getComposite());
+		addMenu(getContentComposite());
 	}
 	
 	public void addMenu(LContainer frame) {
-		Composite c = frame.getComposite();
-		Menu menu = getMenu();
+		JComponent c = frame.getContentComposite();
+		JPopupMenu menu = getComponentPopupMenu();
 		if (menu == null) {
 			menu = addMenu(c);
-			setMenu(menu);
+			setComponentPopupMenu(menu);
 			addFocusOnClick(this);
-		} else if (c.getMenu() == null) {
-			c.setMenu(menu);
+		} else if (c.getComponentPopupMenu() == null) {
+			c.setComponentPopupMenu(menu);
 			addFocusOnClick(c);
 		}
 	}
 	
 	public void addMenu(LWidget widget) {
-		Menu menu = getMenu();
+		JPopupMenu menu = getComponentPopupMenu();
 		if (menu == null) {
-			menu = addMenu((Composite) widget);
-			setMenu(menu);
-			addFocusOnClick(widget);
-		} else if (widget.getMenu() == null) {
-			widget.setMenu(menu);
+			menu = addMenu((JComponent) widget);
+			setComponentPopupMenu(menu);
+			addFocusOnClick(this);
+		} else if (widget.getComponentPopupMenu() == null) {
+			widget.setComponentPopupMenu(menu);
 			addFocusOnClick(widget);
 		}
 	}
@@ -147,37 +114,18 @@ public abstract class LEditor extends LView {
 	public void addHeader(LContainer parent) {
 		if (parent == null)
 			parent = this;
-		Composite header = new Composite(parent.getComposite(), 0); 
-		header.setLayout(new RowLayout());
+		LPanel header = new LPanel(parent); 
+		header.setSequentialLayout(true);
 		addHeaderButtons(header);
 	}
 	
-	
-	public void setCopyEnabled(Menu menu, boolean value) {
-		String str = toString();
-		LMenuInterface.setMenuButton(menu, value, LVocab.instance.COPY, "copy", new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				System.out.println("Copied from " + str);
-				onCopyButton(menu);
-			}
-		}, 'C');
+	public void setCopyEnabled(lbase.gui.LMenu menu, boolean value) {
+		menu.setMenuButton(value, LVocab.instance.COPY, "copy", (d) -> onCopyButton(menu), "Ctrl+&C");
 	}
 
-	public void setPasteEnabled(Menu menu, boolean value) {
-		String str = toString();
-		LMenuInterface.setMenuButton(menu, value, LVocab.instance.PASTE, "paste", new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				System.out.println("Pasted on " + str);
-				onPasteButton(menu);
-			}
-		}, 'V');
+	public void setPasteEnabled(lbase.gui.LMenu menu, boolean value) {
+		menu.setMenuButton(value, LVocab.instance.PASTE, "paste", (d) -> onPasteButton(menu), "Ctrl+&V");
 	}
-	
-	public abstract void onCopyButton(Menu menu);
-	public abstract void onPasteButton(Menu menu);
-	public abstract boolean canDecode(String str);
 	
 	// }}
 	

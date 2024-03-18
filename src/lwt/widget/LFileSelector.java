@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.function.Function;
 
 import lwt.container.LContainer;
-import lwt.dataestructure.LDataTree;
+import lbase.data.LDataTree;
 
 public class LFileSelector extends LNodeSelector<String> {
-
+	private static final long serialVersionUID = 1L;
+	
 	protected LDataTree<String> root;
 	protected ArrayList<Function<File, Boolean>> fileRestrictions = new ArrayList<>();
 	

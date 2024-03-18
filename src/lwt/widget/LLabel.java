@@ -1,55 +1,44 @@
 package lwt.widget;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Menu;
+import javax.swing.JLabel;
+import javax.swing.JPopupMenu;
 
+import lbase.gui.LMenu;
 import lwt.LFlags;
 import lwt.container.LContainer;
 
 public class LLabel extends LWidget {
+	private static final long serialVersionUID = 1L;
 
-	private Label label;
+	private JLabel label;
 	
-	LLabel (Composite parent, int style) {
-		super(parent, SWT.NONE);
-		label.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+	LLabel (LContainer parent, int style) {
+		super(parent);
 	}
 	
-	LLabel(Composite parent, int style, int hfill, int vfill) {
-		super(parent, SWT.FILL);
-		GridData gridData = new GridData(SWT.FILL, SWT.FILL, false, false, hfill, vfill);
-		gridData.widthHint = 0;
-		gridData.heightHint = 0;
-		setLayoutData(gridData);
+	LLabel(LContainer parent, int style, int hfill, int vfill) {
+		super(parent, 1);
+		setAlignment(0);
 		setEnabled(false);
 	}
 
 	public LLabel(LContainer parent, int style, String text, int columns) {
-		this(parent.getComposite(), SWT.NONE);
+		this(parent, 0);
 		label.setText(text);
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.horizontalSpacing = 0;
-		gridLayout.verticalSpacing = 0;
-		gridLayout.marginWidth = 0;
-		gridLayout.marginHeight = 3;
-		setLayout(gridLayout);
-		boolean expand = (style & LFlags.EXPAND) > 0;
+		setMargins(0, 3);
+		setSpread(columns, 1);
+		setExpand((style & LFlags.EXPAND) > 0, false);
+		int alingment = 0;
 		if ((style & LFlags.TOP) > 0) {
-			setLayoutData(new GridData(SWT.LEFT, SWT.TOP, expand, false, columns, 1));
+			alingment = LFlags.LEFT & LFlags.TOP;
 		} else if ((style & LFlags.BOTTOM) > 0) {
-			setLayoutData(new GridData(SWT.LEFT, SWT.BOTTOM, expand, false, columns, 1));
+			alingment = LFlags.LEFT & LFlags.BOTTOM;
 		} else if ((style & LFlags.RIGHT) > 0) {
-			setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, expand, false, columns, 1));			
+			alingment = LFlags.RIGHT & LFlags.CENTER;		
 		} else if ((style & LFlags.CENTER) > 0) {
-			setLayoutData(new GridData(SWT.FILL, SWT.FILL, expand, false, columns, 1));
-			label.setAlignment(SWT.CENTER);
-		} else {
-			setLayoutData(new GridData(SWT.FILL, SWT.FILL, expand, false, columns, 1));
+			label.setHorizontalTextPosition(JLabel.CENTER);
 		}
+		setAlignment(alingment);
 	}
 
 	public LLabel(LContainer parent, int style, String text) {
@@ -70,7 +59,7 @@ public class LLabel extends LWidget {
 	}
 
 	public LLabel(LContainer parent, int hfill, int vfill) {
-		this(parent.getComposite(), SWT.NONE, hfill, vfill);
+		this(parent, 1, hfill, vfill);
 	}
 
 	/**
@@ -87,14 +76,15 @@ public class LLabel extends LWidget {
 
 	@Override
 	protected void createContent(int flags) {
-		if (flags != SWT.NONE)
+		if (flags == 1)
 			return;
-		label = new Label(this, SWT.NONE);
+		label = new JLabel();
+		add(label);
 	}
 
 	public void setText(String text) {
 		label.setText(text);
-		layout();
+		refreshLayout();
 	}
 	
 	@Override
@@ -108,19 +98,19 @@ public class LLabel extends LWidget {
 	}
 	
 	@Override
-	public void setMenu(Menu menu) {
-		super.setMenu(menu);
-		label.setMenu(menu);
+	public void setComponentPopupMenu(JPopupMenu menu) {
+		super.setComponentPopupMenu(menu);
+		label.setComponentPopupMenu(menu);
 	}
 
 	//////////////////////////////////////////////////
 	// {{ Menu
 
 	@Override
-	public void onCopyButton(Menu menu) {}
+	public void onCopyButton(LMenu menu) {}
 
 	@Override
-	public void onPasteButton(Menu menu) {}
+	public void onPasteButton(LMenu menu) {}
 
 	@Override
 	public boolean canDecode(String str) {

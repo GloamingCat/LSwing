@@ -1,19 +1,18 @@
 package lwt.widget;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.wb.swt.SWTResourceManager;
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 
 import lwt.container.LContainer;
 
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
-
 public class LCheckBox extends LControlWidget<Boolean> {
+	private static final long serialVersionUID = 1L;
 
-	private Button button;
+	private JCheckBox button;
 	
 	/**
 	 * Create the composite.
@@ -26,33 +25,33 @@ public class LCheckBox extends LControlWidget<Boolean> {
 	
 	public LCheckBox(LContainer parent, int columns) {
 		super(parent);
-		if (columns > 1)
-			setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, columns, 1));
-		button.addSelectionListener(new SelectionAdapter() {
+		setSpread(columns, 1);
+		button.addActionListener(new ActionListener() {
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				if (button.getSelection() == currentValue)
+			public void actionPerformed(ActionEvent e) {
+				if (button.isSelected() == currentValue)
 					return;
-				newModifyAction(currentValue, button.getSelection());
-				currentValue = button.getSelection();
+				newModifyAction(currentValue, button.isSelected());
+				currentValue = button.isSelected();
 			}
 		});
 	}
 	
 	@Override
 	protected void createContent(int flags) {
-		button = new Button(this, SWT.CHECK);
+		button = new JCheckBox();
+		add(button);
 	}
 
 	public void setValue(Object obj) {
 		if (obj != null) {
 			Boolean i = (Boolean) obj;
 			button.setEnabled(true);
-			button.setSelection(i);
+			button.setSelected(i);
 			currentValue = i;
 		} else {
 			button.setEnabled(false);
-			button.setSelection(false);
+			button.setSelected(false);
 			currentValue = null;
 		}
 	}
@@ -63,11 +62,12 @@ public class LCheckBox extends LControlWidget<Boolean> {
 	
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
-		button.setForeground(SWTResourceManager.getColor(enabled ? SWT.COLOR_BLACK : SWT.COLOR_DARK_GRAY));
+		button.setForeground(enabled ?
+				new Color(0, 0, 0) : new Color(100, 100, 100));
 	}
 	
 	@Override
-	protected Control getControl() {
+	protected JComponent getControl() {
 		return button;
 	}
 

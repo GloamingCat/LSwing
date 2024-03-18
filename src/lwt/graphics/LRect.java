@@ -1,6 +1,6 @@
 package lwt.graphics;
 
-import org.eclipse.swt.graphics.Rectangle;
+import java.awt.Rectangle;
 
 public class LRect {
 	

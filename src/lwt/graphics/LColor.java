@@ -1,11 +1,12 @@
 package lwt.graphics;
 
+import java.awt.Color;
 import java.util.HashMap;
 
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.wb.swt.SWTResourceManager;
-
 public class LColor {
+	
+	public static final LColor BLACK = new LColor(0, 0, 0, 255);
+	public static final LColor WHITE = new LColor(255, 255, 255, 255);
 	
 	public int red;
 	public int green;
@@ -31,7 +32,7 @@ public class LColor {
 	}
 	
 	public Color convert() {
-		return SWTResourceManager.getColor(red, green, blue);
+		return new Color(red, green, blue);
 	}
 	
 	//////////////////////////////////////////////////

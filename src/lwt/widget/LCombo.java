@@ -1,21 +1,18 @@
 package lwt.widget;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
-import lwt.container.LContainer;
-import lwt.graphics.LTexture;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.GridData;
+import lwt.container.LContainer;
 
 public class LCombo extends LControlWidget<Integer> {
+	private static final long serialVersionUID = 1L;
 
-	private Combo combo;
+	private JComboBox<String> combo;
 	private boolean includeID = true;
 	private boolean optional = true;
 	
@@ -33,17 +30,15 @@ public class LCombo extends LControlWidget<Integer> {
 	}
 	
 	public LCombo(LContainer parent, int columns, boolean readOnly) {
-		super(parent, (readOnly ? SWT.READ_ONLY : 0));
-		setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, columns, 1));
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.verticalSpacing = 0;
-		gridLayout.marginWidth = 0;
-		gridLayout.marginHeight = 0;
-		setLayout(gridLayout);
-		combo.addSelectionListener(new SelectionAdapter() {
+		super(parent, (readOnly ? 1 : 0));
+		setFillLayout(true);
+		setSpread(columns, 1);
+		setExpand(true, false);
+		combo.addActionListener(new ActionListener() {
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				int current = currentValue == null ? -1 : currentValue;
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println(arg0.getActionCommand());
+				int current = currentValue == null ? (optional ? -1 : 0) : currentValue;
 				if (getSelectionIndex() == current)
 					return;
 				newModifyAction(currentValue, getSelectionIndex());
@@ -54,18 +49,16 @@ public class LCombo extends LControlWidget<Integer> {
 	
 	@Override
 	protected void createContent(int flags) {
-		combo = new Combo(this, SWT.BORDER | flags);
-		GridData gd_combo = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-		if (!LTexture.onWindows)
-			gd_combo.heightHint = 28;
-		combo.setLayoutData(gd_combo);
+		combo = new JComboBox<String>();
+		combo.setEditable(flags == 0);
+		add(combo);
 	}
 
 	public int getSelectionIndex() {
 		if (optional) {
-			return combo.getSelectionIndex() - 1;
+			return combo.getSelectedIndex() - 1;
 		} else {
-			return combo.getSelectionIndex();
+			return combo.getSelectedIndex();
 		}
 	}
 	
@@ -73,17 +66,11 @@ public class LCombo extends LControlWidget<Integer> {
 		if (optional) 
 			i++;
 		if (i >= combo.getItemCount())
-			combo.select(0);
+			combo.setSelectedIndex(0);
 		else
-			combo.select(i);
+			combo.setSelectedIndex(i);
 	}
-	
-	public void setItem(int i, Object obj) {
-		if (optional)
-			i++;
-		combo.setItem(i, obj.toString());
-	}
-	
+
 	public void setValue(Object obj) {
 		if (obj != null) {
 			Integer i = (Integer) obj;
@@ -92,7 +79,7 @@ public class LCombo extends LControlWidget<Integer> {
 			currentValue = i;
 		} else {
 			combo.setEnabled(false);
-			combo.clearSelection();
+			combo.setSelectedItem(null);
 			currentValue = null;
 		}
 	}
@@ -110,22 +97,14 @@ public class LCombo extends LControlWidget<Integer> {
 	public void setItems(ArrayList<?> array) {
 		if (array == null)
 			array = new ArrayList<Object>();
-		int d = 0;
-		String[] items;
-		if (optional) {
-			items = new String[array.size() + 1];
-			items[0] = "";
-			d = 1;
-		} else {
-			items = new String[array.size()];
-		}
+		if (optional)
+			combo.addItem("");
 		int id = 0;
 		for(Object obj : array) {
 			String item = includeID ? String.format("[%03d] ", id) : "";
-			items[id + d] = item + obj.toString();
+			combo.addItem(item + obj.toString());
 			id++;
 		}
-		combo.setItems(items);
 	}
 	
 	public void setIncludeID(boolean value) {
@@ -137,7 +116,7 @@ public class LCombo extends LControlWidget<Integer> {
 	}
 	
 	@Override
-	protected Control getControl() {
+	protected JComponent getControl() {
 		return combo;
 	}
 

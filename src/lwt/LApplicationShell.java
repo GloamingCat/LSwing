@@ -1,51 +1,45 @@
 package lwt;
 
-import lwt.action.LActionManager;
 import lwt.container.LContainer;
+import lwt.container.LPanel;
+import lwt.container.LStack;
 import lwt.container.LView;
-import lwt.dataserialization.LFileManager;
-import lwt.dataserialization.LSerializer;
-import lwt.dialog.LShell;
+import lwt.dialog.LErrorDialog;
+import lwt.dialog.LFileDialog;
+import lwt.dialog.LConfirmDialog;
+import lwt.dialog.LWindow;
+import lwt.editor.LMenuBar;
+import lwt.editor.LSubMenu;
+import lwt.graphics.LTexture;
+
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.MenuAdapter;
-import org.eclipse.swt.events.MenuEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.wb.swt.SWTResourceManager;
+import javax.swing.JFrame;
 
-public abstract class LApplicationShell extends LShell implements LContainer {
+import lbase.LVocab;
+import lbase.action.LActionManager;
+import lbase.gui.LMenu;
+import lbase.serialization.LFileManager;
+import lbase.serialization.LSerializer;
+
+public abstract class LApplicationShell extends LWindow implements LContainer, lbase.gui.LApplicationWindow {
 
 	protected LSerializer project = null;
 	protected String applicationName;
+	protected String projectExtension = "txt";
 
 	protected ArrayList<LView> views = new ArrayList<>();
 	protected LView defaultView = null;
 	protected LView currentView;
-	protected StackLayout stackLayout;
+	protected LStack stack;
 
-	public Menu menuProject;
-	public Menu menuEdit;
-	public Menu menuView;
-	public Menu menuHelp;
-	protected MenuItem mntmView;
-	protected MenuItem mntmUndo;
-	protected MenuItem mntmRedo;
-	protected MenuItem mntmCopy;
-	protected MenuItem mntmPaste;
-	protected MenuItem mntmDelete;
-	protected MenuItem mntmEdit;
+	protected LMenuBar menuBar;
+	public LSubMenu menuProject;
+	public LSubMenu menuEdit;
+	public LSubMenu menuView;
+	public LSubMenu menuHelp;
 
 	/**
 	 * Create the shell.
@@ -54,181 +48,74 @@ public abstract class LApplicationShell extends LShell implements LContainer {
 	 */
 	public LApplicationShell(int initialWidth, int initialHeight, String title, String icon) {
 		super();
-		SWTResourceManager.rootClass = getClass();
-		setSize(new Point(initialWidth, initialHeight));
+		LTexture.rootClass = getClass();
+		setSize(initialWidth, initialHeight);
 		if (title != null) {
-			setText(title);
+			setTitle(title);
 			applicationName = "LTH Editor";
 		}
 		if (icon != null) {
-			setImage(SWTResourceManager.getImage(LApplicationShell.class, icon));
+			jframe.setIconImage(LTexture.getBufferedImage(icon));
 		}
 
 		LVocab vocab = LVocab.instance;
 
-		stackLayout = new StackLayout();
-		setLayout(stackLayout);
-
-		addListener(SWT.Close, new Listener() {
-			public void handleEvent(Event event) {
-				event.doit = askSave();
-			}
-		});
-
-		Menu menu = new Menu(this, SWT.BAR);
-		setMenuBar(menu);
-
-		MenuItem mntmProject = new MenuItem(menu, SWT.CASCADE);
-		mntmProject.setText(vocab.PROJECT);
-
-		menuProject = new Menu(mntmProject);
-		mntmProject.setMenu(menuProject);
-
-		MenuItem mntmNew = new MenuItem(menuProject, SWT.NONE);
-		mntmNew.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				project = newProject();
-			}
-		});
-		mntmNew.setText(vocab.NEW + "\tCtrl + &N");
-		mntmNew.setAccelerator(SWT.MOD1 | 'N');
-
-		MenuItem mntmOpen = new MenuItem(menuProject, SWT.NONE);
-		mntmOpen.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				project = openProject();
-			}
-		});
-		mntmOpen.setText(vocab.OPEN + "\tCtrl + &O");
-		mntmOpen.setAccelerator(SWT.MOD1 | 'O');
-
-		MenuItem mntmSave = new MenuItem(menuProject, SWT.NONE);
-		mntmSave.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				saveProject();
-			}
-		});
-		mntmSave.setText(vocab.SAVE + "\tCtrl + &S");
-		mntmSave.setAccelerator(SWT.MOD1 | 'S');
-
-		menuProject.addMenuListener(new MenuAdapter() {
-			@Override
-			public void menuShown(MenuEvent arg0) {
-				mntmSave.setEnabled(project != null && LActionManager.getInstance().hasChanges());
-			}
-		});
-
-		new MenuItem(menuProject, SWT.SEPARATOR);
-
-		MenuItem mntmExit = new MenuItem(menuProject, SWT.NONE);
-		mntmExit.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				close();
-			}
-		});
-		mntmExit.setText(vocab.EXIT + "\t Alt + F4");
-		mntmExit.setAccelerator(SWT.ALT | SWT.F4);
-
-		MenuItem mntmEdit = new MenuItem(menu, SWT.CASCADE);
-		mntmEdit.setText(vocab.EDIT);
-
-		menuEdit = new Menu(mntmEdit);
-		mntmEdit.setMenu(menuEdit);
-
-		mntmUndo = new MenuItem(menuEdit, SWT.NONE);
-		mntmUndo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				currentView.getActionStack().undo();
-			}
-		});
-		mntmUndo.setAccelerator(SWT.MOD1 | 'Z');
-		mntmUndo.setText(vocab.UNDO + "\t Ctrl + &Z");
-		mntmUndo.setEnabled(false);
-
-		mntmRedo = new MenuItem(menuEdit, SWT.NONE);
-		mntmRedo.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				currentView.getActionStack().redo();
-			}
-		});
-		mntmRedo.setAccelerator(SWT.MOD1 | 'Y');
-		mntmRedo.setText(vocab.REDO + "\t Ctrl + &Y");
-		mntmRedo.setEnabled(false);
+		stack = new LStack(getContentComposite());
+		new LPanel(stack);
 		
-		new MenuItem(menuEdit, SWT.SEPARATOR);
-		
-		mntmCopy = new MenuItem(menuEdit, SWT.NONE);
-		mntmCopy.addSelectionListener(new SelectionAdapter() {
+		jframe.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		jframe.addWindowListener(new WindowAdapter() {
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				currentView.getMenuInterface().copy();
+			public void windowClosing(WindowEvent e) {
+				if (askSave())
+					System.exit(0);
 			}
 		});
-		mntmCopy.setAccelerator(SWT.MOD1 | 'C');
-		mntmCopy.setText(vocab.COPY + "\t Ctrl + &C");
-		mntmCopy.setEnabled(false);
 
-		mntmPaste = new MenuItem(menuEdit, SWT.NONE);
-		mntmPaste.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				currentView.getMenuInterface().paste();
-			}
-		});
-		mntmPaste.setAccelerator(SWT.MOD1 | 'V');
-		mntmPaste.setText(vocab.PASTE + "\t Ctrl + &V");
-		mntmPaste.setEnabled(false);
+		menuBar = new LMenuBar(this);
 
-		mntmView = new MenuItem(menu, SWT.CASCADE);
-		mntmView.setText(vocab.VIEW);
+		menuProject = menuBar.addSubMenu(vocab.PROJECT, "project");
+		menuProject.addMenuButton(vocab.NEW, "new", (d) -> project = newProject(), "Ctrl+&N");
+		menuProject.addMenuButton(vocab.OPEN, "open", (d) -> project = openProject(), "Ctrl+&O");
+		menuProject.addMenuButton(vocab.SAVE, "save", (d) -> saveProject(), "Ctrl+&S");
+		menuProject.addSeparator();
+		menuProject.addMenuButton(vocab.EXIT, "exit", (d) -> close(), "Alt+F4");
 
-		menuView = new Menu(mntmView);
-		mntmView.setMenu(menuView);
+		menuEdit = menuBar.addSubMenu(vocab.EDIT, "edit");
+		menuEdit.addMenuButton(vocab.UNDO, "undo", (d) -> currentView.getActionStack().undo(), "Ctrl+&Z");
+		menuEdit.setButtonEnabled("undo", false);
+		menuEdit.addMenuButton(vocab.REDO, "redo", (d) -> currentView.getActionStack().redo(), "Ctrl+&Y");
+		menuEdit.setButtonEnabled("redo", false);
+		menuEdit.addSeparator();
+		menuEdit.addMenuButton(vocab.COPY, "copy", (d) -> currentView.getMenuInterface().copy(), "Ctrl+&C");
+		menuEdit.setButtonEnabled("copy", false);
+		menuEdit.addMenuButton(vocab.PASTE, "paste", (d) -> currentView.getMenuInterface().paste(), "Ctrl+&V");
+		menuEdit.setButtonEnabled("paste", false);
 
-		MenuItem mntmHelp = new MenuItem(menu, SWT.CASCADE);
-		mntmHelp.setText(vocab.HELP);
+		menuView = menuBar.addSubMenu(vocab.VIEW, "view");
+		menuBar.setMenuEnabled("view", false);
+		menuHelp = menuBar.addSubMenu(vocab.HELP, "help");
+		menuBar.setMenuEnabled("help", false);
 
-		menuHelp = new Menu(mntmHelp);
-		mntmHelp.setMenu(menuHelp);
-
-		mntmView.setEnabled(false);
-		mntmSave.setEnabled(false);
-
+	}
+	
+	@Override
+	public LMenu getEditMenu() {
+		return menuEdit;
 	}
 
 	public void run() {
-		open();
-		layout();
-		while (!isDisposed()) {
-			if (!Display.getDefault().readAndDispatch()) {
-				Display.getDefault().sleep();
+		javax.swing.SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				open();
+				refreshLayout();
 			}
-		}
-		LGlobals.clipboard.dispose();
-		System.exit(0);
+		});
 	}
 
 	protected void addView(final LView view, String name, String shortcut) {
-		MenuItem item = new MenuItem(menuView, SWT.NONE);
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				setCurrentView(view);
-			}
-		});
+		menuView.addMenuButton(name, name, (d) -> setCurrentView(view), shortcut);
 		views.add(view);
-		if (shortcut != null) {
-			item.setText(name + "\t" + shortcut);
-			item.setAccelerator(LGlobals.accelerators.get(shortcut));
-		} else {
-			item.setText(name);
-		}
 	}
 
 	protected boolean loadDefault(String path) {
@@ -244,14 +131,14 @@ public abstract class LApplicationShell extends LShell implements LContainer {
 		LVocab vocab = LVocab.instance;
 		LSerializer project = createProject(path);
 		if (!project.load()) {
-			MessageBox msg = new MessageBox(getShell(), SWT.ICON_ERROR | SWT.OK);
-			msg.setText(vocab.LOADERROR);
-			msg.setMessage(vocab.LOADERRORMSG + "\n" + path);
+			LErrorDialog msg = new LErrorDialog(this,
+					vocab.LOADERROR,
+					vocab.LOADERRORMSG + "\n" + path);
 			msg.open();
 			return false;
 		} else {
 			this.project = project;
-			mntmView.setEnabled(true);
+			menuView.setEnabled(true);
 			if (defaultView != null)
 				setCurrentView(defaultView);
 			return true;
@@ -264,24 +151,27 @@ public abstract class LApplicationShell extends LShell implements LContainer {
 
 	protected void setCurrentView(LView view) {
 		currentView = view;
-		stackLayout.topControl = currentView;
-		setRedraw(false);
-		layout();
+		getContentComposite().setIgnoreRepaint(true);
+		stack.setTop(currentView);
+		//refreshLayout();
 		currentView.onVisible();
 		refreshEditButtons();
-		setRedraw(true);
+		getContentComposite().setIgnoreRepaint(false);
 	}
 	
+	@Override
 	public void refreshEditButtons() {
-		mntmUndo.setEnabled(currentView.getActionStack().canUndo());
-		mntmRedo.setEnabled(currentView.getActionStack().canRedo());
+		menuProject.setButtonEnabled("save", project != null && LActionManager.getInstance().hasChanges());
+		menuEdit.setButtonEnabled("undo", currentView.getActionStack().canUndo());
+		menuEdit.setButtonEnabled("redo", currentView.getActionStack().canRedo());
 	}
 	
+	@Override
 	public void refreshClipboardButtons() {
-		mntmCopy.setEnabled(currentView.getMenuInterface().canCopy());
-		mntmPaste.setEnabled(currentView.getMenuInterface().canPaste());
+		menuEdit.setButtonEnabled("copy", currentView.getMenuInterface().canCopy());
+		menuEdit.setButtonEnabled("paste", currentView.getMenuInterface().canPaste());
 	}
-
+	
 	protected abstract LSerializer createProject(String path);
 
 	public LSerializer newProject() {
@@ -289,26 +179,24 @@ public abstract class LApplicationShell extends LShell implements LContainer {
 			return project;
 		}
 		LVocab vocab = LVocab.instance;
-		FileDialog dialog = new FileDialog(this);
-		dialog.setText(vocab.NEWPROJECT);
-		dialog.setFilterExtensions(new String[] {"*.json"});
-		dialog.setFilterPath(LFileManager.applicationPath());
+		LFileDialog dialog = new LFileDialog(this, vocab.NEWPROJECT, projectExtension, true);
 		String resultPath = dialog.open();
 		if (resultPath == null)
 			return project;
 		LSerializer newProject = createProject(resultPath);
-		if (newProject.isDataFolder(resultPath)) {
-			MessageBox msg = new MessageBox(this, SWT.ICON_QUESTION | SWT.YES | SWT.NO | SWT.CANCEL);
-			msg.setText(vocab.EXISTINGPROJECT);
-			msg.setMessage(vocab.EXISTINGMSG);
+		if (newProject.isDataFolder(LFileManager.getDirectory(resultPath))) {
+			LConfirmDialog msg = new LConfirmDialog(this, 
+					vocab.EXISTINGPROJECT,
+					vocab.EXISTINGMSG,
+					LConfirmDialog.OK_CANCEL);
 			int result = msg.open();
-			if (result != SWT.YES) {
+			if (result != LConfirmDialog.YES) {
 				return project;
 			}
 		}
 		newProject.initialize();
 		newProject.save();
-		mntmView.setEnabled(true);
+		menuView.setEnabled(true);
 		String path = LFileManager.appDataPath(applicationName) + "lattest.txt";
 		byte[] bytes = resultPath.getBytes();
 		LFileManager.save(path, bytes);
@@ -322,10 +210,7 @@ public abstract class LApplicationShell extends LShell implements LContainer {
 			return project;
 		}
 		LVocab vocab = LVocab.instance;
-		FileDialog dialog = new FileDialog(this);
-		dialog.setText(vocab.OPENPROJECT);
-		dialog.setFilterExtensions(new String[] {"*.json"});
-		dialog.setFilterPath(LFileManager.applicationPath());
+		LFileDialog dialog = new LFileDialog(this, vocab.OPENPROJECT, projectExtension, false);
 		String resultFile = dialog.open();
 		if (resultFile == null)
 			return project;
@@ -333,7 +218,7 @@ public abstract class LApplicationShell extends LShell implements LContainer {
 		System.out.println("Opened: " + resultFile);
 		project = createProject(resultFile);
 		if (project.load()) {
-			mntmView.setEnabled(true);
+			menuView.setEnabled(true);
 			String path = LFileManager.appDataPath(applicationName) + "lattest.txt";
 			byte[] bytes = resultFile.getBytes();
 			LFileManager.save(path, bytes);
@@ -342,9 +227,9 @@ public abstract class LApplicationShell extends LShell implements LContainer {
 			if (defaultView != null)
 				setCurrentView(defaultView);
 		} else {
-			MessageBox msg = new MessageBox(this, SWT.ICON_ERROR | SWT.OK);
-			msg.setText(vocab.LOADERROR);
-			msg.setMessage(vocab.LOADERRORMSG + ":" + resultFile);
+			LErrorDialog msg = new LErrorDialog(this,
+					vocab.LOADERROR,
+					vocab.LOADERRORMSG + ":" + resultFile);
 			msg.open();
 			project = previous;
 		}
@@ -356,9 +241,9 @@ public abstract class LApplicationShell extends LShell implements LContainer {
 			return;
 		if (!project.save()) {
 			LVocab vocab = LVocab.instance;
-			MessageBox msg = new MessageBox(this, SWT.APPLICATION_MODAL | SWT.ICON_ERROR | SWT.OK);
-			msg.setText(vocab.SAVEERROR);
-			msg.setMessage(vocab.SAVEERRORMSG);
+			LErrorDialog msg = new LErrorDialog(this,
+					vocab.SAVEERROR,
+					vocab.SAVEERRORMSG);
 			msg.open();
 		} else {
 			LActionManager.getInstance().onSave();
@@ -368,14 +253,15 @@ public abstract class LApplicationShell extends LShell implements LContainer {
 	protected boolean askSave() {
 		if (project != null && LActionManager.getInstance().hasChanges()) {
 			LVocab vocab = LVocab.instance;
-			MessageBox msg = new MessageBox(this, SWT.APPLICATION_MODAL | SWT.YES | SWT.NO | SWT.CANCEL);
-			msg.setText(vocab.UNSAVEDPROJECT);
-			msg.setMessage(vocab.UNSAVEDMSG);
+			LConfirmDialog msg = new LConfirmDialog(this, 
+					vocab.UNSAVEDPROJECT,
+					vocab.UNSAVEDMSG,
+					LConfirmDialog.YES_NO_CANCEL);
 			int result = msg.open();
-			if (result == SWT.YES) {
+			if (result == LConfirmDialog.YES) {
 				saveProject();
 				return true;
-			} else if (result == SWT.NO) {
+			} else if (result == LConfirmDialog.NO) {
 				return true;
 			} else {
 				return false;
@@ -383,13 +269,6 @@ public abstract class LApplicationShell extends LShell implements LContainer {
 		} else {
 			return true;
 		}
-	}
-
-	@Override
-	protected void checkSubclass() { }
-
-	public Composite getComposite() {
-		return this;
 	}
 
 }

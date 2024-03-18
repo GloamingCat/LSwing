@@ -6,11 +6,12 @@ import lwt.container.LContainer;
 import lwt.container.LImage;
 import lwt.dialog.LImageShell;
 import lwt.dialog.LObjectShell;
-import lwt.dialog.LShell;
+import lwt.dialog.LWindow;
 import lwt.dialog.LShellFactory;
 
 public class LImageButton extends LObjectButton<String> {
-
+	private static final long serialVersionUID = 1L;
+	
 	protected LImage image;
 	protected String folder = "";
 
@@ -18,7 +19,7 @@ public class LImageButton extends LObjectButton<String> {
 		super(parent);
 		setShellFactory(new LShellFactory<String>() {
 			@Override
-			public LObjectShell<String> createShell(LShell parent) {
+			public LObjectShell<String> createShell(LWindow parent) {
 				return new LImageShell(parent, optional, folder);
 			}
 		});

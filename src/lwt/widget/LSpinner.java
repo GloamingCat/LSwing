@@ -1,19 +1,19 @@
 package lwt.widget;
 
 import lwt.container.*;
-import lwt.graphics.LTexture;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.GridData;
+import javax.swing.JComponent;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class LSpinner extends LControlWidget<Integer> {
+	private static final long serialVersionUID = 1L;
 
-	private Spinner spinner;
+	private JSpinner spinner;
+	private int minimum = 0;
+	private int maximum = 100;
 
 	/**
 	 * @wbp.parser.constructor
@@ -25,29 +25,23 @@ public class LSpinner extends LControlWidget<Integer> {
 	
 	public LSpinner(LContainer parent, int columns) {
 		super(parent);
-		setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, columns, 1));
+		setFillLayout(true);
+		setExpand(true, false);
+		setSpread(columns, 1);
 	}
 	
 	@Override
 	protected void createContent(int flags) {
-		GridLayout gridLayout = new GridLayout(1, false);
-		gridLayout.horizontalSpacing = 0;
-		gridLayout.marginHeight = 0;
-		gridLayout.marginWidth = 0;
-		gridLayout.verticalSpacing = 0;
-		setLayout(gridLayout);
-		spinner = new Spinner(this, SWT.BORDER);
-		GridData gd_spinner = new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1);
-		if (!LTexture.onWindows)
-			gd_spinner.heightHint = 26;
-		spinner.setLayoutData(gd_spinner);
-		spinner.addSelectionListener(new SelectionAdapter() {
+		spinner = new JSpinner();
+		add(spinner);
+		spinner.setModel(new SpinnerNumberModel(minimum, minimum, maximum, 1));
+		spinner.addChangeListener(new ChangeListener() {
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				if (currentValue != null && spinner.getSelection() == currentValue)
+			public void stateChanged(ChangeEvent e) {
+				if (currentValue != null && spinner.getValue() == currentValue)
 					return;
-				newModifyAction(currentValue, spinner.getSelection());
-				currentValue = spinner.getSelection();
+				newModifyAction(currentValue, (Integer) spinner.getValue());
+				currentValue = (Integer) spinner.getValue();
 			}
 		});
 	}
@@ -57,25 +51,27 @@ public class LSpinner extends LControlWidget<Integer> {
 		if (obj != null) {
 			Integer i = (Integer) obj;
 			spinner.setEnabled(true);
-			spinner.setSelection(i);
+			spinner.setValue(i);
 			currentValue = i;
 		} else {
 			spinner.setEnabled(false);
-			spinner.setSelection(0);
+			spinner.setValue((int) 0);
 			currentValue = null;
 		}
 	}
 	
 	public void setMinimum(int i) {
-		spinner.setMinimum(i);
+		minimum = i;
+		spinner.setModel(new SpinnerNumberModel((int) spinner.getValue(), minimum, maximum, 1));
 	}
 	
 	public void setMaximum(int i) {
-		spinner.setMaximum(i);
+		maximum = i;
+		spinner.setModel(new SpinnerNumberModel((int) spinner.getValue(), minimum, maximum, 1));
 	}
 	
 	@Override
-	protected Control getControl() {
+	protected JComponent getControl() {
 		return spinner;
 	}
 

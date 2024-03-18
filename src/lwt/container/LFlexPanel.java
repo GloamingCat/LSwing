@@ -1,48 +1,40 @@
 package lwt.container;
 
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
 import javax.swing.JComponent;
-import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 
 import lwt.LFlags;
 import lwt.graphics.LPoint;
 
-public class LScrollPanel extends JScrollPane implements LContainer {
+public class LFlexPanel extends JSplitPane implements LContainer {
 
 	private static final long serialVersionUID = 1L;
 	private GridBagConstraints gridData;
 	private int minWidth, minHeight;
+	
+	 LFlexPanel(JComponent parent, int dir) {
+		super(dir);
+		if (parent != null)
+			parent.add(this);
+	}
 
 	/**
-	 * Internal, no layout.
+	 * Fill layout.
 	 */
-	LScrollPanel(JComponent parent) {
-		super();
-		parent.add(this);
+	public LFlexPanel(LContainer parent, boolean horizontal) {
+		this(parent.getContentComposite(), horizontal ? JSplitPane.HORIZONTAL_SPLIT : JSplitPane.VERTICAL_SPLIT);
 	}
 
-	/** Fill layout with no margin.
-	 * @param parent
-	 * @param horizontal
+	/**
+	 * Fill horizontal layout.
 	 */
-	public LScrollPanel(LContainer parent, boolean large) {
-		this(parent.getContentComposite());
-		if (large) {
-			setAutoscrolls(true);
-			setExpand(true, true);
-		}
-	}
-
-	/** No layout.
-	 * @param parent
-	 */
-	public LScrollPanel(LContainer parent) {
-		this(parent, false);
+	public LFlexPanel(LContainer parent) {
+		this(parent, true);
 	}
 
 	//////////////////////////////////////////////////
@@ -140,31 +132,23 @@ public class LScrollPanel extends JScrollPane implements LContainer {
 		return d;
 	}
 	
-	public void refreshSize(LPoint size) {
-		//refreshSize(size.x, size.y);
-	}
-	
-	public void refreshSize(int width, int height) {
-		//setMinSize(width, height);
-		refreshLayout();
-	}
-	
 	// }}
 
 	//////////////////////////////////////////////////
 	// {{ Container Methods
-
-	public Component add(Component c) {
-		super.add(c);
-		setViewportView(c);
-		return c;
+	
+	public void setWeights(float first, float second) {
+		setResizeWeight(second / (first + second));
+		Dimension minimumSize = new Dimension(0, 0);
+		leftComponent.setMinimumSize(minimumSize);
+		rightComponent.setMinimumSize(minimumSize);
 	}
-
+	
 	@Override
 	public JComponent getContentComposite() {
 		return this;
 	}
-
+	
 	// }}
 
 }

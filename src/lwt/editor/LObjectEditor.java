@@ -1,5 +1,9 @@
 package lwt.editor;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,21 +11,18 @@ import java.util.Map;
 
 import lwt.LGlobals;
 import lwt.LMenuInterface;
-import lwt.action.LControlAction;
+import lbase.action.LControlAction;
 import lwt.container.LContainer;
 import lwt.container.LControlView;
 import lwt.container.LView;
-import lwt.dataestructure.LPath;
-import lwt.event.LControlEvent;
-import lwt.event.LSelectionEvent;
-import lwt.event.listener.LControlListener;
-import lwt.event.listener.LSelectionListener;
-import lwt.widget.LControl;
+import lbase.data.LPath;
+import lbase.event.LControlEvent;
+import lbase.event.LSelectionEvent;
+import lbase.event.listener.LControlListener;
+import lbase.event.listener.LSelectionListener;
+import lbase.gui.LControl;
+import lbase.gui.LMenu;
 import lwt.widget.LControlWidget;
-
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.widgets.Menu;
 
 /**
  * A specific type of Editor that edits a single object.
@@ -30,7 +31,8 @@ import org.eclipse.swt.widgets.Menu;
  *
  */
 public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
-
+	private static final long serialVersionUID = 1L;
+	
 	protected HashMap<LControlWidget<?>, String> controlMap = new HashMap<>();
 	protected HashMap<LEditor, String> editorMap = new HashMap<>();
 	public LCollectionEditor<?, ?> collectionEditor;
@@ -52,41 +54,6 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		addMenu();
 	}
 
-	/**
-	 * Fill/row layout.
-	 * @param parent
-	 * @param horizontal
-	 * @param equalCells
-	 * @param doubleBuffered
-	 */
-	public LObjectEditor(LContainer parent, boolean horizontal, boolean equalCells, boolean doubleBuffered) {
-		super(parent, horizontal, equalCells, doubleBuffered);
-		addMenu();
-	}
-	
-	/**
-	 * Fill layout with no margin.
-	 * @param parent
-	 * @param horizontal
-	 * @param doubleBuffered
-	 */
-	public LObjectEditor(LContainer parent, boolean horizontal, boolean doubleBuffered) {
-		super(parent, horizontal, doubleBuffered);
-		addMenu();
-	}
-	
-	/**
-	 * Grid layout.
-	 * @param parent
-	 * @param columns
-	 * @param equalCols
-	 * @param doubleBuffered
-	 */
-	public LObjectEditor(LContainer parent, int columns, boolean equalCols, boolean doubleBuffered) {
-		super(parent, columns, equalCols, doubleBuffered);
-		addMenu();
-	}
-	
 	// }}
 
 	//////////////////////////////////////////////////
@@ -299,20 +266,23 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	//////////////////////////////////////////////////
 	// {{ Clipboard
 	
-	public void onCopyButton(Menu menu) {
-		LGlobals.clipboard.setContents(new Object[] { encodeData(currentObject) },
-				new Transfer[] { TextTransfer.getInstance() });
+	public void onCopyButton(LMenu menu) {
+		String str = encodeData(currentObject);
+		LGlobals.clipboard.setContents(new StringSelection(str), null);
 	}
 	
-	public void onPasteButton(Menu menu) {
-		String str = (String) LGlobals.clipboard.getContents(TextTransfer.getInstance());
-		if (str == null)
+	public void onPasteButton(LMenu menu) {
+		DataFlavor dataFlavor = DataFlavor.stringFlavor;
+		if (!LGlobals.clipboard.isDataFlavorAvailable(dataFlavor))
 			return;
 		try {
+			String str = (String) LGlobals.clipboard.getData(dataFlavor);
+			if (str == null)
+				return;
 			T newValue = decodeData(str);
 			if (newValue != null && !newValue.equals(currentObject))
 				modify(newValue);	
-		} catch (ClassCastException e) {
+		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
 			System.err.println(e.getMessage());
 			return;
 		}

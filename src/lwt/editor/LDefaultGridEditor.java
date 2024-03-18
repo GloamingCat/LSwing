@@ -2,10 +2,11 @@ package lwt.editor;
 
 import lwt.container.LContainer;
 import lwt.container.LImage;
-import lwt.dataestructure.LPath;
+import lbase.data.LPath;
 import lwt.datainterface.LGraphical;
 
 public abstract class LDefaultGridEditor<T extends LGraphical> extends LGridEditor<T, T> {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create the composite.

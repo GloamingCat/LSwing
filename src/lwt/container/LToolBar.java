@@ -1,64 +1,87 @@
 package lwt.container;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
-import org.eclipse.wb.swt.SWTResourceManager;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JRadioButton;
+import javax.swing.JToolBar;
+
+import lwt.graphics.LTexture;
 
 public class LToolBar extends LPanel {
 	
-	private ToolBar toolBar;
+	private static final long serialVersionUID = 1L;
+	private JToolBar toolBar;
 	
 	public LToolBar(LContainer parent) {
 		super(parent);
-		toolBar = new ToolBar(this, SWT.FLAT | SWT.RIGHT);
+		toolBar = new JToolBar();
+		parent.getContentComposite().add(toolBar);
 		setFillLayout(true);
 	}
 	
-	private <T> ToolItem addItem(int type, Consumer<T> onSelect, T data, String txt) {
-		ToolItem item = new ToolItem(toolBar, type);
+	public <T> void addItem(Consumer<T> onSelect, T data, String txt, boolean selected) {
+		JRadioButton item = new JRadioButton();
+		toolBar.add(item);
 		if (onSelect != null) {
-			item.addSelectionListener(new SelectionAdapter() {
+			item.addActionListener(new ActionListener() {
 				@Override
-				public void widgetSelected(SelectionEvent arg0) {
+				public void actionPerformed(ActionEvent e) {
 					onSelect.accept(data);
 				}
 			});
 		}
-		Image img = SWTResourceManager.getImage(txt);
+		BufferedImage img = LTexture.getBufferedImage(txt);
 		if (img == null)
 			item.setText(txt);
 		else
-			item.setImage(img);
-		return item;
+			item.setIcon(new ImageIcon(img));
 	}
 	
-	public <T> void addItem(Consumer<T> onSelect, T data, String imagePath, boolean selected) {
-		addItem(SWT.RADIO, onSelect, data, imagePath).setSelection(selected);
+	public void addCheckItem(Consumer<Boolean> onSelect, String txt, boolean selected) {
+		JCheckBox item = new JCheckBox();
+		toolBar.add(item);
+		item.setSelected(selected);
+		if (onSelect != null) {
+			item.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					onSelect.accept(item.isSelected());
+				}
+			});
+		}
+		BufferedImage img = LTexture.getBufferedImage(txt);
+		if (img == null)
+			item.setText(txt);
+		else
+			item.setIcon(new ImageIcon(img));		
 	}
 	
-	public void addCheckItem(Consumer<Boolean> onSelect, String imagePath, boolean selected) {
-		ToolItem item = addItem(SWT.CHECK, null, null, imagePath);
-		item.setSelection(selected);
-		item.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				onSelect.accept(item.getSelection());
-			}
-		});
-	}
-	
-	public <T> void addButtonItem(Consumer<T> onSelect, T data, String imagePath) {
-		addItem(SWT.NONE, onSelect, data, imagePath);
+	public <T> void addButtonItem(Consumer<T> onSelect, T data, String txt) {
+		JButton item = new JButton();
+		toolBar.add(item);
+		if (onSelect != null) {
+			item.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					onSelect.accept(data);
+				}
+			});
+		}
+		BufferedImage img = LTexture.getBufferedImage(txt);
+		if (img == null)
+			item.setText(txt);
+		else
+			item.setIcon(new ImageIcon(img));
 	}
 	
 	public void addSeparator() {
-		new ToolItem(toolBar, SWT.SEPARATOR);
+		toolBar.addSeparator();
 	}
 
 }

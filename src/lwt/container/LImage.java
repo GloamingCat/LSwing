@@ -1,27 +1,21 @@
 package lwt.container;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.AffineTransform;
+
 import lwt.LFlags;
 import lwt.graphics.LColor;
-import lwt.graphics.LPainter;
 import lwt.graphics.LPoint;
 import lwt.graphics.LRect;
 import lwt.graphics.LTexture;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Transform;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Listener;
-import org.eclipse.wb.swt.SWTResourceManager;
-
 public class LImage extends LCanvas {
 
-	private Image original = null;
+	private static final long serialVersionUID = 1L;
+	private LTexture original = null;
 	private LRect rectangle;
 	private int align = LFlags.MIDDLE | LFlags.CENTER;
 	
@@ -42,55 +36,50 @@ public class LImage extends LCanvas {
 	 */
 	public LImage(LContainer parent) {
 		super(parent);
-		setBackground(SWTResourceManager.getColor(224, 224, 224));
-		setLayout(new FillLayout());
-		Listener oldListeter = getListeners(SWT.Paint)[0];
-		removeListener(SWT.Paint, oldListeter);
-		addPaintListener(new PaintListener() {
-			@Override
-			public void paintControl(PaintEvent e) {
-				currentEvent = e;
-				int x = 0;
-				int y = 0;
-				if (buffer != null) {
-					Rectangle bounds = getBounds();
-					LRect rect = rectangle == null ? new LRect(buffer.getBounds()) : rectangle;
-					int w = Math.round(rect.width * sx);
-					int h = Math.round(rect.height * sy);
-					if ((align & LFlags.RIGHT) > 0) {
-						x = bounds.width - w;
-					} else if ((align & LFlags.MIDDLE) > 0) {
-						x = (bounds.width - w) / 2;
-					}
-					if ((align & LFlags.BOTTOM) > 0) {
-						y = bounds.height - h;
-					} else if ((align & LFlags.CENTER) > 0) {
-						y = (bounds.height - h) / 2;
-					}
-					try {
-						e.gc.setAlpha(a);
-						if (rz != 0) {
-							Transform t = new Transform(Display.getCurrent());
-							t.translate(ox * sx, oy * sy);
-							t.rotate(rz);
-							t.translate(-ox * sx, -oy * sy);
-							e.gc.setTransform(t);
-						}
-						e.gc.drawImage(buffer, rect.x, rect.y, rect.width, rect.height, 
-								x, y, w, h);
-						if (rz != 0)
-							e.gc.setTransform(null);
-					} catch (IllegalArgumentException ex) { System.out.println("Problem printing quad."); }
-				}
-				dx = x;
-				dy = y;
-				for (LPainter p : painters) {
-					p.setGC(e.gc);
-					p.paint();
-				}
+		setFillLayout(true);
+		setBackground(new LColor(224, 224, 224));
+	}
+	
+	@Override
+	protected void paintComponent(Graphics g) {
+		currentEvent = g;
+		int x = 0;
+		int y = 0;
+		if (buffer != null) {
+			Rectangle bounds = getBounds();
+			LRect rect = rectangle != null ? rectangle :
+				new LRect(0, 0, buffer.getWidth(), buffer.getHeight());
+			int w = Math.round(rect.width * sx);
+			int h = Math.round(rect.height * sy);
+			if ((align & LFlags.RIGHT) > 0) {
+				x = bounds.width - w;
+			} else if ((align & LFlags.MIDDLE) > 0) {
+				x = (bounds.width - w) / 2;
 			}
-		});
-		addListener(SWT.Paint, oldListeter);
+			if ((align & LFlags.BOTTOM) > 0) {
+				y = bounds.height - h;
+			} else if ((align & LFlags.CENTER) > 0) {
+				y = (bounds.height - h) / 2;
+			}
+			try {
+				g.setColor(new Color(255, 255, 255, a));
+				Graphics2D g2d = (Graphics2D) g;
+				if (rz != 0) {
+					AffineTransform t = g2d.getTransform();
+					t.translate(ox * sx, oy * sy);
+					t.rotate(rz);
+					t.translate(-ox * sx, -oy * sy);
+					g2d.setTransform(t);
+				}
+				g.drawImage(buffer, rect.x, rect.y, rect.width, rect.height, 
+						x, y, w, h, null);
+				if (rz != 0)
+					g2d.setTransform(null);
+			} catch (IllegalArgumentException ex) { System.out.println("Problem printing quad."); }
+		}
+		dx = x;
+		dy = y;
+		super.paintComponent(g);
 	}
 	
 	public float getImageX() {
@@ -107,31 +96,31 @@ public class LImage extends LCanvas {
 	
 	public void setImage(String path) {
 		if (path == null) {
-			setImage((Image) null, null);
+			setImage((LTexture) null, null);
 			return;
 		}
-		Image img = SWTResourceManager.getImage(path);
+		LTexture img = new LTexture(path);
 		setImage(img);
 	}
 	
 	public void setImage(String path, LRect r) {
 		if (path == null) {
-			setImage((Image) null, null);
+			setImage((LTexture) null, null);
 			return;
 		}
-		Image img = SWTResourceManager.getImage(path);
+		LTexture img = new LTexture(path);
 		setImage(img, r);
 	}
 	
-	public void setImage(Image img) {
+	public void setImage(LTexture img) {
 		if (img == null) {
-			setImage((Image) null, null);
+			setImage((LTexture) null, null);
 		} else {
-			setImage(img, new LRect(img.getBounds()));
+			setImage(img, img.getBounds());
 		}
 	}
 	
-	public void setImage(Image img, LRect rect) {
+	public void setImage(LTexture img, LRect rect) {
 		rectangle = rect;
 		original = img;
 		disposeBuffer();
@@ -141,20 +130,20 @@ public class LImage extends LCanvas {
 	}
 	
 	public void refreshImage() {
-		if (original == null)
+		if (original == null || original.convert() == null)
 			return;
 		disposeBuffer();
-		ImageData imgData = original.getImageData();
-		LTexture.correctTransparency(imgData);
-		LTexture.colorTransform(imgData, r, g, b, h, s, v);
-		buffer = new Image(getDisplay(), imgData);
+		LPoint size = original.getSize();
+		buffer = original.convert().getSubimage(0, 0, size.x, size.y);
+		LTexture.correctTransparency(buffer);
+		LTexture.colorTransform(buffer, r, g, b, h, s, v);
 	}
 
 	public boolean hasImage() {
 		return buffer != null;
 	}
 	
-	public Image getOriginalImage() {
+	public LTexture getOriginalImage() {
 		return original;
 	}
 	
@@ -168,8 +157,7 @@ public class LImage extends LCanvas {
 	}
 	
 	public LPoint getImageSize() {
-		Rectangle r = buffer.getBounds();
-		return new LPoint(r.width, r.height);
+		return new LPoint(buffer.getWidth(), buffer.getHeight());
 	}
 	
 	public void setAlignment(int a) {

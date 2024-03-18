@@ -3,14 +3,14 @@ package lwt.container;
 import java.util.ArrayList;
 
 import lwt.LMenuInterface;
-import lwt.action.LActionStack;
+import lwt.dialog.LWindow;
+import lbase.action.LActionStack;
+import lbase.action.LState;
 import lwt.editor.LEditor;
-import lwt.editor.LState;
 
-import org.eclipse.swt.SWT;
-
-public class LView extends LPanel {
-
+public class LView extends LPanel implements lbase.gui.LView {
+	private static final long serialVersionUID = 1L;
+	
 	protected LView parent;
 	protected LMenuInterface menuInterface;
 	boolean doubleBuffered = false;
@@ -24,42 +24,7 @@ public class LView extends LPanel {
 	 * @param doubleBuffered
 	 */
 	public LView(LContainer parent, boolean doubleBuffered) {
-		super(parent.getComposite(),  SWT.NONE);
-		this.doubleBuffered = doubleBuffered;
-	}
-
-	/**
-	 * Fill/row layout.
-	 * @param parent
-	 * @param horizontal
-	 * @param equalCells
-	 * @param doubleBuffered
-	 */
-	public LView(LContainer parent, boolean horizontal, boolean equalCells, boolean doubleBuffered) {
-		super(parent.getComposite(), horizontal, equalCells, SWT.NONE);
-		this.doubleBuffered = doubleBuffered;
-	}
-	
-	/**
-	 * Fill layout with no margin.
-	 * @param parent
-	 * @param horizontal
-	 * @param doubleBuffered
-	 */
-	public LView(LContainer parent, boolean horizontal, boolean doubleBuffered) {
-		super(parent.getComposite(), horizontal, SWT.NONE);
-		this.doubleBuffered = doubleBuffered;
-	}
-	
-	/**
-	 * Grid layout.
-	 * @param parent
-	 * @param columns
-	 * @param equalCols
-	 * @param doubleBuffered
-	 */
-	public LView(LContainer parent, int columns, boolean equalCols, boolean doubleBuffered) {
-		super(parent.getComposite(), columns, equalCols,  SWT.NONE);
+		super(parent.getContentComposite());
 		this.doubleBuffered = doubleBuffered;
 	}
 
@@ -91,18 +56,17 @@ public class LView extends LPanel {
 		subEditors.remove(editor);
 	}
 	
-	public void layout(boolean changed) {
+	public void refreshLayout() {
 		if (doubleBuffered)
-			setRedraw(false);
-		super.layout(changed);
+			setIgnoreRepaint(true);
+		super.refreshLayout();
 		if (doubleBuffered)
-			setRedraw(true);
-		
+			setIgnoreRepaint(false);
 	}
 	
 	public void onVisible() {
 		if (doubleBuffered)
-			setRedraw(false);
+			setIgnoreRepaint(true);
 		try {
 			onChildVisible();
 		} catch(Exception e) {
@@ -110,7 +74,7 @@ public class LView extends LPanel {
 			throw e;
 		}
 		if (doubleBuffered)
-			setRedraw(true);
+			setIgnoreRepaint(false);
 	}
 	
 	public void onChildVisible() {
@@ -175,6 +139,11 @@ public class LView extends LPanel {
 		for(LView child : children) {
 			child.restart();
 		}
+	}
+
+	@Override
+	public LWindow getWindow() {
+		return super.getWindow();
 	}
 
 }

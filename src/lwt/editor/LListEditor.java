@@ -1,13 +1,14 @@
 package lwt.editor;
 
 import lwt.container.LContainer;
-import lwt.dataestructure.LDataList;
-import lwt.dataestructure.LDataTree;
-import lwt.dataestructure.LPath;
-import lwt.event.LEditEvent;
+import lbase.data.LDataList;
+import lbase.data.LDataTree;
+import lbase.data.LPath;
+import lbase.event.LEditEvent;
 import lwt.widget.LList;
 
 public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
+	private static final long serialVersionUID = 1L;
 	
 	protected LList<T, ST> list;
 	
@@ -22,6 +23,7 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 		list.setMenuInterface(getMenuInterface());
 	}
 	
+	@SuppressWarnings("serial")
 	protected LList<T, ST> createList(boolean check) { 
 		LListEditor<T, ST> self = this;
 		return new LList<T, ST>(this, check) {
@@ -46,8 +48,7 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 			}
 			@Override
 			public LDataTree<T> toNode(LPath path) {
-				T data = self.getDataCollection().get(path.index);
-				return new LDataTree<T> (data);
+				return self.getDataCollection().toTree().getNode(path);
 			}
 			@Override
 			protected String encodeNode(LDataTree<T> node) {

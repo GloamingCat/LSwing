@@ -14,7 +14,8 @@ import myeditor.data.MyContent;
 import myeditor.project.MyProject;
 
 public class MyContentEditor extends LObjectEditor<MyContent> {
-
+	private static final long serialVersionUID = 1L;
+	
 	LImageButton btnImage;
 	
 	/**
@@ -23,7 +24,8 @@ public class MyContentEditor extends LObjectEditor<MyContent> {
 	 * @wbp.eval.method.parameter parent new lwt.dialog.LShell()
 	 */
 	public MyContentEditor(LContainer parent) {
-		super(parent, 2, false, true);
+		super(parent, true);
+		setGridLayout(2);
 		
 		LLabel lblName = new LLabel(this, MyVocab.instance.NAME);
 		LText txtName = new LText(this);
@@ -45,8 +47,10 @@ public class MyContentEditor extends LObjectEditor<MyContent> {
 		LImage image = new LImage(this);
 		image.setExpand(true, true);
 		btnImage.setImage(image);
+		LFrame frame = new LFrame(this, MyVocab.instance.SUBCONTENT);
+		frame.setFillLayout(true);
 		
-		LFrame subFrame = new LFrame(this, MyVocab.instance.SUBCONTENT, true);
+		LFrame subFrame = frame;
 		subFrame.setSpread(2, 1);
 		subFrame.setExpand(true, true);
 		MySubContentEditor subEditor = new MySubContentEditor(subFrame);

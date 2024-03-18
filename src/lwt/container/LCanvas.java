@@ -1,24 +1,21 @@
 package lwt.container;
 
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
 
 import lwt.graphics.LPainter;
 import lwt.graphics.LTexture;
 
 public class LCanvas extends LView {
+	private static final long serialVersionUID = 1L;
 	
-	protected PaintEvent currentEvent;
+	protected Graphics currentEvent;
 	protected ArrayList<LPainter> painters;
 	
-	protected GC bufferGC;
-	protected Image buffer;
+	protected Graphics bufferGC;
+	protected BufferedImage buffer;
 
 	/**
 	 * @wbp.parser.constructor
@@ -27,15 +24,6 @@ public class LCanvas extends LView {
 	public LCanvas(LContainer parent) {
 		super(parent, false);
 		painters = new ArrayList<LPainter>();
-		addPaintListener(new PaintListener() {
-			public void paintControl(PaintEvent e) {
-				currentEvent = e;
-				for (LPainter p : painters) {
-					p.setGC(e.gc);
-					p.paint();
-				}
-			}
-		});
 	}
 	
 	public void addPainter(LPainter painter) {
@@ -45,6 +33,15 @@ public class LCanvas extends LView {
 	public void removePainter(LPainter painter) {
 		painters.remove(painter);
 	}
+	
+	@Override
+	protected void paintComponent(Graphics g) {
+		currentEvent = g;
+		for (LPainter p : painters) {
+			p.setGC(g);
+			p.paint();
+		}
+	}
 
 	//////////////////////////////////////////////////
 	// {{ Draw
@@ -52,10 +49,9 @@ public class LCanvas extends LView {
 	public void fillRect() {
 		if (bufferGC == null) {
 			Rectangle r = getBounds();
-			currentEvent.gc.fillRectangle(r.x, r.y, r.width, r.height);
+			currentEvent.fillRect(r.x, r.y, r.width, r.height);
 		} else {
-			Rectangle r = buffer.getBounds();
-			bufferGC.fillRectangle(r.x, r.y, r.width, r.height);
+			bufferGC.fillRect(0, 0, buffer.getWidth(), buffer.getHeight());
 		}
 	}
 	
@@ -69,23 +65,24 @@ public class LCanvas extends LView {
 	}
 	
 	public void drawBuffer(int x, int y, float sx, float sy) {
-		Rectangle r = buffer.getBounds();
-		currentEvent.gc.drawImage(buffer, 0, 0, r.width, r.height,
-				x, y, Math.round(r.width * sx), Math.round(r.height * sy));
+		int w = buffer.getWidth();
+		int h = buffer.getHeight();
+		currentEvent.drawImage(buffer, 0, 0, w, h,
+				x, y, Math.round(w * sx), Math.round(h * sy), null);
 	}
 	
 	public void drawBuffer(int x, int y) {
-		currentEvent.gc.drawImage(buffer, x, y);
+		currentEvent.drawImage(buffer, x, y, null);
 	}
 	
 	public void pushBuffer() {
-		buffer = new Image(Display.getCurrent(), getBounds());
-		bufferGC = new GC(buffer);
+		Rectangle r = getBounds();
+		pushBuffer(r.width, r.height);
 	}
 	
 	public void pushBuffer(int w, int h) {
-		buffer = new Image(Display.getCurrent(), w, h);
-		bufferGC = new GC(buffer);
+		buffer = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		bufferGC = buffer.getGraphics();
 	}
 	
 	public void popBuffer() {
@@ -103,7 +100,7 @@ public class LCanvas extends LView {
 	
 	public void disposeBuffer() {
 		if (buffer != null)
-			buffer.dispose();
+			buffer.flush();
 		buffer = null;
 	}
 	
@@ -115,7 +112,7 @@ public class LCanvas extends LView {
 	// }}
 	
 	public void redraw() {
-		super.redraw();
+		super.repaint();
 	}
 	
 }

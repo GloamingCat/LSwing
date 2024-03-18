@@ -17,5 +17,5 @@ public class LFlags {
 	public final static int RELEASE = 2;
 	public final static int REPEATPRESS = 4;
 	public final static int DOUBLEPRESS = 8;
-
+	
 }

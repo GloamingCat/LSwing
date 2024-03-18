@@ -1,25 +1,22 @@
 package lwt.widget;
 
-import lwt.LGlobals;
-import lwt.LVocab;
 import lwt.container.LContainer;
-import lwt.dialog.LObjectDialog;
 import lwt.dialog.LShellFactory;
+import lbase.LVocab;
+import lbase.event.LSelectionEvent;
+import lbase.event.listener.LSelectionListener;
 
 import java.lang.reflect.Type;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
+import javax.swing.JComponent;
+
+import gson.GGlobals;
 
 public abstract class LObjectButton<T> extends LControlWidget<T> {
+	private static final long serialVersionUID = 1L;
 	
-	public String name = "";
-	protected LObjectDialog<T> dialog;
-	private Button button;
+	protected LShellFactory<T> shellFactory;
+	private LButton button;
 
 	/**
 	 * Create the composite.
@@ -28,29 +25,25 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 	 */
 	public LObjectButton(LContainer parent) {
 		super(parent);
-		setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-		dialog = new LObjectDialog<T>(getShell(), getShell().getStyle());
-		button.addSelectionListener(new SelectionAdapter() {
+		button.onClick = new LSelectionListener() {
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				dialog.setText(name);
-				T newValue = dialog.open(currentValue);
+			public void onSelect(LSelectionEvent arg0) {
+				T newValue = shellFactory.openShell(getWindow(), currentValue);
 				if (newValue != null) {
 					newModifyAction(currentValue, newValue);
 					setValue(newValue);
 				}
 			}
-		});
-		button.setText(LVocab.instance.SELECT);
+		};
 	}
 
 	@Override
 	protected void createContent(int flags) {
-		button = new Button(this, SWT.NONE);
+		button = new LButton(this, LVocab.instance.SELECT);
 	}
 
 	public void setShellFactory(LShellFactory<T> factory) {
-		dialog.setFactory(factory);
+		shellFactory = factory;
 	}
 	
 	public void setText(String text) {
@@ -71,19 +64,19 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 	}
 	
 	@Override
-	protected Control getControl() {
+	protected JComponent getControl() {
 		return button;
 	}
 
 	@Override
 	public String encodeData(T value) {
-		return LGlobals.gson.toJson(value, value.getClass());
+		return GGlobals.gson.toJson(value, value.getClass());
 	}
 	
 	@Override
 	public T decodeData(String str) {
 		@SuppressWarnings("unchecked")
-		T fromJson = (T) LGlobals.gson.fromJson(str, getType());
+		T fromJson = (T) GGlobals.gson.fromJson(str, getType());
 		return fromJson;
 	}
 	
@@ -91,7 +84,7 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 	public boolean canDecode(String str) {
 		try {
 			@SuppressWarnings("unchecked")
-			T newValue = (T) LGlobals.gson.fromJson(str, getType());	
+			T newValue = (T) GGlobals.gson.fromJson(str, getType());	
 			return newValue != null;
 		} catch (ClassCastException e) {
 			System.err.println(e.getMessage());

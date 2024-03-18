@@ -1,12 +1,13 @@
 package lwt.editor;
 
 import lwt.container.LContainer;
-import lwt.dataestructure.LDataTree;
-import lwt.dataestructure.LPath;
-import lwt.event.LEditEvent;
+import lbase.data.LDataTree;
+import lbase.data.LPath;
+import lbase.event.LEditEvent;
 import lwt.widget.LTree;
 
 public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
+	private static final long serialVersionUID = 1L;
 	
 	protected LTree<T, ST> tree;
 	
@@ -21,6 +22,7 @@ public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 		tree.setMenuInterface(getMenuInterface());
 	}
 	
+	@SuppressWarnings("serial")
 	protected LTree<T, ST> createTree(boolean check) { 
 		LTreeEditor<T, ST> self = this;
 		return new LTree<T, ST>(this, check) {

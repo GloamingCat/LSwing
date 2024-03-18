@@ -1,14 +1,14 @@
 package lwt.widget;
 
 import lwt.container.LContainer;
-import lwt.dataestructure.LDataTree;
-import lwt.dataestructure.LPath;
+import lbase.data.LDataTree;
+import lbase.data.LPath;
 
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.TreeItem;
+import javax.swing.DropMode;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 public abstract class LList<T, ST> extends LTree<T, ST> {
+	private static final long serialVersionUID = 1L;
 	
 	protected boolean includeID = false;
 	
@@ -25,60 +25,67 @@ public abstract class LList<T, ST> extends LTree<T, ST> {
 		super(parent, check);
 	}
 	
+	@Override
+	protected void createContent(int flags) {
+		super.createContent(flags);
+		tree.setDropMode(DropMode.INSERT);
+	}
+	
+	@Override
 	public void setIncludeID(boolean value) {
 		includeID = value;
 	}
-
-	@Override
-	protected int indexByBounds(Point pt, Rectangle bounds) {
-		if (pt.y < bounds.y + bounds.height / 2) {
-			return 0;
-		} else {
-			return 1;
-		}
-	}
 	
+	@Override
 	public void setItems(LDataTree<T> root) {
 		super.setItems(root);
 		refreshAll();
 	}
 	
-	public void setItemNode(TreeItem item, LDataTree<T> node) {
+	@Override
+	public void setItemNode(DefaultMutableTreeNode item, LDataTree<T> node) {
 		String id = "";
 		if (includeID) {
 			id = stringID(indexOf(item));
 		}
 		String name = dataToString(node.data);
-		item.setData(DATA, node.data);
-		item.setData(ID, node.id);
-		item.setText(id + name);
+		ItemData data = new ItemData(id + name, node.id, node.data);
+		item.setUserObject(data);
 	}
 	
+	@Override
+	public void refreshObject(DefaultMutableTreeNode item, T data) {
+
+	}
 	public void refreshObject(LPath path) {
-		TreeItem item = toTreeItem(path);
+		DefaultMutableTreeNode item = toTreeItem(path);
 		if (item != null) {
 			String id = "";
 			if (includeID) {
 				id = stringID(path.index);
 			}
-			String name = dataToString(toObject(path));
-			item.setText(id + name);
+			@SuppressWarnings("unchecked")
+			ItemData itemData = (ItemData) item.getUserObject();
+			itemData.data = toObject(path);
+			itemData.name = id + dataToString(itemData.data);
+			item.setUserObject(itemData);
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void refreshAll() {
 		if (includeID) {
-			int i = 0;
-			for(TreeItem item : tree.getItems()) {
-				String name = dataToString((T) item.getData(DATA));
-				String id = stringID(i++);
-				item.setText(id + name);
+			for (int i = 0; i < root.getChildCount(); i++) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(i);
+				ItemData data = (LTreeBase<T, ST>.ItemData) node.getUserObject();
+				String name = dataToString(data.data);
+				data.name = stringID(i) + name;
 			}
 		} else {
-			for(TreeItem item : tree.getItems()) {
-				String name = dataToString((T) item.getData(DATA));
-				item.setText(name);
+			for (int i = 0; i < root.getChildCount(); i++) {
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(i);
+				ItemData data = (LTreeBase<T, ST>.ItemData) node.getUserObject();
+				data.name = dataToString(data.data);
 			}
 		}
 	}

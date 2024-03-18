@@ -1,11 +1,12 @@
 package lwt.editor;
 
 import lwt.container.LContainer;
-import lwt.dataestructure.LDataCollection;
-import lwt.dataestructure.LDataTree;
-import lwt.dataestructure.LPath;
+import lbase.data.LDataCollection;
+import lbase.data.LDataTree;
+import lbase.data.LPath;
 
 public abstract class LDefaultListEditor<T> extends LListEditor<T, T> {
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Create the composite.

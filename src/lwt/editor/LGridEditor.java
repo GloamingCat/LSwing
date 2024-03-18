@@ -2,14 +2,15 @@ package lwt.editor;
 
 import lwt.container.LContainer;
 import lwt.container.LImage;
-import lwt.dataestructure.LDataCollection;
-import lwt.dataestructure.LDataList;
-import lwt.dataestructure.LDataTree;
-import lwt.dataestructure.LPath;
-import lwt.event.LEditEvent;
+import lbase.data.LDataCollection;
+import lbase.data.LDataList;
+import lbase.data.LDataTree;
+import lbase.data.LPath;
+import lbase.event.LEditEvent;
 import lwt.widget.LGrid;
 
 public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
+	private static final long serialVersionUID = 1L;
 
 	protected LGrid<T, ST> grid;
 	
@@ -19,6 +20,7 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 		setListeners();
 	}
 	
+	@SuppressWarnings("serial")
 	protected LGrid<T, ST> createGrid() {
 		LGridEditor<T, ST> self = this;
 		return new LGrid<T, ST>(this) {

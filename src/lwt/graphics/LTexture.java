@@ -1,41 +1,41 @@
 package lwt.graphics;
 
+import java.awt.Color;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.HashMap;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.PaletteData;
-import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.wb.swt.SWTResourceManager;
+import javax.imageio.ImageIO;
 
 public class LTexture {
-	
+
 	public static final boolean onWindows = System.getProperty("os.name").
 			toLowerCase().contains("win");
-	public static final int libVersion = SWT.getVersion();
+	public static final int libVersion = -1;
 	
-	private Image image;
+	public static Class<?> rootClass;
+	
+	private BufferedImage image;
 	
 	public LTexture(String file) {
-		image = SWTResourceManager.getImage(file);
+		image = getBufferedImage(file);
 	}
 	
-	public LTexture(Image image) {
+	public LTexture(BufferedImage image) {
 		this.image = image;
 	}
 	
 	public LTexture(int imgW, int imgH) {
-		ImageData data = new ImageData(imgW, imgH, 32, 
-				new PaletteData(0xff, 0xff00, 0xff0000));
-		data.alphaData = new byte[imgW * imgH];
-		Arrays.fill(data.alphaData, (byte) 0);
-		image = new Image(Display.getCurrent(), data);
+		int[] raster = new int[imgW * imgH];
+		Arrays.fill(raster, (byte) 0);
+		image = new BufferedImage(imgW, imgH, BufferedImage.TYPE_INT_ARGB);
+		image.setRGB(0, 0, imgW, imgH, raster, 0, 4);
 	}
 	
 	public LTexture(ByteBuffer buffer, int width, int height, int channels) {
@@ -46,12 +46,16 @@ public class LTexture {
 			bytes = new byte[buffer.capacity()];
 			buffer.get(bytes);
 		}
-		ImageData data = new ImageData(
-				width, height, channels * 8,
-				new PaletteData(0xff000000, 0xff0000, 0xff00), 1,
-				bytes);
-		correctTransparency(data);
-		image = new Image(Display.getCurrent(), data);
+		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		int[] raster = new int[width * height];
+		for (int i = 0; i < width * height; i++) {
+			int r = bytes[i*4];
+			int g = bytes[i*4+1];
+			int b = bytes[i*4+2];
+			int a = bytes[i*4+3];
+			raster[i] = (a << 24) + (r << 16) + (g << 8) + b;
+		}
+		image.setRGB(0, 0, width, height, raster, 0, 4);
 	}
 	
 	public boolean isEmpty() {
@@ -62,25 +66,23 @@ public class LTexture {
 	// {{ String Image
 
 	public LTexture(String s, int w, int h, LColor background, boolean borders) {
-		Image image = new Image(Display.getCurrent(), w, h);
-		GC gc = new GC(image);
+		BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+		Graphics gc = image.getGraphics();
 		if (background != null) {
-			gc.setBackground(background.convert());
-			gc.fillRectangle(1, 1, w-2, h-2);
+			gc.setColor(background.convert());
+			gc.fillRect(1, 1, w-2, h-2);
 		}
-		Point size = gc.stringExtent(s);
-		int x = (w - size.x) / 2;
-		int y = (h - size.y) / 2;
-		gc.setForeground(image.getDevice().getSystemColor(SWT.COLOR_BLACK));
-		gc.drawText(s, x, y);
+		FontMetrics fm = gc.getFontMetrics(gc.getFont());
+		Rectangle2D size = fm.getStringBounds(s, gc);
+		int x = (w - (int)size.getWidth()) / 2;
+		int y = (h - (int)size.getHeight()) / 2;
+		gc.setColor(new Color(0, 0, 0));
+		gc.drawString(s, x, y);
 		if (borders) {
-			gc.drawRectangle(2, 2, w - 5, h - 5);
+			gc.drawRect(2, 2, w - 5, h - 5);
 		}
 		gc.dispose();
-		ImageData imageData = image.getImageData();
-		imageData.transparentPixel = imageData.getPixel(0, 0);
-		image.dispose();
-		this.image = new Image(Display.getCurrent(), imageData);
+		this.image = image;
 	}
 
 	public LTexture(String s, int w, int h, LColor background) {
@@ -89,34 +91,38 @@ public class LTexture {
 
 	// }}
 	
-	public Image convert() {
+	public BufferedImage convert() {
 		return image;
 	}
 	
 	public void dispose() {
-		image.dispose();
+		image.flush();
 	}
 	
 	public LPoint getSize() {
-		Rectangle rect = image.getBounds();
-		return new LPoint(rect.width, rect.height);
+		if (image == null)
+			return null;
+		return new LPoint(image.getWidth(), image.getHeight());
+	}
+	
+	public LRect getBounds() {
+		if (image == null)
+			return null;
+		return new LRect(0, 0, image.getWidth(), image.getHeight());
 	}
 	
 	public ByteBuffer toBuffer() {
-		ImageData data = image.getImageData();
-		int channels = data.depth / 8;
-		ByteBuffer buffer = ByteBuffer.allocateDirect(data.width * data.height * 4);
-		for (int i = 0; i < data.width * data.height; i++) {
-			buffer.put(i*4, data.data[i*channels+2]);
-			buffer.put(i*4+1, data.data[i*channels+1]);
-			buffer.put(i*4+2, data.data[i*channels]);
-			byte alpha = (byte)255;
-			if (data.alphaData != null)
-				alpha = data.alphaData[i];
-			else if (data.transparentPixel != -1)
-				alpha = data.transparentPixel == data.getPixel(i % data.width, i / data.width)
-					? (byte)0 : (byte)255;
-			buffer.put(i*4+3, alpha);
+		int n = image.getWidth() * image.getHeight();
+		ByteBuffer buffer = ByteBuffer.allocateDirect(n * 4);
+		for (int x = 0; x < image.getWidth(); x++) {
+			for (int y = 0; y < image.getHeight(); y++) {
+				int pixel = image.getRGB(x, y);
+				int i = ( x + ( y * image.getHeight() ) ) * 4;
+				buffer.put(i*4,   (byte) ((pixel & 0x00ff0000) >> 16));
+				buffer.put(i*4+1, (byte) ((pixel & 0x0000ff00) >> 8));
+				buffer.put(i*4+2, (byte) (pixel & 0x000000ff));
+				buffer.put(i*4+3, (byte) ((pixel & 0xff000000) >> 24));
+			}
 		}
 		return buffer;
 	}
@@ -129,70 +135,34 @@ public class LTexture {
 	public void colorTransform(
 			float r, float g, float b,
 			float h, float s, float v) {
-		ImageData data = image.getImageData();
-		correctTransparency(data);
-		colorTransform(data, r, g, b, h, s, v);
-		image.dispose();
-		image = new Image(Display.getCurrent(), data);
+		correctTransparency(image);
+		colorTransform(image, r, g, b, h, s, v);
 	}
 	
 	public void colorTransform(
 			float r, float g, float b, float a,
 			float h, float s, float v) {
-		ImageData data = image.getImageData();
-		correctTransparency(data, a);
-		colorTransform(data, r, g, b, h, s, v);
-		image.dispose();
-		image = new Image(Display.getCurrent(), data);
+		correctTransparency(image, a);
+		colorTransform(image, r, g, b, h, s, v);
 	}
 	
-	public void correctTransparency() {
-		if (!onWindows || libVersion >= 4963)
-			return;
-		ImageData data = image.getImageData();
-		correctTransparency(data);
-		image.dispose();
-		image = new Image(Display.getCurrent(), data);
-	}
+	public void correctTransparency() {}
 
 	// }}
 	
 	//////////////////////////////////////////////////
 	// {{ ImageData
 
-	public static void correctTransparency(ImageData data) {
-		try {
-			if (!onWindows || libVersion >= 4963)
-				return;
-			if (data.depth == 24) {
-				return;
-			}
-			int len = data.width * data.height;
-			data.transparentPixel = -1;
-			data.alpha = -1;
-			data.alphaData = new byte[len];
-			for (int i = 0; i < len; i++) {
-				data.alphaData[i] = data.data[i * 4 + 3];
-			}
-		} catch(Exception e) {
-
-		}
-	}
+	public static void correctTransparency(BufferedImage data) {}
 	
-	public static void correctTransparency(ImageData data, float a) {
-		try {
-			if (!onWindows || libVersion >= 4963)
-				return;
-			int len = data.width * data.height;
-			data.transparentPixel = -1;
-			data.alpha = -1;
-			data.alphaData = new byte[len];
-			for (int i = 0; i < len; i++) {
-				byte alpha = data.depth == 24 ? (byte)255 : data.data[i * 4 + 3];
-				data.alphaData[i] = (byte) (alpha * a);
+	public static void correctTransparency(BufferedImage image, float a) {
+		for (int x = 0; x < image.getWidth(); x++) {
+			for (int y = 0; y < image.getHeight(); y++) {
+				int pixel = image.getRGB(x, y);
+				int alpha = (pixel & 0xff000000) >> 24;
+				pixel = (pixel & 0x00ffffff) | (Math.min((int)(alpha * a), 255) << 24);
+				image.setRGB(x, y, pixel);
 			}
-		} catch(Exception e) {
-
 		}
 	}
 	
@@ -207,44 +177,45 @@ public class LTexture {
 	 * @param _v [0, 1]
 	 * @return
 	 */
-	public static void colorTransform(ImageData src, 
+	public static void colorTransform(BufferedImage image, 
 			float _r, float _g, float _b,
 			float _h, float _s, float _v) {
 		if (_r == 1 && _g == 1 && _b == 1 && 
 				_h == 0 && _s == 1 && _v == 1)
 			return;
-		for (int i = 0; i < src.width; i++) {
-			for (int j = 0; j < src.height; j++) {
-				int pixel = src.getPixel(i, j);
-				if (pixel == 0 && _v == 1)
-					continue;
-				RGB rgb = src.palette.getRGB(pixel);
-				float[] hsb = rgb.getHSB();
-				hsb[0] += _h;
-				hsb[1] *= _s;
-				hsb[2] *= _v;
-				rgb = new RGB(hsb[0] % 360, 
-						Math.max(0, Math.min(1, hsb[1])), 
-						Math.max(0, Math.min(1, hsb[2])));
-				rgb.red *= _r;
-				rgb.green *= _g;
-				rgb.blue *= _b;
-				pixel = src.palette.getPixel(rgb);
-				src.setPixel(i, j, pixel);
+		float[] hsb = new float[3];
+		for (int x = 0; x < image.getWidth(); x++) {
+			for (int y = 0; y < image.getHeight(); y++) {
+				int pixel = image.getRGB(x, y);
+				int r = (pixel & 0x00ff0000) >> 16;
+				int g = (pixel & 0x0000ff00) >> 8;
+				int b = pixel & 0x000000ff;
+				int a = (pixel & 0xff000000) >> 24; 
+				Color.RGBtoHSB(r, g, b, hsb);
+				hsb[0] = (hsb[0] + _h) % 360;
+				hsb[1] = Math.max(0, Math.min(1, hsb[1] + _s));
+				hsb[2] = Math.max(0, Math.min(1, hsb[2] + _v));
+				pixel = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
+				r = (byte) _r * ((pixel & 0x00ff0000) >> 16);
+				g = (byte) _g * ((pixel & 0x0000ff00) >> 8);
+				b = (byte) _b * (pixel & 0x000000ff);
+				pixel = (a << 24) | (r << 16) | (g << 8) | b;
 			}
 		}
 	}
-
-	public static Image colorTransform(Image src, 
-			float r, float g, float b,
-			float h, float s, float v) {
-		if (r == 1 && g == 1 && b == 1 && 
-				h == 0 && s == 1 && v == 1)
-			return src;
-		ImageData newdata = src.getImageData();
-		colorTransform(newdata, r, g, b, h, s, v);
-		src.dispose();
-		return new Image(Display.getCurrent(), newdata);
+	
+	
+	private static final HashMap<String, BufferedImage> loadedImages = new HashMap<String, BufferedImage>();	
+	
+	public static BufferedImage getBufferedImage(String file) {
+		BufferedImage image = loadedImages.get(file);
+		if (image == null) {
+			try {
+				image = ImageIO.read(new File(file));
+				loadedImages.put(file, image);
+			} catch (IOException e) { }
+		}
+		return image;
 	}
 
 }

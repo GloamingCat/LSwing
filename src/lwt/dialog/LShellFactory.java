@@ -1,7 +1,13 @@
 package lwt.dialog;
 
-public interface LShellFactory<T> {
+public abstract class LShellFactory<T> {
 
-	public LObjectShell<T> createShell(LShell parent);
+	public abstract LObjectShell<T> createShell(LWindow parent);
+	public T openShell(LWindow parent, T initial) {
+		LObjectShell<T> shell = createShell(parent);
+		shell.open(initial);
+		T result = shell.getResult();
+		return result;
+	}
 	
 }

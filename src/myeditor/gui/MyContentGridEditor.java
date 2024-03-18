@@ -1,14 +1,15 @@
 package myeditor.gui;
 
 import lwt.container.LContainer;
-import lwt.container.LSashPanel;
+import lwt.container.LFlexPanel;
 import lwt.container.LView;
-import lwt.dataestructure.LDataList;
+import lbase.data.LDataList;
 import lwt.editor.LDefaultGridEditor;
 import myeditor.data.MyContent;
 import myeditor.project.MyProject;
 
 public class MyContentGridEditor extends LView {
+	private static final long serialVersionUID = 1L;
 
 	private LDefaultGridEditor<MyContent> gridEditor;
 	private MyContentEditor contentEditor;
@@ -19,11 +20,12 @@ public class MyContentGridEditor extends LView {
 	 * @param style
 	 */
 	public MyContentGridEditor(LContainer parent) {
-		super(parent, true, false);
+		super(parent, false);
+		setFillLayout(true);
 		
 		createMenuInterface();
 		
-		LSashPanel sashForm = new LSashPanel(this, true);
+		LFlexPanel sashForm = new LFlexPanel(this, true);
 		
 		gridEditor = new MyContentGrid(sashForm);
 		gridEditor.getCollectionWidget().cellWidth = 40;
@@ -39,6 +41,7 @@ public class MyContentGridEditor extends LView {
 
 	}
 
+	@SuppressWarnings("serial")
 	private class MyContentGrid extends LDefaultGridEditor<MyContent> {
 		public MyContentGrid(LContainer parent) {
 			super(parent);

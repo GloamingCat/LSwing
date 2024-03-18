@@ -1,19 +1,16 @@
 package lwt.container;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
+import javax.swing.JComponent;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import lwt.LMenuInterface;
 
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.SWT;
-
 public class LViewFolder extends LView {
+	private static final long serialVersionUID = 1L;
 	
-	protected TabFolder tabFolder;
+	protected JTabbedPane tabFolder;
 	protected int currentTab = 0;
 	
 	/**
@@ -22,12 +19,13 @@ public class LViewFolder extends LView {
 	 */
 	public LViewFolder(LContainer parent, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
-		setLayout(new FillLayout(SWT.HORIZONTAL));
-		tabFolder = new TabFolder(this, SWT.NONE);
-		tabFolder.addSelectionListener(new SelectionAdapter() {
+		setFillLayout(true);
+		tabFolder = new JTabbedPane();
+		add(tabFolder);
+		tabFolder.addChangeListener(new ChangeListener() {
 			@Override
-			public void widgetSelected(SelectionEvent arg0) {
-				int i = tabFolder.getSelectionIndex();
+			public void stateChanged(ChangeEvent e) {
+				int i = tabFolder.getSelectedIndex();
 				if (children != null && currentTab != i && i >= 0 && i < children.size()) {
 					currentTab = i;
 					children.get(i).onVisible();
@@ -38,23 +36,23 @@ public class LViewFolder extends LView {
 	
 	public void addTab(String name, LView child) {
 		addChild(child);
-		TabItem tbtm = new TabItem(tabFolder, SWT.NONE);
-		tbtm.setText(name);
-		tbtm.setControl(child);
+		tabFolder.addTab(name, child);
 	}
 	
 	public void addTab(String name, LContainer child) {
-		TabItem tbtm = new TabItem(tabFolder, SWT.NONE);
-		tbtm.setText(name);
-		tbtm.setControl(child.getComposite());
+		tabFolder.addTab(name, child.getContentComposite());
 	}
 
 	public LMenuInterface getMenuInterface() {
 		return children.get(currentTab).getMenuInterface();
 	}
 	
-	public Composite getComposite() {
+	public JComponent getContentComposite() {
 		return tabFolder;
+	}
+	
+	public JComponent getTopComposite() {
+		return this;
 	}
 
 }

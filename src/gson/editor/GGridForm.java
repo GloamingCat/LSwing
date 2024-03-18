@@ -3,12 +3,13 @@ package gson.editor;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 
-import lwt.LGlobals;
+import gson.GGlobals;
 import lwt.container.LContainer;
-import lwt.dataestructure.LDataList;
+import lbase.data.LDataList;
 import lwt.editor.LGridForm;
 
 public abstract class GGridForm<T> extends LGridForm<T> {
+	private static final long serialVersionUID = 1L;
 
 	public GGridForm(LContainer parent, int columns) {
 		super(parent, columns);
@@ -21,24 +22,24 @@ public abstract class GGridForm<T> extends LGridForm<T> {
 			throw new ClassCastException("Object cannot be cast to " + copy.getClass().getTypeName());
 		LDataList<T> list = (LDataList<T>) obj;
 		for (T original : list) {
-			String json = LGlobals.gson.toJson(original, original.getClass());
-			copy.add((T) LGlobals.gson.fromJson(json, original.getClass()));
+			String json = GGlobals.gson.toJson(original, original.getClass());
+			copy.add((T) GGlobals.gson.fromJson(json, original.getClass()));
 		}
 		return copy;
 	}
 	
 	@Override
 	public String encodeData(LDataList<T> data) {
-		return LGlobals.gson.toJson(data, data.getClass());
+		return GGlobals.gson.toJson(data, data.getClass());
 	}
 	
 	@SuppressWarnings("unchecked")
 	@Override
 	public LDataList<T> decodeData(String str) {
 		LDataList<T> list = new LDataList<>();
-		JsonArray array = LGlobals.json.parse(str).getAsJsonArray();
+		JsonArray array = GGlobals.json.parse(str).getAsJsonArray();
 		for (JsonElement je : array) {
-			list.add((T) LGlobals.gson.fromJson(je, getType()));
+			list.add((T) GGlobals.gson.fromJson(je, getType()));
 		}
 		return list;
 	}

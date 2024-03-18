@@ -2,22 +2,28 @@ package lwt.widget;
 
 import lwt.LGlobals;
 import lwt.container.LContainer;
-import lwt.dataestructure.LDataTree;
-import lwt.dataestructure.LPath;
-import lwt.event.LDeleteEvent;
-import lwt.event.LEditEvent;
-import lwt.event.LInsertEvent;
+import lwt.editor.LPopupMenu;
+import lbase.data.LDataTree;
+import lbase.data.LPath;
+import lbase.event.LDeleteEvent;
+import lbase.event.LEditEvent;
+import lbase.event.LInsertEvent;
+import lbase.gui.LMenu;
 
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.TreeItem;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.IOException;
+
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
+	private static final long serialVersionUID = 1L;
 	
-	protected Menu menu;
+	protected LPopupMenu menu;
 	protected boolean includeID = false;
 	protected boolean editEnabled = false;
 	
@@ -32,15 +38,23 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	 */
 	public LTree(LContainer parent, boolean check) {
 		super(parent, check);
-		menu = new Menu(tree);
-		tree.setMenu(menu);
+		LPopupMenu menu = new LPopupMenu(tree);
 		tree.addMouseListener(new MouseListener() {
-			public void mouseUp(MouseEvent arg0) {}
-			public void mouseDown(MouseEvent arg0) {}
-			public void mouseDoubleClick(MouseEvent arg0) {
-				onEditButton(menu);
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() >= 2)
+					onEditButton(menu);
 			}
+			@Override
+			public void mousePressed(MouseEvent e) {}
+			@Override
+			public void mouseReleased(MouseEvent e) {}
+			@Override
+			public void mouseEntered(MouseEvent e) {}
+			@Override
+			public void mouseExited(MouseEvent e) {}
 		});
+		this.menu = menu;
 	}
 	
 	public void setIncludeID(boolean value) {
@@ -56,14 +70,14 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	//-------------------------------------------------------------------------------------
 	
 	public LInsertEvent<T> insert(LPath parentPath, int index, LDataTree<T> node) {
-		TreeItem parent = toTreeItem(parentPath);
+		DefaultMutableTreeNode parent = toTreeItem(parentPath);
 		createTreeItem(parent, index, node);
 		//refreshAll();
 		return new LInsertEvent<T>(parentPath, index, node);
 	}
 	
 	public LDeleteEvent<T> delete(LPath parentPath, int index) {
-		TreeItem item = toTreeItem(parentPath, index);
+		DefaultMutableTreeNode item = toTreeItem(parentPath, index);
 		LDataTree<T> node = disposeTreeItem(item);
 		//refreshAll();
 		return new LDeleteEvent<T>(parentPath, index, node);
@@ -112,9 +126,10 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	// Menu Handlers
 	//-------------------------------------------------------------------------------------
 	
-	protected void onEditButton(Menu menu) {
+	@Override
+	protected void onEditButton(LMenu menu) {
 		if (tree.getSelectionCount() > 0) {
-			TreeItem item = tree.getSelection()[0];
+			DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 			LPath path = toPath(item);
 			LEditEvent<ST> event = newEditAction(path);
 			if (event != null) {
@@ -123,63 +138,76 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 		}
 	}
 	
-	protected void onInsertNewButton(Menu menu) {
+	@Override
+	protected void onInsertNewButton(LMenu menu) {
 		LPath parentPath = null;
 		int index = -1;
 		LDataTree<T> newNode = emptyNode();
 		if (tree.getSelectionCount() > 0) {
-			TreeItem item = tree.getSelection()[0];
-			parentPath = toPath(item.getParentItem());
+			DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+			parentPath = toPath(item.getParent());
 			index = indexOf(item) + 1;
 		}
 		newInsertAction(parentPath, index, newNode);
 	}
 	
-	protected void onDuplicateButton(Menu menu) {
+	@Override
+	protected void onDuplicateButton(LMenu menu) {
 		if (tree.getSelectionCount() > 0) {
-			TreeItem item = tree.getSelection()[0];
+			DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 			LPath itemPath = toPath(item);
 			LDataTree<T> node = duplicateNode(toNode(itemPath));
-			LPath parentPath = toPath(item.getParentItem());
+			LPath parentPath = toPath(item.getParent());
 			int i = indexOf(item) + 1;
 			newInsertAction(parentPath, i, node);
 		}
 	}
 	
-	protected void onDeleteButton(Menu menu) {
+	@Override
+	protected void onDeleteButton(LMenu menu) {
 		if (tree.getSelectionCount() > 0) {
-			TreeItem item = tree.getSelection()[0];
-			TreeItem parentItem = item.getParentItem();
+			DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+			TreeNode parentItem = item.getParent();
 			LPath parentPath = toPath(parentItem);
 			int i = indexOf(item);
 			newDeleteAction(parentPath, i);
 		}
 	}
 	
-	public void onCopyButton(Menu menu) {
+	@Override
+	public void onCopyButton(LMenu menu) {
 		LPath path = getSelectedPath();
 		if (path != null) {
 			LDataTree<T> node = toNode(path);
-			LGlobals.clipboard.setContents(new Object[] { encodeNode(node) },
-					new Transfer[] { TextTransfer.getInstance() });
+			LGlobals.clipboard.setContents(new StringSelection(encodeNode(node)), null);
 		}
 	}
 	
-	public void onPasteButton(Menu menu) {
-		String str = (String) LGlobals.clipboard.getContents(TextTransfer.getInstance());
-		if (str == null)
+	@Override
+	public void onPasteButton(LMenu menu) {
+		DataFlavor dataFlavor = DataFlavor.stringFlavor;
+		if (!LGlobals.clipboard.isDataFlavorAvailable(dataFlavor))
 			return;
-		LDataTree<T> newNode = decodeNode(str);
-		if (newNode == null)
+		try {
+			String str = (String) LGlobals.clipboard.getData(dataFlavor);
+			if (str == null)
+				return;
+			LDataTree<T> newNode = decodeNode(str);
+			if (newNode == null)
+				return;
+			LPath parentPath = null;
+			int index = -1;
+			if (tree.getSelectionCount() > 0) {
+				DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				parentPath = toPath(item.getParent());
+				index = indexOf(item) + 1;
+			}
+			newInsertAction(parentPath, index, newNode);
+		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
+			System.err.println(e.getMessage());
 			return;
-		LPath parentPath = null;
-		int index = -1;
-		if (tree.getSelectionCount() > 0) {
-			TreeItem item = tree.getSelection()[0];
-			parentPath = toPath(item.getParentItem());
-			index = indexOf(item) + 1;
 		}
-		newInsertAction(parentPath, index, newNode);
+
 	}
 	
 }

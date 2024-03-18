@@ -1,20 +1,19 @@
 package lwt.editor;
 
+import java.awt.Dimension;
 import java.util.ArrayList;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Control;
 
 import lwt.container.LContainer;
 import lwt.container.LPanel;
 import lwt.container.LScrollPanel;
-import lwt.dataestructure.LDataList;
-import lwt.event.LControlEvent;
-import lwt.event.listener.LControlListener;
+import lbase.data.LDataList;
+import lbase.event.LControlEvent;
+import lbase.event.listener.LControlListener;
 import lwt.widget.LControlWidget;
 import lwt.widget.LLabel;
 
 public abstract class LGridForm<T> extends LObjectEditor<LDataList<T>> {
+	private static final long serialVersionUID = 1L;
 
 	protected LDataList<T> values;
 	protected ArrayList<LControlWidget<T>> controls;
@@ -22,11 +21,12 @@ public abstract class LGridForm<T> extends LObjectEditor<LDataList<T>> {
 	protected LPanel content;
 	
 	public LGridForm(LContainer parent, int columns) {
-		super(parent, true, false);
+		super(parent, false);
+		setFillLayout(true);
 		controls = new ArrayList<>();
 		scroll = new LScrollPanel(this, true);
-		content = new LPanel(scroll, columns * 2, false);
-		scroll.setContent(content);
+		content = new LPanel(scroll);
+		content.setGridLayout(columns * 2);
 	}
 	
 	public void setObject(Object obj) {
@@ -63,20 +63,19 @@ public abstract class LGridForm<T> extends LObjectEditor<LDataList<T>> {
 	}
 
 	public void onVisible() {
-		Control[] children = content.getChildren();
 		ArrayList<Object> data = getList();
 		// Update children
-		children = content.getChildren();
+		int nLabels = getChildCount() / 2;
 		controls.clear();
-		for (int i = 0; i < children.length / 2; i++)	{
-			LLabel label = (LLabel) children[i * 2];
+		for (int i = 0; i < nLabels; i++)	{
+			LLabel label = (LLabel) getChild(i * 2);
 			label.setText(getLabelText(i, data.get(i)));
 			@SuppressWarnings("unchecked")
-			LControlWidget<T> control = (LControlWidget<T>) children[i * 2 + 1];
+			LControlWidget<T> control = (LControlWidget<T>) getChild(i * 2 + 1);
 			controls.add(control);
 		}
 		// Add missing controls for exceeding attributes
-		for(int i = children.length / 2; i < data.size(); i ++) {
+		for(int i = nLabels; i < data.size(); i ++) {
 			new LLabel(content, getLabelText(i, data.get(i)));
 			LControlWidget<T> control = createControl(i, data.get(i));
 			final int k = i;
@@ -92,12 +91,13 @@ public abstract class LGridForm<T> extends LObjectEditor<LDataList<T>> {
 			controls.add(control);
 		}
 		// Remove exceeding controls
-		for (int i = data.size() * 2; i < children.length; i++) {
-			children[i].dispose();
+		nLabels = data.size() * 2;
+		while (getChildCount() > nLabels) {
+			LPanel label = (LPanel) getChild(nLabels);
+			label.dispose();
 		}
-		layout();
-		scroll.setContent(content);
-		scroll.setMinSize(content.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		Dimension size = content.getSize();
+		scroll.refreshSize(size.width, size.height);
 	}
 	
 	protected abstract T getDefaultValue();

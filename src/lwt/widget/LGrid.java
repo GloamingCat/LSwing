@@ -1,39 +1,32 @@
 package lwt.widget;
 
-import lwt.action.LActionStack;
+import java.awt.Component;
+import java.awt.LayoutManager;
+
+import lwt.LFlags;
 import lwt.container.LContainer;
 import lwt.container.LImage;
-import lwt.dataestructure.LDataCollection;
-import lwt.dataestructure.LDataList;
-import lwt.dataestructure.LDataTree;
-import lwt.dataestructure.LPath;
-import lwt.event.LDeleteEvent;
-import lwt.event.LEditEvent;
-import lwt.event.LInsertEvent;
-import lwt.event.LMoveEvent;
-import lwt.event.LSelectionEvent;
+import lwt.editor.LPopupMenu;
+import lbase.action.LActionStack;
+import lbase.data.LDataCollection;
+import lbase.data.LDataList;
+import lbase.data.LDataTree;
+import lbase.data.LPath;
+import lbase.event.LDeleteEvent;
+import lbase.event.LEditEvent;
+import lbase.event.LInsertEvent;
+import lbase.event.LMouseEvent;
+import lbase.event.LMoveEvent;
+import lbase.event.LSelectionEvent;
+import lbase.event.listener.LMouseListener;
+import lbase.gui.LMenu;
+import lwt.graphics.LColor;
+import lwt.graphics.LPainter;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Layout;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
-
-public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implements LContainer {
+public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
+	private static final long serialVersionUID = 1L;
 
 	protected LActionStack actionStack;
-	protected Layout layout;
-	protected FillLayout fillLayout;
 	protected int selectedIndex = -1;
 	protected T selectedObj = null;
 
@@ -45,6 +38,9 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 	public int cellWidth = 24;
 	public int cellHeight = 24;
 	
+	private LayoutManager layout;
+	private LayoutManager emptyLayout;
+	
 	/**
 	 * Create the composite.
 	 * @param parent
@@ -52,38 +48,20 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 	 */
 	public LGrid(LContainer parent) {
 		super(parent);
-		fillLayout = new FillLayout();
-		setColumns(-1);
-		setLayout(fillLayout);
 	}
 	
 	@Override
 	protected void createContent(int flags) {
-		LImage label = new LImage(this);
-		Menu menu = new Menu(label);
-		label.setMenu(menu);
-		MenuItem mntmNewItem = new MenuItem(menu, SWT.NONE);
-		mntmNewItem.setText("New Item");
+		setEmptyLayout();
 	}
 
 	public void setColumns(int columns) {
 		if (columns <= 0) {
-			RowLayout rowLayout = new RowLayout(SWT.HORIZONTAL);
-			rowLayout.fill = true;
-			rowLayout.pack = true;
-			rowLayout.wrap = true;
-			rowLayout.spacing = 5;
-			rowLayout.marginWidth = 0;
-			rowLayout.marginHeight = 0;
-			layout = rowLayout;
+			setSequentialLayout(true);
 		} else {
-			GridLayout gridLayout = new GridLayout(columns, true);
-			gridLayout.marginWidth = 0;
-			gridLayout.marginHeight = 0;
-			gridLayout.horizontalSpacing = 5;
-			gridLayout.verticalSpacing = 5;
-			layout = gridLayout;
+			setGridLayout(columns);
 		}
+		layout = getLayout();
 	}
 
 	public void setDataCollection(LDataCollection<T> collection) {
@@ -94,27 +72,34 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 	@SuppressWarnings("unchecked")
 	public LDataList<T> getDataCollection() {
 		LDataList<T> list = new LDataList<T>();
-		for(Control c : getChildren()) {
-			list.add((T) c.getData());
+		for (Component c : getComponents()) {
+			LImage img = (LImage) c;
+			list.add((T) img.getData());
 		}
 		return list;
 	}
 	
 	public void clear() {
-		for(Control c : getChildren()) {
-			c.dispose();
+		for (Component c : getComponents()) {
+			LImage img = (LImage) c;
+			img.dispose();
 		}
 	}
 	
-	private void emptyLayout() {
-		setLayout(fillLayout);
+	private void setEmptyLayout() {
+		if (emptyLayout == null) {
+			setFillLayout(true);
+			emptyLayout = getLayout();
+		} else {
+			setLayout(emptyLayout);
+		}
 		addLabel(0, null, true);
-		layout();
+		refreshLayout();
 	}
 	
 	private int indexOf(LImage label) {
 		int i = 0;
-		for(Control c : getChildren()) {
+		for (Component c : getComponents()) {
 			if (c == label)
 				return i;
 			else
@@ -134,49 +119,42 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 					setImage(label, i);
 					i++;
 				}
-				layout();
+				refreshLayout();
 			} else {
-				emptyLayout();
+				setEmptyLayout();
 			}
 		}
 	}
 	
 	private LImage addLabel(int i, T data, boolean placeholder) {
 		LImage label = new LImage(this);
-		if (layout instanceof GridLayout) {
-			//label.setExpand(true, true);
-			label.setMinimumWidth(cellWidth);
-			label.setMinimumHeight(cellHeight);
-		} else {
-			label.setLayoutData(new RowData(cellWidth, cellHeight));
-		}
-		Menu menu = new Menu(label);
-		label.setMenu(menu);
-		menu.setData("label", label);
-		
+		label.setMinimumWidth(cellWidth);
+		label.setMinimumHeight(cellHeight);
+		LPopupMenu menu = new LPopupMenu(label);
+		menu.putClientProperty("label", label);
 		if (placeholder) {
 			if (insertEnabled)
 				setInsertNewEnabled(menu, true);
 		} else {
 			label.setData(data);
-			label.addPaintListener(new PaintListener() {
+			label.addPainter(new LPainter() {
 				@Override
-				public void paintControl(PaintEvent e) {
+				public void paint() {
 					if (indexOf(label) == selectedIndex) {
-						e.gc.setForeground(Display.getCurrent().getSystemColor(SWT.COLOR_BLACK));
-						e.gc.drawRectangle(0, 0, label.getBounds().width - 1, label.getBounds().height - 1);
+						setPaintColor(LColor.BLACK);
+						drawRect(0, 0, label.getBounds().width - 1, label.getBounds().height - 1);
 					}
 				}
 			});
-			label.addMouseListener(new MouseAdapter() {
+			label.addMouseListener(new LMouseListener() {
 				@Override
-				public void mouseDown(MouseEvent arg0) {
-					if (label.isDisposed())
-						return;
-					int i = indexOf(label);
-					select(data, i);
-					LSelectionEvent e = new LSelectionEvent(new LPath(i), data, i);
-					notifySelectionListeners(e);
+				public void onMouseChange(LMouseEvent e0) {
+					if (e0.button == LFlags.LEFT && e0.type == LFlags.PRESS) {
+						int i = indexOf(label);
+						select(data, i);
+						LSelectionEvent e = new LSelectionEvent(new LPath(i), data, i);
+						notifySelectionListeners(e);
+					}
 				}
 			});
 			if (!isEditable())
@@ -186,7 +164,6 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 			setDuplicateEnabled(menu, duplicateEnabled);
 			setDeleteEnabled(menu, deleteEnabled);
 		}
-		
 		return label;
 	}
 	
@@ -199,36 +176,36 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 	public LImage getSelectedCell() {
 		if (selectedIndex == -1)
 			return null;
-		return (LImage) getChildren()[selectedIndex];
+		return (LImage) getChild(selectedIndex);
 	}
 	
 	//-------------------------------------------------------------------------------------
 	// Button Handler
 	//-------------------------------------------------------------------------------------
 	
-	protected void onEditButton(Menu menu) {
-		LImage label = (LImage) menu.getData("label");
+	protected void onEditButton(LMenu menu) {
+		LImage label = (LImage) ((LPopupMenu) menu).getClientProperty("label");
 		int i = indexOf(label);
 		LPath path = new LPath(i);
 		newEditAction(path);
 	}
 	
-	protected void onInsertNewButton(Menu menu) {
-		LImage label = (LImage) menu.getData("label");
+	protected void onInsertNewButton(LMenu menu) {
+		LImage label = (LImage) ((LPopupMenu) menu).getClientProperty("label");
 		int i = indexOf(label) + 1;
 		LDataTree<T> newNode = emptyNode();
 		newInsertAction(null, i, newNode);
 	}
 	
-	protected void onDuplicateButton(Menu menu) {
-		LImage label = (LImage) menu.getData("label");
+	protected void onDuplicateButton(LMenu menu) {
+		LImage label = (LImage) ((LPopupMenu) menu).getClientProperty("label");
 		int i = indexOf(label);
 		LDataTree<T> newNode = duplicateNode(new LPath(i));
 		newInsertAction(null, i, newNode);
 	}
 	
-	protected void onDeleteButton(Menu menu) {
-		LImage label = (LImage) menu.getData("label");
+	protected void onDeleteButton(LMenu menu) {
+		LImage label = (LImage) ((LPopupMenu) menu).getClientProperty("label");
 		int i = indexOf(label);
 		newDeleteAction(null, i);
 	}
@@ -262,7 +239,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 
 	@Override
 	public LInsertEvent<T> insert(LPath parentPath, int index, LDataTree<T> node) {
-		if (getLayout() == fillLayout) {
+		if (getLayout() == emptyLayout) {
 			clear();
 			setLayout(layout);
 		}
@@ -272,12 +249,12 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 
 	@Override
 	public LDeleteEvent<T> delete(LPath parentPath, int index) {
-		Control c = getChildren()[index];
+		LImage c = (LImage) getChild(index);
 		@SuppressWarnings("unchecked")
 		T data = (T) c.getData();
 		c.dispose();
-		if (getChildren().length == 0) {
-			emptyLayout();
+		if (getChildCount() == 0) {
+			setEmptyLayout();
 		}
 		return new LDeleteEvent<T>(parentPath, index, new LDataTree<T>(data));
 	}
@@ -294,32 +271,28 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 	public void notifyEditListeners(LEditEvent<ST> event) {
 		super.notifyEditListeners(event);
 		refreshObject(event.path);
-		layout();
+		refreshLayout();
 	}
 	
 	@Override
 	public void notifyInsertListeners(LInsertEvent<T> event) {
 		super.notifyInsertListeners(event);
 		refreshAll();
-		layout();
+		refreshLayout();
 	}
 	
 	@Override
 	public void notifyDeleteListeners(LDeleteEvent<T> event) {
 		super.notifyDeleteListeners(event);
 		refreshAll();
-		layout();
+		refreshLayout();
 	}
 	
 	@Override
 	public void refreshObject(LPath path) { 
-		LImage label = (LImage) getChildren()[path.index];
+		LImage label = (LImage) getChild(path.index);
 		T data = toObject(path);
 		label.setData(data);
-		if (path.index == selectedIndex)
-			label.reskin(SWT.BORDER);
-		else
-			label.reskin(SWT.NONE);
 		setImage(label, path.index);
 	}
 
@@ -327,8 +300,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 	public void refreshAll() {
 		if (getLayout() == layout) {
 			LPath p = new LPath(0);
-			Control[] c = getChildren();
-			for(p.index = 0; p.index < c.length; p.index++) {
+			for(p.index = 0; p.index < getChildCount(); p.index++) {
 				refreshObject(p);
 			}
 		}
@@ -340,7 +312,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 	
 	public LSelectionEvent select(LPath path) {
 		if (path.index >= 0) {
-			LImage l = (LImage) getChildren()[path.index];
+			LImage l = (LImage) getChild(path.index);
 			@SuppressWarnings("unchecked")
 			T data = (T) l.getData("data");
 			select(data, path.index);
@@ -375,35 +347,20 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> implemen
 			if (i >= 0) {
 				refreshObject(new LPath(i));
 			}
-			layout();
+			refreshLayout();
 		}
 	}
 	
 	@Override
-	public void onCopyButton(Menu menu) {
+	public void onCopyButton(LMenu menu) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void onPasteButton(Menu menu) {
+	public void onPasteButton(LMenu menu) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	@Override
-	public Composite getComposite() {
-		return this;
-	}
-	
-	@Override
-	public Object getChild(int i) {
-		return getChildren()[i];
-	}
-	
-	@Override
-	public int getChildCount() {
-		return this.getChildren().length;
 	}
 
 }

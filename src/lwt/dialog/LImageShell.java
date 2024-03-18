@@ -9,10 +9,11 @@ import javax.imageio.ImageIO;
 import lwt.LFlags;
 import lwt.container.LImage;
 import lwt.container.LPanel;
-import lwt.container.LSashPanel;
+import lwt.container.LFlexPanel;
 import lwt.container.LScrollPanel;
-import lwt.event.LSelectionEvent;
-import lwt.event.listener.LSelectionListener;
+import lbase.LVocab;
+import lbase.event.LSelectionEvent;
+import lbase.event.listener.LSelectionListener;
 import lwt.widget.LFileSelector;
 
 public class LImageShell extends LObjectShell<String> {
@@ -27,16 +28,17 @@ public class LImageShell extends LObjectShell<String> {
 	 * @wbp.eval.method.parameter optional true
 	 * @wbp.eval.method.parameter rootPath ""
 	 */
-	public LImageShell(LShell parent, boolean optional, String rootPath) {
-		super(parent);
+	public LImageShell(LWindow parent, boolean optional, String rootPath) {
+		super(parent, LVocab.instance.IMAGESHELL);
 		setMinimumSize(600, 400);
 
-		LSashPanel form = new LSashPanel(content, true);
+		LFlexPanel form = new LFlexPanel(content, true);
 		selFile = new LFileSelector(form, optional);
 		selFile.addFileRestriction( (f) -> { return isImage(f); } );
 		selFile.setFolder(rootPath);
 
-		LPanel quad = new LPanel(form, 1);
+		LPanel quad = new LPanel(form);
+		quad.setGridLayout(1);
 
 		scroll = new LScrollPanel(quad);
 		scroll.setExpand(true, true);
