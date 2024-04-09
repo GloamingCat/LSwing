@@ -1,22 +1,22 @@
 package myeditor;
 
 import lbase.serialization.LSerializer;
-import lwt.LApplicationShell;
+import lwt.LApplicationWindow;
 import myeditor.gui.MyConfigEditor;
 import myeditor.gui.MyContentGridEditor;
 import myeditor.gui.MyContentListEditor;
 import myeditor.gui.MyContentTreeEditor;
 import myeditor.project.MyProject;
 
-public class MyApplicationShell extends LApplicationShell {
+public class MyApplicationShell extends LApplicationWindow {
 	
 	/**
 	 * Launch the application.
-	 * @param args
+	 * @param args Command-line arguments.
 	 */
-	public static void main(String args[]) {
+	public static void main(String[] args) {
 		try {
-			MyApplicationShell shell = new MyApplicationShell();
+			MyApplicationShell shell = new MyApplicationShell(args);
 			shell.run();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -25,12 +25,13 @@ public class MyApplicationShell extends LApplicationShell {
 
 	/**
 	 * Create the shell.
-	 * @param display
 	 */
-	public MyApplicationShell() {
-		super(450, 300, "My Editor", null);
-		applicationName = "LSwing Test";
+	public MyApplicationShell(String... args) {
+		super(450, 300, null, args);
+	}
 
+	@Override
+	protected void createViews() {
 		MyContentTreeEditor treeEditor = new MyContentTreeEditor(stack);
 		MyContentListEditor listEditor = new MyContentListEditor(stack);
 		MyContentGridEditor gridEditor = new MyContentGridEditor(stack);
@@ -42,11 +43,17 @@ public class MyApplicationShell extends LApplicationShell {
 		addView(configEditor, MyVocab.instance.CONTENTTYPES, "F5");
 
 		defaultView = treeEditor;
-		loadDefault();
+	}
+
+	public String getApplicationName() {
+		return "LSwing Test";
+	}
+	public String getProjectExtension() {
+		return "txt";
 	}
 	
 	@Override
-	protected LSerializer createProject(String path) {
+	public LSerializer createProject(String path) {
 		return new MyProject(path);
 	}
 

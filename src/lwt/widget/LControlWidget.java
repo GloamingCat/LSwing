@@ -18,7 +18,6 @@ import lbase.gui.LControl;
 import lbase.gui.LMenu;
 
 public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
-	private static final long serialVersionUID = 1L;
 	
 	protected ArrayList<LControlListener<T>> modifyListeners = new ArrayList<>();
 	protected T currentValue;
@@ -66,20 +65,19 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 		super.setComponentPopupMenu(menu);
 		getControl().setComponentPopupMenu(menu);
 	}
-
 	
 	//-------------------------------------------------------------------------------------
 	// Modify Events
 	//-------------------------------------------------------------------------------------
 
 	protected void newModifyAction(T oldValue, T newValue) {
-		LControlEvent<T> event = new LControlEvent<T>(oldValue, newValue);
-		newAction(new LControlAction<T>(this, event));
+		LControlEvent<T> event = new LControlEvent<>(oldValue, newValue);
+		newAction(new LControlAction<>(this, event));
 		notifyListeners(event);
 	}
 	
 	public LControlEvent<T> createEvent() {
-		LControlEvent<T> e = new LControlEvent<T>(null, currentValue);
+		LControlEvent<T> e = new LControlEvent<>(null, currentValue);
 		e.detail = -1;
 		return e;
 	}
@@ -127,7 +125,6 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 				modify(newValue);	
 		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
 			System.err.println(e.getMessage());
-			return;
 		}
 	}
 	

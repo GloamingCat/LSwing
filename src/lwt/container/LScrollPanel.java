@@ -1,22 +1,18 @@
 package lwt.container;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 
-import javax.swing.JComponent;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 
-import lwt.LFlags;
-import lwt.graphics.LPoint;
+import lbase.data.LPoint;
+import lwt.layout.LCellData;
+import lwt.layout.LLayedCell;
 
-public class LScrollPanel extends JScrollPane implements LContainer {
+public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell {
 
-	private static final long serialVersionUID = 1L;
-	private GridBagConstraints gridData;
-	private int minWidth, minHeight;
+	protected LCellData gridData;
+
+	protected JComponent content;
 
 	/**
 	 * Internal, no layout.
@@ -24,147 +20,76 @@ public class LScrollPanel extends JScrollPane implements LContainer {
 	LScrollPanel(JComponent parent) {
 		super();
 		parent.add(this);
+		content = new JPanel();
+		content.setLayout(new GridLayout());
+		setViewportView(content);
 	}
 
-	/** Fill layout with no margin.
-	 * @param parent
-	 * @param horizontal
-	 */
 	public LScrollPanel(LContainer parent, boolean large) {
 		this(parent.getContentComposite());
 		if (large) {
 			setAutoscrolls(true);
-			setExpand(true, true);
+			getCellData().setExpand(true, true);
 		}
 	}
 
-	/** No layout.
-	 * @param parent
-	 */
 	public LScrollPanel(LContainer parent) {
 		this(parent, false);
 	}
 
 	//////////////////////////////////////////////////
-	// {{ Parent Layout
+	//region Scroll
 	
-	private void initGridData() {
-		GridBagLayout gbl = (GridBagLayout) getParent().getLayout();
-		int n = getParent().getComponentCount();
-		int cols = gbl.columnWeights.length;
-		gridData = new GridBagConstraints(
-				n % cols, n / cols, 
-				1, 1, 
-				0, 0, 
-				GridBagConstraints.CENTER, 
-				GridBagConstraints.NONE, 
-				new Insets(0, 0, 0, 0),
-				0, 0);
-		gbl.setConstraints(this, gridData);
-	}
-	
-	public void setSpread(int cols, int rows) {
-		initGridData();
-		gridData.gridwidth = cols;
-		gridData.gridheight = rows;
-		((GridBagLayout) getParent().getLayout()).setConstraints(this, gridData);
-	}
-	
-	public void setAlignment(int a) {
-		initGridData();
-		if ((a & LFlags.LEFT) > 0) {
-			if ((a & LFlags.TOP) > 0)
-				gridData.anchor = GridBagConstraints.NORTHWEST;
-			else if ((a & LFlags.BOTTOM) > 0)
-				gridData.anchor = GridBagConstraints.SOUTHWEST;
-			else if ((a & LFlags.CENTER) > 0)
-				gridData.anchor = GridBagConstraints.WEST;
-		} else if ((a & LFlags.RIGHT) > 0) {
-			if ((a & LFlags.TOP) > 0)
-				gridData.anchor = GridBagConstraints.NORTHEAST;
-			else if ((a & LFlags.BOTTOM) > 0)
-				gridData.anchor = GridBagConstraints.SOUTHEAST;
-			else if ((a & LFlags.CENTER) > 0)
-				gridData.anchor = GridBagConstraints.EAST;
-		} else if ((a & LFlags.MIDDLE) > 0) {
-			if ((a & LFlags.TOP) > 0)
-				gridData.anchor = GridBagConstraints.NORTH;
-			else if ((a & LFlags.BOTTOM) > 0)
-				gridData.anchor = GridBagConstraints.SOUTH;
-			else if ((a & LFlags.CENTER) > 0)
-				gridData.anchor = GridBagConstraints.CENTER;
-		}	
-		((GridBagLayout) getParent().getLayout()).setConstraints(this, gridData);
+	public void setContentSize(LPoint size) {
+		setContentSize(size.x, size.y);
 	}
 
-	public void setExpand(boolean h, boolean v) {
-		initGridData();
-		gridData.weightx = h ? 1 : 0;
-		gridData.weighty = v ? 1 : 0;
-		((GridBagLayout) getParent().getLayout()).setConstraints(this, gridData);
+	public void setContentSize(int width, int height) {
+		content.setPreferredSize(new Dimension(width, height));
 	}
-	
-	public void setMinimumWidth(int w) {
-		minWidth = w;
-		((LPanel) getParent()).refreshLayout();
-	}
-	
-	public void setMinimumHeight(int h) {
-		minHeight = h;
-		((LPanel) getParent()).refreshLayout();
-	}
-	
-	// }}
-	
-	//////////////////////////////////////////////////
-	// {{ Size
-	
-	public LPoint getCurrentSize() {
-		Dimension d = getSize();
-		return new LPoint(d.width, d.height);
-	}
-	
-	public void setCurrentSize(LPoint size) {
-		setSize(size.x, size.y);
-	}
-	
-	public void setCurrentSize(int x, int y) {
-		setSize(x, y);
-	}
-	
-	@Override
-	public Dimension getPreferredSize() {
-		Dimension d = super.getPreferredSize();
-		d.width = Math.max(d.width, minWidth);
-		d.height = Math.max(d.height, minHeight);
-		return d;
-	}
-	
-	public void refreshSize(LPoint size) {
-		//refreshSize(size.x, size.y);
-	}
-	
-	public void refreshSize(int width, int height) {
-		//setMinSize(width, height);
-		refreshLayout();
-	}
-	
-	// }}
+	//endregion
 
 	//////////////////////////////////////////////////
-	// {{ Container Methods
-
-	public Component add(Component c) {
-		super.add(c);
-		setViewportView(c);
-		return c;
-	}
+	//region Container Methods
 
 	@Override
 	public JComponent getContentComposite() {
+		return content;
+	}
+
+	@Override
+	public JComponent getTopComposite() {
 		return this;
 	}
 
-	// }}
+	@Override
+	public LCellData getCellData() {
+		if (gridData == null)
+			gridData = new LCellData();
+		return gridData;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension d = super.getPreferredSize();
+		if (gridData != null) {
+			if (gridData.width != -1)
+				d.width = Math.max(d.width, gridData.width);
+			if (gridData.height != -1)
+				d.height = Math.max(d.height, gridData.height);
+		}
+		return d;
+	}
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension d = super.getMinimumSize();
+		if (gridData != null) {
+			d.width = Math.max(d.width, gridData.minWidth);
+			d.height = Math.max(d.height, gridData.minHeight);
+		}
+		return d;
+	}
+	//endregion
 
 }

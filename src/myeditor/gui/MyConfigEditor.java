@@ -9,18 +9,10 @@ import myeditor.project.MyProject;
 
 public class MyConfigEditor extends LViewFolder {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-
 	public MyConfigEditor(LContainer parent) {
 		super(parent, false);
 		LDefaultListEditor<String> typesEditor = new LDefaultListEditor<>(this) {
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
+
 			@Override
 			protected LDataList<String> getDataCollection() {
 				return MyProject.current.subContentTypes;
@@ -31,7 +23,7 @@ public class MyConfigEditor extends LViewFolder {
 			}
 			@Override
 			protected String duplicateElement(String original) {
-				return original + "";
+				return original;
 			}
 			@Override
 			protected String encodeElement(String data) {

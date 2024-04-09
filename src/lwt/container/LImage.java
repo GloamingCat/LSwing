@@ -1,20 +1,18 @@
 package lwt.container;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 
 import lwt.LFlags;
 import lwt.graphics.LColor;
-import lwt.graphics.LPoint;
+import lbase.data.LPoint;
 import lwt.graphics.LRect;
 import lwt.graphics.LTexture;
 
 public class LImage extends LCanvas {
 
-	private static final long serialVersionUID = 1L;
 	private LTexture original = null;
 	private LRect rectangle;
 	private int align = LFlags.MIDDLE | LFlags.CENTER;
@@ -29,11 +27,6 @@ public class LImage extends LCanvas {
 	
 	private float dx = 0, dy = 0;
 
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
 	public LImage(LContainer parent) {
 		super(parent);
 		setFillLayout(true);
@@ -41,7 +34,7 @@ public class LImage extends LCanvas {
 	}
 	
 	@Override
-	protected void paintComponent(Graphics g) {
+	protected void callPainters(Graphics2D g) {
 		currentEvent = g;
 		int x = 0;
 		int y = 0;
@@ -63,23 +56,24 @@ public class LImage extends LCanvas {
 			}
 			try {
 				g.setColor(new Color(255, 255, 255, a));
-				Graphics2D g2d = (Graphics2D) g;
 				if (rz != 0) {
-					AffineTransform t = g2d.getTransform();
+					AffineTransform t = g.getTransform();
 					t.translate(ox * sx, oy * sy);
 					t.rotate(rz);
 					t.translate(-ox * sx, -oy * sy);
-					g2d.setTransform(t);
+					g.setTransform(t);
 				}
-				g.drawImage(buffer, rect.x, rect.y, rect.width, rect.height, 
-						x, y, w, h, null);
+				g.drawImage(buffer, x, y, x + w, y + h,
+						rect.x, rect.y, rect.x + rect.width, rect.y + rect.height,null);
 				if (rz != 0)
-					g2d.setTransform(null);
-			} catch (IllegalArgumentException ex) { System.out.println("Problem printing quad."); }
+					g.setTransform(null);
+			} catch (IllegalArgumentException ex) { 
+				System.err.println("Problem printing quad.");
+			}
 		}
 		dx = x;
 		dy = y;
-		super.paintComponent(g);
+		super.callPainters(g);
 	}
 	
 	public float getImageX() {

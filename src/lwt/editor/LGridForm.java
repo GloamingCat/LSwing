@@ -13,7 +13,6 @@ import lwt.widget.LControlWidget;
 import lwt.widget.LLabel;
 
 public abstract class LGridForm<T> extends LObjectEditor<LDataList<T>> {
-	private static final long serialVersionUID = 1L;
 
 	protected LDataList<T> values;
 	protected ArrayList<LControlWidget<T>> controls;
@@ -96,8 +95,8 @@ public abstract class LGridForm<T> extends LObjectEditor<LDataList<T>> {
 			LPanel label = (LPanel) getChild(nLabels);
 			label.dispose();
 		}
-		Dimension size = content.getSize();
-		scroll.refreshSize(size.width, size.height);
+		Dimension size = content.getPreferredSize();
+		scroll.setContentSize(size.width, size.height);
 	}
 	
 	protected abstract T getDefaultValue();

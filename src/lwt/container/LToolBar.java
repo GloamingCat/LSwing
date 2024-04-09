@@ -1,7 +1,5 @@
 package lwt.container;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
 
@@ -14,9 +12,8 @@ import javax.swing.JToolBar;
 import lwt.graphics.LTexture;
 
 public class LToolBar extends LPanel {
-	
-	private static final long serialVersionUID = 1L;
-	private JToolBar toolBar;
+
+	private final JToolBar toolBar;
 	
 	public LToolBar(LContainer parent) {
 		super(parent);
@@ -29,12 +26,7 @@ public class LToolBar extends LPanel {
 		JRadioButton item = new JRadioButton();
 		toolBar.add(item);
 		if (onSelect != null) {
-			item.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					onSelect.accept(data);
-				}
-			});
+			item.addActionListener(e -> onSelect.accept(data));
 		}
 		BufferedImage img = LTexture.getBufferedImage(txt);
 		if (img == null)
@@ -48,12 +40,7 @@ public class LToolBar extends LPanel {
 		toolBar.add(item);
 		item.setSelected(selected);
 		if (onSelect != null) {
-			item.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					onSelect.accept(item.isSelected());
-				}
-			});
+			item.addActionListener(e -> onSelect.accept(item.isSelected()));
 		}
 		BufferedImage img = LTexture.getBufferedImage(txt);
 		if (img == null)
@@ -66,12 +53,7 @@ public class LToolBar extends LPanel {
 		JButton item = new JButton();
 		toolBar.add(item);
 		if (onSelect != null) {
-			item.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					onSelect.accept(data);
-				}
-			});
+			item.addActionListener(e -> onSelect.accept(data));
 		}
 		BufferedImage img = LTexture.getBufferedImage(txt);
 		if (img == null)

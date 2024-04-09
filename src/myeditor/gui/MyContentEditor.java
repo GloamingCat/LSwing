@@ -1,6 +1,6 @@
 package myeditor.gui;
 
-import lwt.LFlags;
+import lbase.LFlags;
 import lwt.container.LContainer;
 import lwt.container.LFrame;
 import lwt.container.LImage;
@@ -14,10 +14,10 @@ import myeditor.data.MyContent;
 import myeditor.project.MyProject;
 
 public class MyContentEditor extends LObjectEditor<MyContent> {
-	private static final long serialVersionUID = 1L;
-	
-	LImageButton btnImage;
-	
+
+	private final LImageButton btnImage;
+	public final MySubContentEditor subEditor;
+
 	/**
 	 * Create the composite.
 	 * @wbp.parser.constructor
@@ -26,37 +26,37 @@ public class MyContentEditor extends LObjectEditor<MyContent> {
 	public MyContentEditor(LContainer parent) {
 		super(parent, true);
 		setGridLayout(2);
-		
+
 		LLabel lblName = new LLabel(this, MyVocab.instance.NAME);
 		LText txtName = new LText(this);
+		txtName.getCellData().setExpand(true, false);
 		txtName.addMenu(lblName);
 		addControl(txtName, "name");
-		
+
 		LLabel lblValue = new LLabel(this, MyVocab.instance.VALUE);
 		LSpinner spnValue = new LSpinner(this);
+		spnValue.getCellData().setExpand(true, false);
 		spnValue.addMenu(lblValue);
 		addControl(spnValue, "value");
-		
+
 		LLabel lblImage = new LLabel(this, MyVocab.instance.IMAGE);
 		btnImage = new LImageButton(this, true);
-		btnImage.setAlignment(LFlags.LEFT);
+		btnImage.getCellData().setAlignment(LFlags.LEFT);
 		btnImage.addMenu(lblImage);
 		addControl(btnImage, "img");
-		
+
 		new LLabel(this, 1, 1);
 		LImage image = new LImage(this);
-		image.setExpand(true, true);
+		image.getCellData().setExpand(true, true);
 		btnImage.setImage(image);
+
 		LFrame frame = new LFrame(this, MyVocab.instance.SUBCONTENT);
 		frame.setFillLayout(true);
-		
-		LFrame subFrame = frame;
-		subFrame.setSpread(2, 1);
-		subFrame.setExpand(true, true);
-		MySubContentEditor subEditor = new MySubContentEditor(subFrame);
-		subEditor.addMenu(subFrame);
+		frame.getCellData().setSpread(2, 1);
+		frame.getCellData().setExpand(true, true);
+		subEditor = new MySubContentEditor(frame);
+		subEditor.addMenu(frame);
 		addChild(subEditor, "subContent");
-		
 	}
 
 	@Override
@@ -78,10 +78,10 @@ public class MyContentEditor extends LObjectEditor<MyContent> {
 	public boolean canDecode(String str) {
 		return MyContent.canDecode(str);
 	}
-	
+
 	public void onVisible() {
 		super.onVisible();
 		btnImage.setRootPath(MyProject.current.imagePath());
 	}
-	
+
 }

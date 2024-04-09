@@ -5,7 +5,6 @@ import java.awt.Container;
 import javax.swing.JComponent;
 
 import lwt.dialog.LWindow;
-import lwt.widget.LWidget;
 
 public interface LContainer {
 
@@ -31,20 +30,32 @@ public interface LContainer {
 	}
 
 	default void refreshLayout() {
-		getContentComposite().doLayout();
+		getTopComposite().validate();
 	}
 	
 	default void dispose() {
 		for (int i = 0; i < getChildCount(); i++) {
 			Object c = getChild(i);
-			if (c instanceof LContainer) {
-				LContainer lc = (LContainer) c;
+			if (c instanceof LContainer lc) {
 				lc.dispose();
-			} else if (c instanceof LWidget) {
-				LWidget w = (LWidget) c;
-				w.dispose();
 			}
 		}
+	}
+
+	default Object getData() {
+		return getData("");
+	}
+
+	default void setData(Object data) {
+		setData("", data);
+	}
+
+	default Object getData(String key) {
+		return getTopComposite().getClientProperty(key);
+	}
+
+	default void setData(String key, Object data) {
+		getTopComposite().putClientProperty(key, data);
 	}
 	
 }

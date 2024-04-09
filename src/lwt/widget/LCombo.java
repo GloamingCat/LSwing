@@ -24,7 +24,6 @@ public class LCombo extends LControlWidget<Integer> {
 		this(parent, 1, readOnly);
 	}
 	
-	
 	public LCombo(LContainer parent, int columns) {
 		this(parent, columns, false);
 	}
@@ -32,12 +31,11 @@ public class LCombo extends LControlWidget<Integer> {
 	public LCombo(LContainer parent, int columns, boolean readOnly) {
 		super(parent, (readOnly ? 1 : 0));
 		setFillLayout(true);
-		setSpread(columns, 1);
-		setExpand(true, false);
+		getCellData().setSpread(columns, 1);
+		getCellData().setExpand(true, false);
 		combo.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println(arg0.getActionCommand());
 				int current = currentValue == null ? (optional ? -1 : 0) : currentValue;
 				if (getSelectionIndex() == current)
 					return;

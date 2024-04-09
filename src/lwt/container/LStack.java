@@ -8,14 +8,14 @@ import lwt.widget.LWidget;
 public class LStack extends LPanel {
 
 	private static final long serialVersionUID = 1L;
-	private CardLayout stack;
+	private final CardLayout stack;
 	
 	public LStack(LContainer parent) {
 		super(parent);
 		stack = new CardLayout();
 		setLayout(stack);
 	}
-	
+
 	public void setTop(LContainer container) {
 		stack.first(this);
 		for (Component c : getComponents()) {

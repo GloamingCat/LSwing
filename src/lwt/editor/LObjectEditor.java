@@ -2,19 +2,12 @@ package lwt.editor;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import lwt.LGlobals;
-import lwt.LMenuInterface;
 import lbase.action.LControlAction;
-import lwt.container.LContainer;
-import lwt.container.LControlView;
-import lwt.container.LView;
 import lbase.data.LPath;
 import lbase.event.LControlEvent;
 import lbase.event.LSelectionEvent;
@@ -22,6 +15,11 @@ import lbase.event.listener.LControlListener;
 import lbase.event.listener.LSelectionListener;
 import lbase.gui.LControl;
 import lbase.gui.LMenu;
+import lwt.LGlobals;
+import lwt.LMenuInterface;
+import lwt.container.LContainer;
+import lwt.container.LControlView;
+import lwt.container.LView;
 import lwt.widget.LControlWidget;
 
 /**
@@ -31,8 +29,7 @@ import lwt.widget.LControlWidget;
  *
  */
 public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
-	private static final long serialVersionUID = 1L;
-	
+
 	protected HashMap<LControlWidget<?>, String> controlMap = new HashMap<>();
 	protected HashMap<LEditor, String> editorMap = new HashMap<>();
 	public LCollectionEditor<?, ?> collectionEditor;
@@ -42,24 +39,19 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	protected ArrayList<LControlListener<T>> modifyListeners = new ArrayList<>();
 	
 	//////////////////////////////////////////////////
-	// {{ Constructors
-	
-	/**
-	 * No layout.
-	 * @param parent
-	 * @param doubleBuffered
-	 */
+	//region Constructors
+
 	public LObjectEditor(LContainer parent, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
 		addMenu();
 	}
 
-	// }}
+	//endregion
 
 	//////////////////////////////////////////////////
-	// {{ Children
+	//region Children
 	
-	public <CT> void addChild(LEditor editor, String key) {
+	public void addChild(LEditor editor, String key) {
 		if (key.isEmpty()) {
 			addChild(editor);
 		} else {
@@ -77,7 +69,7 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		controlMap.put(control, key);
 		LObjectEditor<T> self = this;
 		control.setMenuInterface(getMenuInterface());
-		control.addModifyListener(new LControlListener<CT>() {
+		control.addModifyListener(new LControlListener<>() {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void onModify(LControlEvent<CT> event) {
@@ -87,9 +79,9 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 				}
 				if (key.isEmpty()) {
 					currentObject = (T) event.newValue;
-				} else if (currentObject != null && key != null) {
+				} else if (currentObject != null) {
 					setFieldValue(currentObject, key, event.newValue);
-					self.notifyListeners(new LControlEvent<T>(currentObject, currentObject));
+					self.notifyListeners(new LControlEvent<>(currentObject, currentObject));
 					if (collectionEditor != null && currentPath != null && event.detail >= 0)
 						collectionEditor.refreshObject(currentPath);
 				}
@@ -107,7 +99,7 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		controlMap.remove(control);
 	}
 	
-	// }}
+	//endregion
 	
 	public void refresh() {}
 	
@@ -119,7 +111,7 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	}
 	
 	//////////////////////////////////////////////////
-	// {{ Object
+	//region Object
 	
 	@SuppressWarnings("unchecked")
 	public void setObject(Object obj) {
@@ -199,19 +191,15 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		currentObject = null;
 		setObject(oldValue);
 	}
-	
+
 	protected Object getFieldValue(Object object, String name) {
 		try {
 			Field field = object.getClass().getField(name);
 			return field.get(object);
 		} catch (NoSuchFieldException e) {
-			System.out.println(name + " not found in " + object.getClass().toString());
+			System.err.println(name + " not found in " + object.getClass());
 			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -222,25 +210,22 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 			Field field = object.getClass().getField(name);
 			field.set(object, value);
 		} catch (NoSuchFieldException e) {
+			System.err.println(name + " not found in " + object.getClass());
 			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
+		} catch (SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Events
+	//region Events
 	
 	protected void newModifyAction(T oldValue, T newValue) {
-		LControlEvent<T> event = new LControlEvent<T>(oldValue, newValue);
+		LControlEvent<T> event = new LControlEvent<>(oldValue, newValue);
 		if (getActionStack() != null) {
-			getActionStack().newAction(new LControlAction<T>(this, event));
+			getActionStack().newAction(new LControlAction<>(this, event));
 		}
 		notifyListeners(event);
 	}
@@ -261,10 +246,10 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		newModifyAction(oldValue, newValue);
 	}
 	
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Clipboard
+	//region Clipboard
 	
 	public void onCopyButton(LMenu menu) {
 		String str = encodeData(currentObject);
@@ -282,9 +267,8 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 			T newValue = decodeData(str);
 			if (newValue != null && !newValue.equals(currentObject))
 				modify(newValue);	
-		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
+		} catch (Exception e) {
 			System.err.println(e.getMessage());
-			return;
 		}
 	}
 	
@@ -292,6 +276,6 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	public abstract String encodeData(T obj);
 	public abstract T decodeData(String str);
 	
-	// }}
+	//endregion
 
 }

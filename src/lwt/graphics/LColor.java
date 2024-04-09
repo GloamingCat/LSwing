@@ -36,7 +36,7 @@ public class LColor {
 	}
 	
 	//////////////////////////////////////////////////
-	// {{ Map
+	//region Map
 	
 	private static HashMap<String, LColor> colorMap = new HashMap<String, LColor>();
 	
@@ -48,6 +48,6 @@ public class LColor {
 		return colorMap.get(name);
 	}
 	
-	// }}
+	//endregion
 	
 }

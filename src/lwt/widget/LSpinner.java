@@ -5,11 +5,8 @@ import lwt.container.*;
 import javax.swing.JComponent;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 public class LSpinner extends LControlWidget<Integer> {
-	private static final long serialVersionUID = 1L;
 
 	private JSpinner spinner;
 	private int minimum = 0;
@@ -26,8 +23,8 @@ public class LSpinner extends LControlWidget<Integer> {
 	public LSpinner(LContainer parent, int columns) {
 		super(parent);
 		setFillLayout(true);
-		setExpand(true, false);
-		setSpread(columns, 1);
+		getCellData().setExpand(true, false);
+		getCellData().setSpread(columns, 1);
 	}
 	
 	@Override
@@ -35,15 +32,12 @@ public class LSpinner extends LControlWidget<Integer> {
 		spinner = new JSpinner();
 		add(spinner);
 		spinner.setModel(new SpinnerNumberModel(minimum, minimum, maximum, 1));
-		spinner.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				if (currentValue != null && spinner.getValue() == currentValue)
-					return;
-				newModifyAction(currentValue, (Integer) spinner.getValue());
-				currentValue = (Integer) spinner.getValue();
-			}
-		});
+		spinner.addChangeListener(e -> {
+            if (currentValue != null && spinner.getValue() == currentValue)
+                return;
+            newModifyAction(currentValue, (Integer) spinner.getValue());
+            currentValue = (Integer) spinner.getValue();
+        });
 	}
 	
 	@Override
@@ -55,7 +49,7 @@ public class LSpinner extends LControlWidget<Integer> {
 			currentValue = i;
 		} else {
 			spinner.setEnabled(false);
-			spinner.setValue((int) 0);
+			spinner.setValue(0);
 			currentValue = null;
 		}
 	}

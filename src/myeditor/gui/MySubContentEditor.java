@@ -10,10 +10,9 @@ import myeditor.data.MySubContent;
 import myeditor.project.MyProject;
 
 public class MySubContentEditor extends LObjectEditor<MySubContent> {
-	private static final long serialVersionUID = 1L;
 
 	LCombo cmbType;
-	
+
 	/**
 	 * Create the composite.
 	 * @wbp.parser.constructor
@@ -22,16 +21,18 @@ public class MySubContentEditor extends LObjectEditor<MySubContent> {
 	public MySubContentEditor(LContainer parent) {
 		super(parent, true);
 		setGridLayout(2);
-		
+
 		new LLabel(this, MyVocab.instance.TYPE);
-		
+
 		cmbType = new LCombo(this, true);
 		cmbType.setOptional(false);
+		cmbType.getCellData().setExpand(true, false);
 		addControl(cmbType, "value");
-		
+
 		new LLabel(this, MyVocab.instance.DESCRIPTION);
-		
-		LTextBox txtDesc = new LTextBox(this, 1, 1);
+
+		LTextBox txtDesc = new LTextBox(this);
+		txtDesc.getCellData().setExpand(true, true);
 		addControl(txtDesc, "description");
 
 	}

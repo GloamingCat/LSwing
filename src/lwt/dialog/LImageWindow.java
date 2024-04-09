@@ -6,54 +6,51 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
-import lwt.LFlags;
+import lbase.LFlags;
+import lbase.LVocab;
 import lwt.container.LImage;
-import lwt.container.LPanel;
 import lwt.container.LFlexPanel;
 import lwt.container.LScrollPanel;
-import lbase.LVocab;
-import lbase.event.LSelectionEvent;
-import lbase.event.listener.LSelectionListener;
 import lwt.widget.LFileSelector;
 
-public class LImageShell extends LObjectShell<String> {
+public class LImageWindow extends LObjectWindow<String> {
 
 	protected LFileSelector selFile;
 	protected LImage imgQuad;
 	protected LScrollPanel scroll;
-	
+
 	/**
 	 * @wbp.parser.constructor
 	 * @wbp.eval.method.parameter parent new LShell(600, 400)
 	 * @wbp.eval.method.parameter optional true
 	 * @wbp.eval.method.parameter rootPath ""
 	 */
-	public LImageShell(LWindow parent, boolean optional, String rootPath) {
-		super(parent, LVocab.instance.IMAGESHELL);
-		setMinimumSize(600, 400);
+	public LImageWindow(LWindow parent, int style) {
+		super(parent, style, LVocab.instance.IMAGESHELL);
+	}
 
+	public void createContent(int style) {
+		super.createContent(style);
 		LFlexPanel form = new LFlexPanel(content, true);
-		selFile = new LFileSelector(form, optional);
-		selFile.addFileRestriction( (f) -> { return isImage(f); } );
-		selFile.setFolder(rootPath);
+		form.getCellData().setExpand(true, true);
+		content.setFillLayout(true);
 
-		LPanel quad = new LPanel(form);
-		quad.setGridLayout(1);
+		selFile = new LFileSelector(form, (style & LFlags.OPTIONAL) > 0);
+		selFile.addFileRestriction(this::isImage);
 
-		scroll = new LScrollPanel(quad);
-		scroll.setExpand(true, true);
+		scroll = new LScrollPanel(form);
 
 		imgQuad = new LImage(scroll);
-		imgQuad.setAlignment(LFlags.TOP & LFlags.LEFT);
+		imgQuad.setAlignment(LFlags.TOP | LFlags.LEFT);
 
-		selFile.addSelectionListener(new LSelectionListener() {
-			@Override
-			public void onSelect(LSelectionEvent event) {
-				resetImage();
-			}
-		});
+		selFile.addSelectionListener(event -> resetImage());
 
 		form.setWeights(1, 1);
+		setMinimumSize(300, 200);
+	}
+
+	public void setRootPath(String path) {
+		selFile.setFolder(path);
 	}
 
 	public void open(String initial) {
@@ -84,7 +81,7 @@ public class LImageShell extends LObjectShell<String> {
 	protected void resetImage() {
 		String path = selFile.getRootFolder() + selFile.getSelectedFile();
 		imgQuad.setImage(path);
-		scroll.refreshSize(imgQuad.getCurrentSize());
+		//scroll.setContentSize(imgQuad.getCurrentSize());
 		imgQuad.redraw();
 	}
 

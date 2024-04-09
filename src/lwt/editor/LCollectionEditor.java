@@ -5,7 +5,7 @@ import lwt.LMenuInterface;
 import lwt.container.LContainer;
 import lbase.data.LDataCollection;
 import lbase.data.LPath;
-import lwt.dialog.LShellFactory;
+import lwt.dialog.LWindowFactory;
 import lbase.event.LDeleteEvent;
 import lbase.event.LEditEvent;
 import lbase.event.LInsertEvent;
@@ -16,8 +16,6 @@ import lwt.widget.LCollection;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 
 /**
  * Edits the items in a list.
@@ -25,39 +23,33 @@ import java.io.IOException;
  */
 
 public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollection<T>> {
-	private static final long serialVersionUID = 1L;
 	
 	public String fieldName = "";
-	protected LShellFactory<ST> shellFactory;
-	
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
+	protected LWindowFactory<ST> shellFactory;
+
 	public LCollectionEditor(LContainer parent) {
 		super(parent, false);
 		setFillLayout(true);
 	}
 	
 	protected void setListeners() {
-		getCollectionWidget().addInsertListener(new LCollectionListener<T>() {
+		getCollectionWidget().addInsertListener(new LCollectionListener<>() {
 			public void onInsert(LInsertEvent<T> event) {
 				getObject().insert(event.parentPath, event.index, event.node);
 			}
 		});
-		getCollectionWidget().addDeleteListener(new LCollectionListener<T>() {
+		getCollectionWidget().addDeleteListener(new LCollectionListener<>() {
 			public void onDelete(LDeleteEvent<T> event) {
 				getObject().delete(event.parentPath, event.index);
 			}
 		});
-		getCollectionWidget().addMoveListener(new LCollectionListener<T>() {
+		getCollectionWidget().addMoveListener(new LCollectionListener<>() {
 			public void onMove(LMoveEvent<T> event) {
 				getObject().move(event.sourceParent, event.sourceIndex, 
 						event.destParent, event.destIndex);
 			}
 		});
-		getCollectionWidget().addEditListener(new LCollectionListener<ST>() {
+		getCollectionWidget().addEditListener(new LCollectionListener<>() {
 			public void onEdit(LEditEvent<ST> event) {
 				setEditableData(event.path, event.newData);
 			}
@@ -71,7 +63,7 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 		getCollectionWidget().setDataCollection(db);
 	}
 	
-	public void setShellFactory(LShellFactory<ST> factory) {
+	public void setShellFactory(LWindowFactory<ST> factory) {
 		shellFactory = factory;
 	}
 	
@@ -81,7 +73,7 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 		ST oldData = getEditableData(path);
 		ST newData = shellFactory.openShell(getWindow(), oldData);
 		if (newData != null) {
-			return new LEditEvent<ST>(path, oldData, newData);
+			return new LEditEvent<>(path, oldData, newData);
 		}
 		return null;
 	}
@@ -130,7 +122,7 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 				getCollectionWidget().setDataCollection(newValue);
 				newModifyAction(oldValue, newValue);
 			}
-		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
+		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}
 	}

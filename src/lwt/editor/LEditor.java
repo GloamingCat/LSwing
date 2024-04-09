@@ -20,7 +20,7 @@ public abstract class LEditor extends LView implements LPastable {
 	private static final long serialVersionUID = 1L;
 
 	//////////////////////////////////////////////////
-	// {{ Constructors
+	//region Constructors
 	
 	/**
 	 * No layout.
@@ -31,18 +31,18 @@ public abstract class LEditor extends LView implements LPastable {
 		super(parent, doubleBuffered);
 	}
 
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Object
+	//region Object
 	
 	public abstract void setObject(Object object);
 	public abstract void saveObjectValues();
 
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Menu
+	//region Menu
 	
 	private void addHeaderButtons(LContainer parent) {
 		LButton copyButton = new LButton(parent, LVocab.instance.COPY);
@@ -127,6 +127,6 @@ public abstract class LEditor extends LView implements LPastable {
 		menu.setMenuButton(value, LVocab.instance.PASTE, "paste", (d) -> onPasteButton(menu), "Ctrl+&V");
 	}
 	
-	// }}
+	//endregion
 	
 }

@@ -21,15 +21,11 @@ import javax.swing.JFrame;
 import lbase.LVocab;
 import lbase.action.LActionManager;
 import lbase.gui.LMenu;
-import lbase.serialization.LFileManager;
 import lbase.serialization.LSerializer;
 
-public abstract class LApplicationShell extends LWindow implements LContainer, lbase.gui.LApplicationWindow {
+public abstract class LApplicationWindow extends LWindow implements lbase.gui.LApplicationWindow {
 
 	protected LSerializer project = null;
-	protected String applicationName;
-	protected String projectExtension = "txt";
-
 	protected ArrayList<LView> views = new ArrayList<>();
 	protected LView defaultView = null;
 	protected LView currentView;
@@ -46,23 +42,14 @@ public abstract class LApplicationShell extends LWindow implements LContainer, l
 	 * @wbp.eval.method.parameter initialWidth 800
 	 * @wbp.eval.method.parameter initialHeight 600
 	 */
-	public LApplicationShell(int initialWidth, int initialHeight, String title, String icon) {
+	public LApplicationWindow(int initialWidth, int initialHeight, String icon, String... args) {
 		super();
 		LTexture.rootClass = getClass();
 		setSize(initialWidth, initialHeight);
-		if (title != null) {
-			setTitle(title);
-			applicationName = "LTH Editor";
-		}
 		if (icon != null) {
 			jframe.setIconImage(LTexture.getBufferedImage(icon));
 		}
-
-		LVocab vocab = LVocab.instance;
-
 		stack = new LStack(getContentComposite());
-		new LPanel(stack);
-		
 		jframe.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		jframe.addWindowListener(new WindowAdapter() {
 			@Override
@@ -71,13 +58,26 @@ public abstract class LApplicationShell extends LWindow implements LContainer, l
 					System.exit(0);
 			}
 		});
+		createMenu();
+		createViews();
+		String folder = args.length > 0 ? args[0] : null;
+		if (folder != null) {
+			System.out.println(folder);
+		}
+		project = loadDefault(folder);
+		if (project != null) {
+			setTitle(getApplicationName() + " - " + folder);
+		}
+	}
 
+	protected void createMenu() {
+		LVocab vocab = LVocab.instance;
 		menuBar = new LMenuBar(this);
 
 		menuProject = menuBar.addSubMenu(vocab.PROJECT, "project");
-		menuProject.addMenuButton(vocab.NEW, "new", (d) -> project = newProject(), "Ctrl+&N");
-		menuProject.addMenuButton(vocab.OPEN, "open", (d) -> project = openProject(), "Ctrl+&O");
-		menuProject.addMenuButton(vocab.SAVE, "save", (d) -> saveProject(), "Ctrl+&S");
+		menuProject.addMenuButton(vocab.NEW, "new", (d) -> onNewProject(), "Ctrl+&N");
+		menuProject.addMenuButton(vocab.OPEN, "open", (d) -> onOpenProject(), "Ctrl+&O");
+		menuProject.addMenuButton(vocab.SAVE, "save", (d) -> onSaveProject(), "Ctrl+&S");
 		menuProject.addSeparator();
 		menuProject.addMenuButton(vocab.EXIT, "exit", (d) -> close(), "Alt+F4");
 
@@ -96,14 +96,15 @@ public abstract class LApplicationShell extends LWindow implements LContainer, l
 		menuBar.setMenuEnabled("view", false);
 		menuHelp = menuBar.addSubMenu(vocab.HELP, "help");
 		menuBar.setMenuEnabled("help", false);
-
 	}
-	
+
+	protected abstract void createViews();
+
 	@Override
 	public LMenu getEditMenu() {
 		return menuEdit;
 	}
-
+	
 	public void run() {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -114,39 +115,9 @@ public abstract class LApplicationShell extends LWindow implements LContainer, l
 	}
 
 	protected void addView(final LView view, String name, String shortcut) {
+		menuBar.setMenuEnabled("view", true);
 		menuView.addMenuButton(name, name, (d) -> setCurrentView(view), shortcut);
 		views.add(view);
-	}
-
-	protected boolean loadDefault(String path) {
-		if (path == null) {
-			String lattest = LFileManager.appDataPath(applicationName) + "lattest.txt";
-			byte[] bytes = LFileManager.load(lattest);
-			if (bytes != null && bytes.length > 0) {
-				path = new String(bytes);
-			} else {
-				return false;
-			}
-		}
-		LVocab vocab = LVocab.instance;
-		LSerializer project = createProject(path);
-		if (!project.load()) {
-			LErrorDialog msg = new LErrorDialog(this,
-					vocab.LOADERROR,
-					vocab.LOADERRORMSG + "\n" + path);
-			msg.open();
-			return false;
-		} else {
-			this.project = project;
-			menuView.setEnabled(true);
-			if (defaultView != null)
-				setCurrentView(defaultView);
-			return true;
-		}
-	}
-
-	protected boolean loadDefault() {
-		return loadDefault(null);
 	}
 
 	protected void setCurrentView(LView view) {
@@ -170,73 +141,89 @@ public abstract class LApplicationShell extends LWindow implements LContainer, l
 	public void refreshClipboardButtons() {
 		menuEdit.setButtonEnabled("copy", currentView.getMenuInterface().canCopy());
 		menuEdit.setButtonEnabled("paste", currentView.getMenuInterface().canPaste());
-	}
+	}	
 	
-	protected abstract LSerializer createProject(String path);
-
-	public LSerializer newProject() {
-		if (!askSave()) {
-			return project;
-		}
-		LVocab vocab = LVocab.instance;
-		LFileDialog dialog = new LFileDialog(this, vocab.NEWPROJECT, projectExtension, true);
-		String resultPath = dialog.open();
-		if (resultPath == null)
-			return project;
-		LSerializer newProject = createProject(resultPath);
-		if (newProject.isDataFolder(LFileManager.getDirectory(resultPath))) {
-			LConfirmDialog msg = new LConfirmDialog(this, 
-					vocab.EXISTINGPROJECT,
-					vocab.EXISTINGMSG,
-					LConfirmDialog.OK_CANCEL);
-			int result = msg.open();
-			if (result != LConfirmDialog.YES) {
-				return project;
-			}
-		}
-		newProject.initialize();
-		newProject.save();
-		menuView.setEnabled(true);
-		String path = LFileManager.appDataPath(applicationName) + "lattest.txt";
-		byte[] bytes = resultPath.getBytes();
-		LFileManager.save(path, bytes);
-		if (defaultView != null)
-			setCurrentView(defaultView);
-		return newProject;
-	}
-
-	public LSerializer openProject() {
-		if (!askSave()) {
-			return project;
-		}
-		LVocab vocab = LVocab.instance;
-		LFileDialog dialog = new LFileDialog(this, vocab.OPENPROJECT, projectExtension, false);
-		String resultFile = dialog.open();
-		if (resultFile == null)
-			return project;
-		LSerializer previous = project;
-		System.out.println("Opened: " + resultFile);
-		project = createProject(resultFile);
-		if (project.load()) {
+	//region Load Project
+	public void onOpenProject() {
+		LSerializer project = openProject();
+		if (project != null) {
+			this.project = project;
 			menuView.setEnabled(true);
-			String path = LFileManager.appDataPath(applicationName) + "lattest.txt";
-			byte[] bytes = resultFile.getBytes();
-			LFileManager.save(path, bytes);
 			for (LView view : views)
 				view.restart();
 			if (defaultView != null)
 				setCurrentView(defaultView);
-		} else {
-			LErrorDialog msg = new LErrorDialog(this,
-					vocab.LOADERROR,
-					vocab.LOADERRORMSG + ":" + resultFile);
-			msg.open();
-			project = previous;
 		}
-		return project;
 	}
 
-	public void saveProject() {
+	@Override
+	public String openLoadProjectDialog() {
+		LFileDialog dialog = new LFileDialog(this,
+				LVocab.instance.OPENPROJECT,
+				getProjectExtension(),
+				false);
+		return dialog.open();
+	}
+	
+	@Override 
+	public void openLoadErrorDialog(String path) {
+		LErrorDialog msg = new LErrorDialog(this,
+				LVocab.instance.LOADERROR,
+				LVocab.instance.LOADERRORMSG + ":" + path);
+		msg.open();
+	}
+
+	@Override
+	public void onLoadSuccess(LSerializer project) {
+		this.project = project;
+		menuView.setEnabled(true);
+		if (defaultView != null)
+			setCurrentView(defaultView);
+	}
+	
+	@Override
+	public void onLoadFail(String path) {
+		LVocab vocab = LVocab.instance;
+		LErrorDialog msg = new LErrorDialog(this,
+				vocab.LOADERROR,
+				vocab.LOADERRORMSG + "\n" + path);
+		msg.open();
+	}
+	//endregion
+	
+	//region New Project
+	public void onNewProject() {
+		LSerializer project = newProject();
+		if (project != null) {
+			this.project = project;
+			menuView.setEnabled(true);
+			if (defaultView != null)
+				setCurrentView(defaultView);
+		}
+	}
+	
+	@Override
+	public String openNewProjectDialog() {
+		LFileDialog dialog = new LFileDialog(this,
+				LVocab.instance.NEWPROJECT,
+				getProjectExtension(),
+				true);
+		return dialog.open();
+	}
+	
+	@Override
+	public boolean openNewConfirmDialog() {
+		LConfirmDialog msg = new LConfirmDialog(this, 
+				LVocab.instance.EXISTINGPROJECT,
+				LVocab.instance.EXISTINGMSG,
+				LConfirmDialog.OK_CANCEL);
+		int result = msg.open();
+		return result == LConfirmDialog.YES;
+	}
+	//endregion
+
+	//region Save Project
+	public void onSaveProject() {
 		if (project == null || !LActionManager.getInstance().hasChanges())
 			return;
 		if (!project.save()) {
@@ -250,7 +237,8 @@ public abstract class LApplicationShell extends LWindow implements LContainer, l
 		}
 	}
 
-	protected boolean askSave() {
+	@Override
+	public boolean askSave() {
 		if (project != null && LActionManager.getInstance().hasChanges()) {
 			LVocab vocab = LVocab.instance;
 			LConfirmDialog msg = new LConfirmDialog(this, 
@@ -259,7 +247,7 @@ public abstract class LApplicationShell extends LWindow implements LContainer, l
 					LConfirmDialog.YES_NO_CANCEL);
 			int result = msg.open();
 			if (result == LConfirmDialog.YES) {
-				saveProject();
+				onSaveProject();
 				return true;
 			} else if (result == LConfirmDialog.NO) {
 				return true;
@@ -270,5 +258,6 @@ public abstract class LApplicationShell extends LWindow implements LContainer, l
 			return true;
 		}
 	}
+	//endregion
 
 }

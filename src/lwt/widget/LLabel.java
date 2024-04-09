@@ -8,70 +8,34 @@ import lwt.LFlags;
 import lwt.container.LContainer;
 
 public class LLabel extends LWidget {
-	private static final long serialVersionUID = 1L;
 
 	private JLabel label;
-	
-	LLabel (LContainer parent, int style) {
-		super(parent);
-	}
-	
-	LLabel(LContainer parent, int style, int hfill, int vfill) {
-		super(parent, 1);
-		setAlignment(0);
+
+	//////////////////////////////////////////////////
+	//region Basic Constructors
+
+	public LLabel(LContainer parent, int hfill, int vfill) {
+		this(parent, 0);
+		getCellData().setAlignment(0);
 		setEnabled(false);
+		getCellData().setSpread(hfill, vfill);
 	}
 
-	public LLabel(LContainer parent, int style, String text, int columns) {
-		this(parent, 0);
-		label.setText(text);
+	public LLabel(LContainer parent, int style) {
+		super(parent);
 		setMargins(0, 3);
-		setSpread(columns, 1);
-		setExpand((style & LFlags.EXPAND) > 0, false);
-		int alingment = 0;
+		getCellData().setExpand((style & LFlags.EXPAND) > 0, false);
+		int alignment = 0;
 		if ((style & LFlags.TOP) > 0) {
-			alingment = LFlags.LEFT & LFlags.TOP;
+			alignment = LFlags.LEFT | LFlags.TOP;
 		} else if ((style & LFlags.BOTTOM) > 0) {
-			alingment = LFlags.LEFT & LFlags.BOTTOM;
+			alignment = LFlags.LEFT | LFlags.BOTTOM;
 		} else if ((style & LFlags.RIGHT) > 0) {
-			alingment = LFlags.RIGHT & LFlags.CENTER;		
+			alignment = LFlags.RIGHT | LFlags.CENTER;
 		} else if ((style & LFlags.CENTER) > 0) {
 			label.setHorizontalTextPosition(JLabel.CENTER);
 		}
-		setAlignment(alingment);
-	}
-
-	public LLabel(LContainer parent, int style, String text) {
-		this(parent, style, text, 1);
-	}
-	
-	public LLabel(LContainer parent, String text, int columns) {
-		this(parent, 0, text, columns);
-	}
-	
-	public LLabel(LContainer parent, String text) {
-		this(parent, 0, text, 1);
-	}
-	
-	public LLabel(LContainer parent, String text, String tooltip) {
-		this(parent, 0, text, 1);
-		setHoverText(tooltip);
-	}
-
-	public LLabel(LContainer parent, int hfill, int vfill) {
-		this(parent, 1, hfill, vfill);
-	}
-
-	/**
-	 * @wbp.parser.constructor
-	 */
-	public LLabel(LContainer parent) {
-		this(parent, "Text");
-	}
-	
-	public LLabel(LContainer parent, int style, String text, String tooltip) {
-		this(parent, style, text);
-		setHoverText(tooltip);
+		getCellData().setAlignment(alignment);
 	}
 
 	@Override
@@ -81,6 +45,32 @@ public class LLabel extends LWidget {
 		label = new JLabel();
 		add(label);
 	}
+
+	//endregion
+
+	//////////////////////////////////////////////////
+	//region Text Constructors
+
+	public LLabel(LContainer parent, String text) {
+		this(parent, LFlags.LEFT | LFlags.TOP, text);
+	}
+
+	public LLabel(LContainer parent, int style, String text) {
+		this(parent, style);
+		label.setText(text);
+	}
+
+	public LLabel(LContainer parent, String text, String tooltip) {
+		this(parent, LFlags.LEFT | LFlags.TOP, text);
+		setHoverText(tooltip);
+	}
+
+	public LLabel(LContainer parent, int style, String text, String tooltip) {
+		this(parent, style, text);
+		setHoverText(tooltip);
+	}
+
+	//endregion
 
 	public void setText(String text) {
 		label.setText(text);
@@ -104,7 +94,7 @@ public class LLabel extends LWidget {
 	}
 
 	//////////////////////////////////////////////////
-	// {{ Menu
+	//region Menu
 
 	@Override
 	public void onCopyButton(LMenu menu) {}
@@ -117,6 +107,6 @@ public class LLabel extends LWidget {
 		return false;
 	}
 
-	// }}
+	//endregion
 
 }

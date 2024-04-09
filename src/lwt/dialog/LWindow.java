@@ -10,8 +10,9 @@ import javax.swing.JFrame;
 import lwt.container.LContainer;
 import lwt.container.LPanel;
 import lwt.editor.LMenuBar;
+import lwt.layout.LLayedContainer;
 
-public class LWindow implements LContainer, lbase.gui.LWindow {
+public class LWindow implements LLayedContainer, lbase.gui.LWindow {
 
 	private final LWindow parent;
 	protected final JDialog jdialog;
@@ -19,7 +20,7 @@ public class LWindow implements LContainer, lbase.gui.LWindow {
 	private final LPanel panel;
 	
 	//////////////////////////////////////////////////
-	// {{ Constructors
+	//region Constructors
 	
 	/**
 	 * Root shell.
@@ -56,39 +57,26 @@ public class LWindow implements LContainer, lbase.gui.LWindow {
 		panel = new LShellPanel(this, jdialog);
 	}
 	
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Layout
-	
+	//region Layout
+
+	@Override
 	public void refreshLayout() {
 		if (jframe != null) {
-			jframe.doLayout();
-			for (Component c : jframe.getComponents()) {
-				if (c instanceof LContainer)
-					((LContainer) c).refreshLayout();
-			}
+			jframe.validate();
 		} else {
-			jdialog.doLayout();
-			for (Component c : jdialog.getComponents()) {
-				if (c instanceof LContainer)
-					((LContainer) c).refreshLayout();
-			}
+			jdialog.validate();
 		}
 	}
 	
-	public void pack() {
-		if (jframe != null)
-			jframe.pack();
-		else
-			jdialog.pack();
-	}
-	
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Properties
-	
+	//region Properties
+
+	@Override
 	public void setTitle(String title) {
 		if (jframe != null)
 			jframe.setTitle(title);
@@ -117,10 +105,10 @@ public class LWindow implements LContainer, lbase.gui.LWindow {
 			jdialog.setJMenuBar(bar);
 	}
 
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Container Methods
+	//region Container Methods
 
 	public LWindow getParent() {
 		return parent;
@@ -181,10 +169,9 @@ public class LWindow implements LContainer, lbase.gui.LWindow {
 			jdialog.dispose();
 	}
 
-	// }}
+	//endregion
 
 	protected class LShellPanel extends LPanel {
-		private static final long serialVersionUID = 1L;
 		
 		LWindow shell;
 		public LShellPanel(LWindow shell, JDialog jdialog) {

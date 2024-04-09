@@ -1,48 +1,38 @@
 package myeditor.gui;
 
+import lbase.data.LDataList;
 import lwt.container.LContainer;
 import lwt.container.LFlexPanel;
 import lwt.container.LView;
-import lbase.data.LDataList;
 import lwt.editor.LDefaultGridEditor;
 import myeditor.data.MyContent;
 import myeditor.project.MyProject;
 
 public class MyContentGridEditor extends LView {
-	private static final long serialVersionUID = 1L;
 
-	private LDefaultGridEditor<MyContent> gridEditor;
-	private MyContentEditor contentEditor;
-	
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
-	public MyContentGridEditor(LContainer parent) {
+    public MyContentGridEditor(LContainer parent) {
 		super(parent, false);
 		setFillLayout(true);
-		
+
 		createMenuInterface();
-		
+
 		LFlexPanel sashForm = new LFlexPanel(this, true);
-		
-		gridEditor = new MyContentGrid(sashForm);
+
+        LDefaultGridEditor<MyContent> gridEditor = new MyContentGrid(sashForm);
 		gridEditor.getCollectionWidget().cellWidth = 40;
 		gridEditor.getCollectionWidget().cellHeight = 40;
 		gridEditor.getCollectionWidget().setColumns(4);
 		addChild(gridEditor);
-		
-		contentEditor = new MyContentEditor(sashForm);
+
+        MyContentEditor contentEditor = new MyContentEditor(sashForm);
 		contentEditor.setMargins(5, 5);
 		gridEditor.addChild(contentEditor);
-		
+
 		sashForm.setWeights(1, 2);
 
 	}
 
-	@SuppressWarnings("serial")
-	private class MyContentGrid extends LDefaultGridEditor<MyContent> {
+	private static class MyContentGrid extends LDefaultGridEditor<MyContent> {
 		public MyContentGrid(LContainer parent) {
 			super(parent);
 		}

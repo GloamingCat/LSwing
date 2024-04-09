@@ -8,22 +8,16 @@ import lwt.container.LContainer;
 import lbase.data.LDataTree;
 
 public class LFileSelector extends LNodeSelector<String> {
-	private static final long serialVersionUID = 1L;
 	
 	protected LDataTree<String> root;
 	protected ArrayList<Function<File, Boolean>> fileRestrictions = new ArrayList<>();
 	
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
 	public LFileSelector(LContainer parent, boolean optional) {
 		super(parent, optional);
 	}
 	
 	public void setFolder(String folder) {
-		root = new LDataTree<String>(folder);
+		root = new LDataTree<>(folder);
 		setFiles(root, folder);
 		setCollection(root);
 	}
@@ -38,10 +32,10 @@ public class LFileSelector extends LNodeSelector<String> {
 			return;
 		for (File entry : f.listFiles()) {
 			if (entry.isDirectory()) {
-				LDataTree<String> subFolder = new LDataTree<String>(entry.getName(), tree);
+				LDataTree<String> subFolder = new LDataTree<>(entry.getName(), tree);
 				setFiles(subFolder, path + entry.getName() + "/");
 			} else if (isValidFile(entry)) {
-				LDataTree<String> file = new LDataTree<String>(entry.getName(), tree);
+				LDataTree<String> file = new LDataTree<>(entry.getName(), tree);
 				file.id = 0;
 			}
 		}
@@ -58,13 +52,14 @@ public class LFileSelector extends LNodeSelector<String> {
 		LDataTree<String> node = getSelectedNode();
 		if (node == null || node.id == -1)
 			return "";
-		String file = node.data;
+		StringBuilder file = new StringBuilder(node.data);
 		node = node.parent;
 		while (node != root) {
-			file = node.data + '/' + file;
+			file.insert(0, node.data);
+			file.insert(0, '/');
 			node = node.parent;
 		}
-		return file;
+		return file.toString();
 	}
 	
 	public void setSelectedFile(String file) {
@@ -75,12 +70,12 @@ public class LFileSelector extends LNodeSelector<String> {
 	public LDataTree<String> findNode(String file) {
 		String[] names = file.split("/");
 		LDataTree<String> node = root;
-		for (int i = 0; i < names.length; i++) {
-			LDataTree<String> child = findChild(names[i], node);
-			if (child == null)
-				return null;
-			node = child;
-		}
+        for (String name : names) {
+            LDataTree<String> child = findChild(name, node);
+            if (child == null)
+                return null;
+            node = child;
+        }
 		return node;
 	}
 	

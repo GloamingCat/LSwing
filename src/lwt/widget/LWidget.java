@@ -17,7 +17,6 @@ import lbase.action.LAction;
 import lbase.gui.LPastable;
 
 public abstract class LWidget extends LPanel implements LPastable {
-	private static final long serialVersionUID = 1L;
 
 	protected LMenuInterface menuInterface;
 
@@ -52,7 +51,7 @@ public abstract class LWidget extends LPanel implements LPastable {
 	}
 	
 	//////////////////////////////////////////////////
-	// {{ Menus
+	//region Menus
 	
 	private LPopupMenu addMenu(JComponent parent) {
 		LPopupMenu menu = new LPopupMenu(parent);
@@ -112,6 +111,6 @@ public abstract class LWidget extends LPanel implements LPastable {
 		menu.setMenuButton(value, LVocab.instance.PASTE, "paste", (d) -> onPasteButton(menu), "Ctrl+&V");
 	}
 	
-	// }}
+	//endregion
 
 }

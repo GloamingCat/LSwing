@@ -74,7 +74,6 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 			public void onSelect(LSelectionEvent event) {
 				LPath path = getCollectionWidget().getSelectedPath();
 				T obj = getCollectionWidget().toObject(path);
-				System.out.println(obj);
 				editor.setObject(obj, path);
 			}
 		});
@@ -151,14 +150,11 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	public LState getState() {
 		final LPath currentPath = getCollectionWidget().getSelectedPath();
 		final ArrayList<LState> states = getChildrenStates();
-		return new LState() {
-			@Override
-			public void reset() {
-				LSelectionEvent e = getCollectionWidget().select(currentPath);
-				getCollectionWidget().notifySelectionListeners(e);
-				resetStates(states);
-			}
-		};
+		return () -> {
+            LSelectionEvent e = getCollectionWidget().select(currentPath);
+            getCollectionWidget().notifySelectionListeners(e);
+            resetStates(states);
+        };
 	}
 	
 	public void refreshDataCollection() {

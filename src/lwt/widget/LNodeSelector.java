@@ -24,7 +24,7 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
 	public LNodeSelector(LContainer parent, boolean optional) {
 		super(parent);
 		setGridLayout(1);
-		tree.setExpand(true, true);
+		tree.getCellData().setExpand(true, true);
 		tree.addSelectionListener(new LSelectionListener() {
 			@Override
 			public void onSelect(LSelectionEvent event) {
@@ -40,7 +40,7 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
 		if (!optional)
 			return;
 		btnNull = new LButton(this, LVocab.instance.DESELECT);
-		btnNull.setExpand(true, false);
+		btnNull.getCellData().setExpand(true, false);
 		btnNull.onClick = new LSelectionListener() {
 			@Override
 			public void onSelect(LSelectionEvent event) {

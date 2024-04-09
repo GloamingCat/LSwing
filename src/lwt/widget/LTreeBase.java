@@ -49,7 +49,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
 		
 	//////////////////////////////////////////////////
-	// {{ Constructors
+	//region Constructors
 	
 	public LTreeBase(LContainer parent) {
 		this(parent, false);
@@ -94,10 +94,10 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		tree.setToolTipText(text);
 	}
 	
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Drag
+	//region Drag
 	
 	public void setDragEnabled(boolean value) {
 		tree.setDragEnabled(value);
@@ -133,10 +133,10 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		return e;
 	}
  	
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Auxiliary
+	//region Auxiliary
 	
 	protected int indexOf(DefaultMutableTreeNode item) {
 		return item.getParent().getIndex(item);
@@ -155,7 +155,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	}
 
 	//////////////////////////////////////////////////
-	// {{ Internal operations
+	//region Internal operations
 	
 	protected LSelectionEvent selectTreeItem(DefaultMutableTreeNode item) {
 		if (item == null) {
@@ -208,10 +208,10 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		return new LMoveEvent<T>(sourceParentPath, sourceIndex, destParentPath, destIndex, node);
 	}
 
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Tree Events
+	//region Tree Events
 
 	public LSelectionEvent select(LPath path) {
 		if (path == null) {
@@ -244,10 +244,10 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		}
 	}
 	
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Node
+	//region Node
 
 	public abstract LDataTree<T> toNode(LPath path);
 
@@ -256,10 +256,10 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		return toNode(path);
 	}
 
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Path
+	//region Path
 
 	public DefaultMutableTreeNode toTreeItem(DefaultMutableTreeNode parent, int index) {
 		if (index == -1) {
@@ -313,10 +313,10 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		return root;
 	}
 	
-	// }}
+	//endregion
 
 	//////////////////////////////////////////////////
-	// {{ Collection
+	//region Collection
 	//-------------------------------------------------------------------------------------
 
 	public void setDataCollection(LDataCollection<T> collection) {

@@ -1,32 +1,30 @@
 package lwt.graphics;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public abstract class LPainter {
 	
-	private Graphics gc;
+	private Graphics2D gc;
 
 	public LPainter() {
 		gc = null;
 	}
 	
-	public LPainter(Graphics gc) {
+	public LPainter(Graphics2D gc) {
 		this.gc = gc;
 	}
 	
 	public LPainter(LTexture target) {
-		this.gc = target.convert().getGraphics();
+		this.gc = (Graphics2D) target.convert().getGraphics();
 	}
 	
-	public void setGC(Graphics gc) {
+	public void setGC(Graphics2D gc) {
 		this.gc = gc;
 	}
 
 	//////////////////////////////////////////////////
-	// {{ Draw
+	//region Draw
 	
 	public void drawRect(int x, int y, int w, int h) {
 		gc.drawRect(x, y, w, h);
@@ -50,18 +48,19 @@ public abstract class LPainter {
 	}
 	
 	private void drawImage(Image img, int x0, int y0, int w0, int h0, int x, int y, float sx, float sy) {
-		gc.drawImage(img, x0, y0, 
-				w0, h0, 
-				x, y, 
-				Math.round(w0 * sx), 
-				Math.round(h0 * sy), null);
+		gc.drawImage(img, x, y,
+				x + Math.round(w0 * sx),
+				y + Math.round(h0 * sy),
+				x0, y0, x0 + w0, y0 + h0, null);
 	}
 	
 	private void drawImage(Image img, int x, int y, float sx, float sy) {
 		int w = img.getWidth(null);
 		int h = img.getHeight(null);
-		gc.drawImage(img, 0, 0, w, h, x, y, 
-				Math.round(w * sx), Math.round(h * sy), null);
+		gc.drawImage(img, x, y,
+				x + Math.round(w * sx),
+				y + Math.round(h * sy),
+				0, 0, w, h, null);
 	}
 	
 	private void drawImage(Image img, int x, int y) {
@@ -124,7 +123,7 @@ public abstract class LPainter {
 		gc.dispose();
 	}
 	
-	// }}
+	//endregion
 	
 	public abstract void paint();
 

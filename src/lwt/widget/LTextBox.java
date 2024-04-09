@@ -7,32 +7,24 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
-import javax.swing.JComponent;
-import javax.swing.JTextArea;
+import javax.swing.*;
 
 import lwt.container.LContainer;
 
 public class LTextBox extends LControlWidget<String> {
-	private static final long serialVersionUID = 1L;
 	
 	private JTextArea text;
-	
+
+	//////////////////////////////////////////////////
+	//region Constructors
+
 	public LTextBox(LContainer parent) {
 		this(parent, false);
-	}
-	
-	public LTextBox(LContainer parent, int cols, int rows) {
-		this(parent, false, cols, rows);
-	}
-	
-	public LTextBox(LContainer parent, boolean readOnly, int cols, int rows) {
-		this(parent, readOnly);
-		setSpread(cols, rows);
 	}
 
 	public LTextBox(LContainer parent, boolean readOnly) {
 		super(parent, readOnly ? 1 : 0);
-		setExpand(true, false);
+		getCellData().setExpand(true, false);
 		text.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {
@@ -59,23 +51,32 @@ public class LTextBox extends LControlWidget<String> {
 			}
 		});
 	}
-	
+
+
 	@Override
 	protected void createContent(int flags) {
 		setFillLayout(true);
 		text = new JTextArea();
 		text.setEditable(flags == 0);
 		text.setLineWrap(true);
-		add(text);
+		text.setWrapStyleWord(true);
+		JScrollPane pane = new JScrollPane(text);
+		//pane.add(text);
+		add(pane);
 	}
-	
+
+	//endregion
+
+	//////////////////////////////////////////////////
+	//region Value
+
 	public void updateCurrentText() {
 		if (!text.getText().equals(currentValue)) {
 			newModifyAction(currentValue, text.getText());
 			currentValue = text.getText();
 		}
 	}
-	
+
 	@Override
 	public void setValue(Object value) {
 		if (value != null) {
@@ -89,7 +90,12 @@ public class LTextBox extends LControlWidget<String> {
 			currentValue = null;
 		}
 	}
-	
+
+	//endregion
+
+	//////////////////////////////////////////////////
+	//region LControlWidget
+
 	@Override
 	protected JComponent getControl() {
 		return text;
@@ -109,5 +115,7 @@ public class LTextBox extends LControlWidget<String> {
 	public boolean canDecode(String str) {
 		return true;
 	}
+
+	//endregion
 	
 }

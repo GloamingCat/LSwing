@@ -2,25 +2,27 @@ package lwt.widget;
 
 import java.lang.reflect.Type;
 
+import lbase.LFlags;
 import lwt.container.LContainer;
 import lwt.container.LImage;
-import lwt.dialog.LImageShell;
-import lwt.dialog.LObjectShell;
+import lwt.dialog.LImageWindow;
+import lwt.dialog.LObjectWindow;
 import lwt.dialog.LWindow;
-import lwt.dialog.LShellFactory;
+import lwt.dialog.LWindowFactory;
 
 public class LImageButton extends LObjectButton<String> {
-	private static final long serialVersionUID = 1L;
-	
+
 	protected LImage image;
 	protected String folder = "";
 
 	public LImageButton(LContainer parent, boolean optional) {
 		super(parent);
-		setShellFactory(new LShellFactory<String>() {
+		setShellFactory(new LWindowFactory<>() {
 			@Override
-			public LObjectShell<String> createShell(LWindow parent) {
-				return new LImageShell(parent, optional, folder);
+			public LObjectWindow<String> createWindow(LWindow parent) {
+				LImageWindow w = new LImageWindow(parent, optional ? LFlags.OPTIONAL : 0);
+				w.setRootPath(folder);
+				return w;
 			}
 		});
 	}
@@ -42,7 +44,7 @@ public class LImageButton extends LObjectButton<String> {
 				if (s.isEmpty()) {
 					image.setImage((String) null);
 				} else {
-					image.setImage(s);
+					image.setImage(folder + s);
 				}
 			}
 			currentValue = s;

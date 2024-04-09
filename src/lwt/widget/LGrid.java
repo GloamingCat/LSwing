@@ -1,7 +1,6 @@
 package lwt.widget;
 
-import java.awt.Component;
-import java.awt.LayoutManager;
+import java.awt.*;
 
 import lwt.LFlags;
 import lwt.container.LContainer;
@@ -24,7 +23,6 @@ import lwt.graphics.LColor;
 import lwt.graphics.LPainter;
 
 public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
-	private static final long serialVersionUID = 1L;
 
 	protected LActionStack actionStack;
 	protected int selectedIndex = -1;
@@ -41,11 +39,6 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 	private LayoutManager layout;
 	private LayoutManager emptyLayout;
 	
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
 	public LGrid(LContainer parent) {
 		super(parent);
 	}
@@ -61,6 +54,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 		} else {
 			setGridLayout(columns);
 		}
+		setEqualCells(true, true);
 		layout = getLayout();
 	}
 
@@ -111,7 +105,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 	public void setList(LDataList<T> list) {
 		clear();
 		if (list != null) {
-			if (list.size() > 0) {
+			if (!list.isEmpty()) {
 				setLayout(layout);
 				int i = 0;
 				for(T data : list) {
@@ -128,8 +122,8 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 	
 	private LImage addLabel(int i, T data, boolean placeholder) {
 		LImage label = new LImage(this);
-		label.setMinimumWidth(cellWidth);
-		label.setMinimumHeight(cellHeight);
+		label.getCellData().setMinimumSize(cellWidth, 0);
+		label.setMinimumSize(new Dimension(0, cellHeight));
 		LPopupMenu menu = new LPopupMenu(label);
 		menu.putClientProperty("label", label);
 		if (placeholder) {
@@ -146,17 +140,14 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 					}
 				}
 			});
-			label.addMouseListener(new LMouseListener() {
-				@Override
-				public void onMouseChange(LMouseEvent e0) {
-					if (e0.button == LFlags.LEFT && e0.type == LFlags.PRESS) {
-						int i = indexOf(label);
-						select(data, i);
-						LSelectionEvent e = new LSelectionEvent(new LPath(i), data, i);
-						notifySelectionListeners(e);
-					}
-				}
-			});
+			label.addMouseListener(e0 -> {
+                if (e0.button == LFlags.LEFT && e0.type == LFlags.PRESS) {
+                    int i1 = indexOf(label);
+                    select(data, i1);
+                    LSelectionEvent e = new LSelectionEvent(new LPath(i1), data, i1);
+                    notifySelectionListeners(e);
+                }
+            });
 			if (!isEditable())
 				return label;
 			setEditEnabled(menu, editEnabled);

@@ -9,19 +9,16 @@ import lbase.action.LState;
 import lwt.editor.LEditor;
 
 public class LView extends LPanel implements lbase.gui.LView {
-	private static final long serialVersionUID = 1L;
 	
 	protected LView parent;
 	protected LMenuInterface menuInterface;
-	boolean doubleBuffered = false;
+	boolean doubleBuffered;
 	
 	protected ArrayList<LView> children = new ArrayList<>();
 	protected ArrayList<LEditor> subEditors = new ArrayList<>();
 	
 	/**
 	 * No layout.
-	 * @param parent
-	 * @param doubleBuffered
 	 */
 	public LView(LContainer parent, boolean doubleBuffered) {
 		super(parent.getContentComposite());
@@ -70,7 +67,7 @@ public class LView extends LPanel implements lbase.gui.LView {
 		try {
 			onChildVisible();
 		} catch(Exception e) {
-			System.out.println(this.getClass());
+			System.err.println(this.getClass());
 			throw e;
 		}
 		if (doubleBuffered)
@@ -85,12 +82,7 @@ public class LView extends LPanel implements lbase.gui.LView {
 	
 	public LState getState() {
 		final ArrayList<LState> states = getChildrenStates();
-		return new LState() {
-			@Override
-			public void reset() {
-				resetStates(states);
-			}
-		};
+		return () -> resetStates(states);
 	}
 	
 	protected ArrayList<LState> getChildrenStates() {

@@ -4,17 +4,16 @@ import lbase.LVocab;
 import lwt.widget.LLabel;
 import lwt.widget.LText;
 
-public class LStringShell extends LObjectShell<String> {
+public class LStringWindow extends LObjectWindow<String> {
 	
 	private LText txtName;
 
-	public LStringShell(LWindow parent, String title) {
+	public LStringWindow(LWindow parent, String title) {
 		super(parent, title);
 		content.setGridLayout(2);
 		new LLabel(content, LVocab.instance.TEXT);
 		txtName = new LText(content);
-		txtName.setExpand(true, false);
-		pack();
+		txtName.getCellData().setExpand(true, false);
 	}
 	
 	public void open(String initial) {

@@ -2,13 +2,10 @@ package lwt.container;
 
 import javax.swing.JComponent;
 import javax.swing.JTabbedPane;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import lwt.LMenuInterface;
 
 public class LViewFolder extends LView {
-	private static final long serialVersionUID = 1L;
 	
 	protected JTabbedPane tabFolder;
 	protected int currentTab = 0;
@@ -22,16 +19,13 @@ public class LViewFolder extends LView {
 		setFillLayout(true);
 		tabFolder = new JTabbedPane();
 		add(tabFolder);
-		tabFolder.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				int i = tabFolder.getSelectedIndex();
-				if (children != null && currentTab != i && i >= 0 && i < children.size()) {
-					currentTab = i;
-					children.get(i).onVisible();
-				}
-			}
-		});
+		tabFolder.addChangeListener(e -> {
+            int i = tabFolder.getSelectedIndex();
+            if (children != null && currentTab != i && i >= 0 && i < children.size()) {
+                currentTab = i;
+                children.get(i).onVisible();
+            }
+        });
 	}
 	
 	public void addTab(String name, LView child) {

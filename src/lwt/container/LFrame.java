@@ -4,9 +4,7 @@ import javax.swing.JComponent;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
-public class LFrame extends LPanel implements LContainer {
-
-	private static final long serialVersionUID = 1L;
+public class LFrame extends LPanel {
 
 	/**
 	 * Internal, no layout.
@@ -16,17 +14,23 @@ public class LFrame extends LPanel implements LContainer {
 	}
 	
 	/** No layout.
-	 * @param parent
 	 */
 	public LFrame(LContainer parent, String title) {
 		this(parent.getContentComposite());
 		setBorder(new TitledBorder(new EmptyBorder(5, 5, 5, 5), title));
 	}
-	
+
+	//////////////////////////////////////////////////
+	//region Frame
+
 	public void setTitle(String text) {
 		TitledBorder border = (TitledBorder) getBorder();
 		border.setTitle(text);
 		setBorder(border);
+	}
+
+	public void setHoverText(String text) {
+		setToolTipText(text);
 	}
 	
 	@Override
@@ -34,7 +38,8 @@ public class LFrame extends LPanel implements LContainer {
 		TitledBorder border = (TitledBorder) getBorder();
 		border.setBorder(new EmptyBorder(v, h, v, h));
 		setBorder(border);
-		doLayout();
 	}
+
+	//endregion
 	
 }

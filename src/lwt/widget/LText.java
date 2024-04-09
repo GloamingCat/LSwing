@@ -10,6 +10,8 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 public class LText extends LControlWidget<String> {
 	private static final long serialVersionUID = 1L;
 	
@@ -33,8 +35,22 @@ public class LText extends LControlWidget<String> {
 	
 	public LText(LContainer parent, int columns, boolean readOnly) {
 		super(parent, readOnly ? 1 : 0);
-		setSpread(columns, 1);
-		setExpand(true, false);
+		getCellData().setSpread(columns, 1);
+		getCellData().setExpand(true, false);
+		text.getDocument().addDocumentListener(new DocumentListener() {
+			@Override
+			public void removeUpdate(DocumentEvent e) {
+				updateCurrentText();
+			}
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				updateCurrentText();
+			}
+			@Override
+			public void changedUpdate(DocumentEvent e) {
+				updateCurrentText();
+			}
+		});
 		text.addFocusListener(new FocusAdapter() {
 			@Override
 			public void focusLost(FocusEvent e) {

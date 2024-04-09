@@ -1,7 +1,6 @@
 package lwt.container;
 
-import java.awt.Graphics;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -9,12 +8,11 @@ import lwt.graphics.LPainter;
 import lwt.graphics.LTexture;
 
 public class LCanvas extends LView {
-	private static final long serialVersionUID = 1L;
 	
-	protected Graphics currentEvent;
+	protected Graphics2D currentEvent;
 	protected ArrayList<LPainter> painters;
 	
-	protected Graphics bufferGC;
+	protected Graphics2D bufferGC;
 	protected BufferedImage buffer;
 
 	/**
@@ -23,7 +21,7 @@ public class LCanvas extends LView {
 	 */
 	public LCanvas(LContainer parent) {
 		super(parent, false);
-		painters = new ArrayList<LPainter>();
+		painters = new ArrayList<>();
 	}
 	
 	public void addPainter(LPainter painter) {
@@ -36,15 +34,20 @@ public class LCanvas extends LView {
 	
 	@Override
 	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		callPainters((Graphics2D) g);
+	}
+
+	protected void callPainters(Graphics2D g) {
 		currentEvent = g;
 		for (LPainter p : painters) {
-			p.setGC(g);
+			p.setGC(currentEvent);
 			p.paint();
 		}
 	}
 
 	//////////////////////////////////////////////////
-	// {{ Draw
+	//region Draw
 	
 	public void fillRect() {
 		if (bufferGC == null) {
@@ -55,10 +58,10 @@ public class LCanvas extends LView {
 		}
 	}
 	
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ Buffer
+	//region Buffer
 	
 	public void setBuffer(LTexture image) {
 		buffer = image.convert();
@@ -68,7 +71,7 @@ public class LCanvas extends LView {
 		int w = buffer.getWidth();
 		int h = buffer.getHeight();
 		currentEvent.drawImage(buffer, 0, 0, w, h,
-				x, y, Math.round(w * sx), Math.round(h * sy), null);
+				x, y, x + Math.round(w * sx), y + Math.round(h * sy), null);
 	}
 	
 	public void drawBuffer(int x, int y) {
@@ -82,7 +85,7 @@ public class LCanvas extends LView {
 	
 	public void pushBuffer(int w, int h) {
 		buffer = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
-		bufferGC = buffer.getGraphics();
+		bufferGC = (Graphics2D) buffer.getGraphics();
 	}
 	
 	public void popBuffer() {
@@ -107,9 +110,9 @@ public class LCanvas extends LView {
 	public void dispose() {
 		super.dispose();
 		disposeBuffer();
-	};
+	}
 	
-	// }}
+	//endregion
 	
 	public void redraw() {
 		super.repaint();

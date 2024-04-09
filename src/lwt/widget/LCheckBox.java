@@ -10,22 +10,17 @@ import javax.swing.JComponent;
 import lwt.container.LContainer;
 
 public class LCheckBox extends LControlWidget<Boolean> {
-	private static final long serialVersionUID = 1L;
 
 	private JCheckBox button;
-	
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
+
 	public LCheckBox(LContainer parent) {
-		this(parent, 1);
+		super(parent);
 	}
 	
-	public LCheckBox(LContainer parent, int columns) {
-		super(parent);
-		setSpread(columns, 1);
+	@Override
+	protected void createContent(int flags) {
+		button = new JCheckBox();
+		add(button);
 		button.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -35,12 +30,6 @@ public class LCheckBox extends LControlWidget<Boolean> {
 				currentValue = button.isSelected();
 			}
 		});
-	}
-	
-	@Override
-	protected void createContent(int flags) {
-		button = new JCheckBox();
-		add(button);
 	}
 
 	public void setValue(Object obj) {

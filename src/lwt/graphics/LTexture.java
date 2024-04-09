@@ -1,5 +1,7 @@
 package lwt.graphics;
 
+import lbase.data.LPoint;
+
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -21,7 +23,7 @@ public class LTexture {
 	
 	public static Class<?> rootClass;
 	
-	private BufferedImage image;
+	private final BufferedImage image;
 	
 	public LTexture(String file) {
 		image = getBufferedImage(file);
@@ -63,7 +65,7 @@ public class LTexture {
 	}
 	
 	//////////////////////////////////////////////////
-	// {{ String Image
+	//region String Image
 
 	public LTexture(String s, int w, int h, LColor background, boolean borders) {
 		BufferedImage image = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -89,7 +91,7 @@ public class LTexture {
 		this(s, w, h, background, false);
 	}
 
-	// }}
+	//endregion
 	
 	public BufferedImage convert() {
 		return image;
@@ -99,7 +101,7 @@ public class LTexture {
 		image.flush();
 	}
 	
-	public LPoint getSize() {
+	public lbase.data.LPoint getSize() {
 		if (image == null)
 			return null;
 		return new LPoint(image.getWidth(), image.getHeight());
@@ -110,7 +112,10 @@ public class LTexture {
 			return null;
 		return new LRect(0, 0, image.getWidth(), image.getHeight());
 	}
-	
+
+	//////////////////////////////////////////////////
+	//region Serialization
+
 	public ByteBuffer toBuffer() {
 		int n = image.getWidth() * image.getHeight();
 		ByteBuffer buffer = ByteBuffer.allocateDirect(n * 4);
@@ -127,10 +132,19 @@ public class LTexture {
 		return buffer;
 	}
 
-	// }}
+	public void storePNG(String fileName) {
+		File outputfile = new File(fileName);
+        try {
+            ImageIO.write(image, "png", outputfile);
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+	//endregion
 
 	//////////////////////////////////////////////////
-	// {{ Color Transform
+	//region Color Transform
 
 	public void colorTransform(
 			float r, float g, float b,
@@ -148,10 +162,10 @@ public class LTexture {
 	
 	public void correctTransparency() {}
 
-	// }}
+	//endregion
 	
 	//////////////////////////////////////////////////
-	// {{ ImageData
+	//region ImageData
 
 	public static void correctTransparency(BufferedImage data) {}
 	
@@ -167,15 +181,12 @@ public class LTexture {
 	}
 	
 	/** Applies color transformation on color matrix.
-	 * @param src
 	 * @param _r [0, 1]
 	 * @param _g [0, 1]
 	 * @param _b [0, 1]
-	 * @param _a [0, 1]
 	 * @param _h [0, 360]
 	 * @param _s [0, 1]
 	 * @param _v [0, 1]
-	 * @return
 	 */
 	public static void colorTransform(BufferedImage image, 
 			float _r, float _g, float _b,
@@ -200,6 +211,7 @@ public class LTexture {
 				g = (byte) _g * ((pixel & 0x0000ff00) >> 8);
 				b = (byte) _b * (pixel & 0x000000ff);
 				pixel = (a << 24) | (r << 16) | (g << 8) | b;
+				image.setRGB(x, y, pixel);
 			}
 		}
 	}

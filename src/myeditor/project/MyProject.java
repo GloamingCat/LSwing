@@ -1,5 +1,6 @@
 package myeditor.project;
 
+import java.io.File;
 import java.util.Scanner;
 
 import lbase.data.LDataList;
@@ -18,7 +19,7 @@ public class MyProject extends LDefaultSerializer {
 	public LDataTree<MyContent> contentTree; 
 	public LDataList<String> subContentTypes;
 	
-	private String folder;
+	private final String folder;
 	
 	public MyProject(String path) {
 		super(path);
@@ -47,7 +48,7 @@ public class MyProject extends LDefaultSerializer {
 				for (int k = 0; k < l; k++) {
 					data = new MyContent(k, j);
 					data.name = "item " + i + " " + j + " " + k;
-					new LDataTree<MyContent>(data, subnode);
+					new LDataTree<>(data, subnode);
 				}
 			}
 		}
@@ -62,7 +63,7 @@ public class MyProject extends LDefaultSerializer {
 	}
 
 	public String imagePath() {
-		return folder + "images/";
+		return folder + "images" + File.separator;
 	}
 
 	@Override
@@ -74,36 +75,37 @@ public class MyProject extends LDefaultSerializer {
 	}
 	
 	protected byte[] serialize() {
-		String content = subContentTypes.size() + ","
-				+ contentList.size() + ","
-				+ contentGrid.size() + "\n";
+		StringBuilder content = new StringBuilder(subContentTypes.size() + ","
+                + contentList.size() + ","
+                + contentGrid.size() + "\n");
 		for (String t : subContentTypes)
-			content += t + "\n";
+			content.append(t).append("\n");
 		for (MyContent c : contentList)
-			content += c.encode() + "\n";
+			content.append(c.encode()).append("\n");
 		for (MyContent c : contentGrid)
-			content += c.encode() + "\n";
-		content += contentTree.encode((e) -> e == null ? "null" : e.encode());
-		return content.getBytes();
+			content.append(c.encode()).append("\n");
+		content.append(contentTree.encode((e) -> e == null ? "null" : e.encode()));
+		return content.toString().getBytes();
 	}
 	
 	protected void deserialize(byte[] bytes) {
 		Scanner scanner = new Scanner(new String(bytes));
 		String[] sizes = scanner.nextLine().split(",");
-		subContentTypes = new LDataList<String>();
+		subContentTypes = new LDataList<>();
 		for (int i = Integer.parseInt(sizes[0]); i > 0; i--) {
 			subContentTypes.add(scanner.nextLine());
 		}
-		contentList = new LDataList<MyContent>();
+		contentList = new LDataList<>();
 		for (int i = Integer.parseInt(sizes[1]); i > 0; i--) {
 			contentList.add(MyContent.decode(scanner.nextLine()));
 		}
-		contentGrid = new LDataList<MyContent>();
+		contentGrid = new LDataList<>();
 		for (int i = Integer.parseInt(sizes[2]); i > 0; i--) {
 			contentGrid.add(MyContent.decode(scanner.nextLine()));
 		}
 		scanner.useDelimiter("\\A");
-		contentTree = LDataTree.decode(scanner.next(), (s) -> MyContent.decode(s));
+		contentTree = LDataTree.decode(scanner.next(), MyContent::decode);
+		scanner.close();
 	}
 	
 }
