@@ -1,7 +1,7 @@
 package myeditor;
 
-import lbase.serialization.LSerializer;
-import lwt.LApplicationWindow;
+import lui.base.serialization.LSerializer;
+import lui.LApplicationWindow;
 import myeditor.gui.MyConfigEditor;
 import myeditor.gui.MyContentGridEditor;
 import myeditor.gui.MyContentListEditor;

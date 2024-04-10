@@ -3,8 +3,8 @@ package gson.editor;
 import java.lang.reflect.Type;
 
 import gson.GGlobals;
-import lwt.container.LContainer;
-import lwt.editor.LDefaultTreeEditor;
+import lui.container.LContainer;
+import lui.editor.LDefaultTreeEditor;
 
 public abstract class GDefaultTreeEditor<T> extends LDefaultTreeEditor<T> {
 	private static final long serialVersionUID = 1L;

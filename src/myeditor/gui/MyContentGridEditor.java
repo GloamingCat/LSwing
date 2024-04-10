@@ -1,10 +1,10 @@
 package myeditor.gui;
 
-import lbase.data.LDataList;
-import lwt.container.LContainer;
-import lwt.container.LFlexPanel;
-import lwt.container.LView;
-import lwt.editor.LDefaultGridEditor;
+import lui.base.data.LDataList;
+import lui.container.LContainer;
+import lui.container.LFlexPanel;
+import lui.container.LView;
+import lui.editor.LDefaultGridEditor;
 import myeditor.data.MyContent;
 import myeditor.project.MyProject;
 

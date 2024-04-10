@@ -5,8 +5,8 @@ import java.lang.reflect.Type;
 import com.google.gson.JsonParseException;
 
 import gson.GGlobals;
-import lwt.container.LContainer;
-import lwt.editor.LObjectEditor;
+import lui.container.LContainer;
+import lui.editor.LObjectEditor;
 
 public abstract class GDefaultObjectEditor<T> extends LObjectEditor<T> {
 	private static final long serialVersionUID = 1L;

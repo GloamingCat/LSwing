@@ -1,7 +1,7 @@
 package myeditor.data;
 
-import lwt.datainterface.LGraphical;
-import lwt.graphics.LTexture;
+import lui.datainterface.LGraphical;
+import lui.graphics.LTexture;
 import myeditor.project.MyProject;
 
 public class MyContent implements LGraphical {

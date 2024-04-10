@@ -1,10 +1,10 @@
 package myeditor.gui;
 
-import lwt.container.LContainer;
-import lwt.editor.LObjectEditor;
-import lwt.widget.LCombo;
-import lwt.widget.LLabel;
-import lwt.widget.LTextBox;
+import lui.container.LContainer;
+import lui.editor.LObjectEditor;
+import lui.widget.LCombo;
+import lui.widget.LLabel;
+import lui.widget.LTextBox;
 import myeditor.MyVocab;
 import myeditor.data.MySubContent;
 import myeditor.project.MyProject;

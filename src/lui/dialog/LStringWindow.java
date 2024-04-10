@@ -1,0 +1,33 @@
+package lui.dialog;
+
+import lui.base.LVocab;
+import lui.widget.LLabel;
+import lui.widget.LText;
+
+public class LStringWindow extends LObjectWindow<String> {
+	
+	private LText txtName;
+
+	public LStringWindow(LWindow parent, String title) {
+		super(parent, title);
+		content.setGridLayout(2);
+		new LLabel(content, LVocab.instance.TEXT);
+		txtName = new LText(content);
+		txtName.getCellData().setExpand(true, false);
+	}
+	
+	public void open(String initial) {
+		super.open(initial);
+		txtName.setValue(initial);
+	}
+
+	@Override
+	protected String createResult(String initial) {
+		if (txtName.getValue().equals(initial)) {
+			return null;
+		} else {
+			return txtName.getValue();
+		}
+	}
+
+}

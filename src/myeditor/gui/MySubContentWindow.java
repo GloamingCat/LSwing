@@ -1,7 +1,7 @@
 package myeditor.gui;
 
-import lwt.dialog.LObjectWindow;
-import lwt.dialog.LWindow;
+import lui.dialog.LObjectWindow;
+import lui.dialog.LWindow;
 import myeditor.data.MySubContent;
 
 public class MySubContentWindow extends LObjectWindow<MySubContent> {

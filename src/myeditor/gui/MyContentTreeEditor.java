@@ -1,16 +1,16 @@
 package myeditor.gui;
 
-import lbase.data.LDataTree;
-import lbase.data.LPath;
-import lbase.event.LEditEvent;
-import lbase.event.listener.LCollectionListener;
-import lwt.container.LContainer;
-import lwt.container.LFlexPanel;
-import lwt.container.LView;
-import lwt.dialog.LObjectWindow;
-import lwt.dialog.LWindow;
-import lwt.dialog.LWindowFactory;
-import lwt.editor.LTreeEditor;
+import lui.base.data.LDataTree;
+import lui.base.data.LPath;
+import lui.base.event.LEditEvent;
+import lui.base.event.listener.LCollectionListener;
+import lui.container.LContainer;
+import lui.container.LFlexPanel;
+import lui.container.LView;
+import lui.dialog.LObjectWindow;
+import lui.dialog.LWindow;
+import lui.dialog.LWindowFactory;
+import lui.editor.LTreeEditor;
 import myeditor.data.MyContent;
 import myeditor.data.MySubContent;
 import myeditor.project.MyProject;

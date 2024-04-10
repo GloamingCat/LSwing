@@ -1,14 +1,14 @@
 package myeditor.gui;
 
-import lbase.LFlags;
-import lwt.container.LContainer;
-import lwt.container.LFrame;
-import lwt.container.LImage;
-import lwt.editor.LObjectEditor;
-import lwt.widget.LImageButton;
-import lwt.widget.LLabel;
-import lwt.widget.LSpinner;
-import lwt.widget.LText;
+import lui.base.LFlags;
+import lui.container.LContainer;
+import lui.container.LFrame;
+import lui.container.LImage;
+import lui.editor.LObjectEditor;
+import lui.widget.LImageButton;
+import lui.widget.LLabel;
+import lui.widget.LSpinner;
+import lui.widget.LText;
 import myeditor.MyVocab;
 import myeditor.data.MyContent;
 import myeditor.project.MyProject;

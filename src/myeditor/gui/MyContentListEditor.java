@@ -1,10 +1,10 @@
 package myeditor.gui;
 
-import lwt.container.LContainer;
-import lwt.container.LFlexPanel;
-import lwt.container.LView;
-import lbase.data.LDataList;
-import lwt.editor.LDefaultListEditor;
+import lui.container.LContainer;
+import lui.container.LFlexPanel;
+import lui.container.LView;
+import lui.base.data.LDataList;
+import lui.editor.LDefaultListEditor;
 import myeditor.data.MyContent;
 import myeditor.project.MyProject;
 

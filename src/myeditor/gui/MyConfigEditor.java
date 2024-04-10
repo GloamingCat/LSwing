@@ -1,9 +1,9 @@
 package myeditor.gui;
 
-import lwt.container.LContainer;
-import lwt.container.LViewFolder;
-import lbase.data.LDataList;
-import lwt.editor.LDefaultListEditor;
+import lui.container.LContainer;
+import lui.container.LViewFolder;
+import lui.base.data.LDataList;
+import lui.editor.LDefaultListEditor;
 import myeditor.MyVocab;
 import myeditor.project.MyProject;
 
