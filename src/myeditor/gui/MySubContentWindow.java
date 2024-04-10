@@ -1,10 +1,10 @@
 package myeditor.gui;
 
-import lui.dialog.LObjectWindow;
+import lui.dialog.LObjectDialog;
 import lui.dialog.LWindow;
 import myeditor.data.MySubContent;
 
-public class MySubContentWindow extends LObjectWindow<MySubContent> {
+public class MySubContentWindow extends LObjectDialog<MySubContent> {
 
     private final MySubContentEditor editor;
     public MySubContentWindow(LWindow parent) {

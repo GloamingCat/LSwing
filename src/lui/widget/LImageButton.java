@@ -5,10 +5,9 @@ import java.lang.reflect.Type;
 import lui.base.LFlags;
 import lui.container.LContainer;
 import lui.container.LImage;
-import lui.dialog.LImageWindow;
-import lui.dialog.LObjectWindow;
-import lui.dialog.LWindow;
-import lui.dialog.LWindowFactory;
+import lui.dialog.*;
+import lui.dialog.LImageDialog;
+import lui.dialog.LObjectDialog;
 
 public class LImageButton extends LObjectButton<String> {
 
@@ -19,8 +18,8 @@ public class LImageButton extends LObjectButton<String> {
 		super(parent);
 		setShellFactory(new LWindowFactory<>() {
 			@Override
-			public LObjectWindow<String> createWindow(LWindow parent) {
-				LImageWindow w = new LImageWindow(parent, optional ? LFlags.OPTIONAL : 0);
+			public LObjectDialog<String> createWindow(LWindow parent) {
+				LImageDialog w = new LImageDialog(parent, optional ? LFlags.OPTIONAL : 0);
 				w.setRootPath(folder);
 				return w;
 			}

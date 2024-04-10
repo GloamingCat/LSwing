@@ -13,7 +13,7 @@ import lui.container.LFlexPanel;
 import lui.container.LScrollPanel;
 import lui.widget.LFileSelector;
 
-public class LImageWindow extends LObjectWindow<String> {
+public class LImageDialog extends LObjectDialog<String> {
 
 	protected LFileSelector selFile;
 	protected LImage imgQuad;
@@ -25,7 +25,7 @@ public class LImageWindow extends LObjectWindow<String> {
 	 * @wbp.eval.method.parameter optional true
 	 * @wbp.eval.method.parameter rootPath ""
 	 */
-	public LImageWindow(LWindow parent, int style) {
+	public LImageDialog(LWindow parent, int style) {
 		super(parent, style, LVocab.instance.IMAGESHELL);
 	}
 

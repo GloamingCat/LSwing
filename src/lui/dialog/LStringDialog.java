@@ -4,11 +4,11 @@ import lui.base.LVocab;
 import lui.widget.LLabel;
 import lui.widget.LText;
 
-public class LStringWindow extends LObjectWindow<String> {
+public class LStringDialog extends LObjectDialog<String> {
 	
 	private LText txtName;
 
-	public LStringWindow(LWindow parent, String title) {
+	public LStringDialog(LWindow parent, String title) {
 		super(parent, title);
 		content.setGridLayout(2);
 		new LLabel(content, LVocab.instance.TEXT);

@@ -7,7 +7,7 @@ import lui.base.event.listener.LCollectionListener;
 import lui.container.LContainer;
 import lui.container.LFlexPanel;
 import lui.container.LView;
-import lui.dialog.LObjectWindow;
+import lui.dialog.LObjectDialog;
 import lui.dialog.LWindow;
 import lui.dialog.LWindowFactory;
 import lui.editor.LTreeEditor;
@@ -35,7 +35,7 @@ public class MyContentTreeEditor extends LView {
 		treeEditor.getCollectionWidget().setPasteEnabled(true);
 		treeEditor.setShellFactory(new LWindowFactory<>() {
 			@Override
-			public LObjectWindow<MySubContent> createWindow(LWindow parent) {
+			public LObjectDialog<MySubContent> createWindow(LWindow parent) {
 				return new MySubContentWindow(parent);
 			}
 		});

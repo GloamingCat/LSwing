@@ -6,13 +6,13 @@ import lui.widget.LButton;
 import lui.base.LFlags;
 import lui.base.LVocab;
 
-public abstract class LObjectWindow<T> extends LWindow {
+public abstract class LObjectDialog<T> extends LWindow {
 
 	protected LPanel content;
 	protected T result = null;
 	protected T initial = null;
 
-	public LObjectWindow(LWindow parent, int style) {
+	public LObjectDialog(LWindow parent, int style) {
 		super(parent);
 		setGridLayout(1);
 		setMargins(5, 5);
@@ -22,12 +22,12 @@ public abstract class LObjectWindow<T> extends LWindow {
 		createContent(style);
 	}
 
-	public LObjectWindow(LWindow parent, int style, String title) {
+	public LObjectDialog(LWindow parent, int style, String title) {
 		this(parent, style);
 		setTitle(title);
 	}
 
-	public LObjectWindow(LWindow parent, String title) {
+	public LObjectDialog(LWindow parent, String title) {
 		this(parent, 0, title);
 	}
 
