@@ -13,7 +13,6 @@ import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 public class LText extends LControlWidget<String> {
-	private static final long serialVersionUID = 1L;
 	
 	protected JTextField text;
 
@@ -40,11 +39,11 @@ public class LText extends LControlWidget<String> {
 		text.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				updateCurrentText();
+				//updateCurrentText();
 			}
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				updateCurrentText();
+				//updateCurrentText();
 			}
 			@Override
 			public void changedUpdate(DocumentEvent e) {
@@ -86,24 +85,27 @@ public class LText extends LControlWidget<String> {
 		add(text);
 	}
 	
-	public void updateCurrentText() {
-		if (!text.getText().equals(currentValue)) {
-			newModifyAction(currentValue, text.getText());
-			currentValue = text.getText();
+	private void updateCurrentText() {
+		String newText = text.getText();
+		if (currentValue != null && !newText.equals(currentValue)) {
+			newModifyAction(currentValue, newText);
+			currentValue = newText;
 		}
 	}
 	
 	@Override
 	public void setValue(Object value) {
+		if (text.getText().equals(value))
+			return;
 		if (value != null) {
 			String s = (String) value;
+			currentValue = s;
 			text.setEnabled(true);
 			text.setText(s);
-			currentValue = s;
 		} else {
+			currentValue = null;
 			text.setEnabled(false);
 			text.setText("");
-			currentValue = null;
 		}
 	}
 	
