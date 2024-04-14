@@ -62,10 +62,8 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 		if (folder != null) {
 			System.out.println(folder);
 		}
-		project = loadDefault(folder);
-		if (project != null) {
-			setTitle(getApplicationName() + " - " + folder);
-		}
+		loadDefault(folder);
+		refreshLayout();
 	}
 
 	protected void createMenu() {
@@ -172,11 +170,12 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 	}
 
 	@Override
-	public void onLoadSuccess(LSerializer project) {
+	public void onLoadSuccess(LSerializer project, String path) {
 		this.project = project;
 		menuView.setEnabled(true);
 		if (defaultView != null)
 			setCurrentView(defaultView);
+		setTitle(getApplicationName() + " - " + path);
 	}
 	
 	@Override

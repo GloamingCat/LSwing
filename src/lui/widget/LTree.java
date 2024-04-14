@@ -18,10 +18,10 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
 public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
-	private static final long serialVersionUID = 1L;
 	
 	protected LPopupMenu menu;
 	protected boolean includeID = false;
@@ -30,12 +30,7 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	public LTree(LContainer parent) {
 		this(parent, false);
 	}
-	
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
+
 	public LTree(LContainer parent, boolean check) {
 		super(parent, check);
 		LPopupMenu menu = new LPopupMenu(tree);

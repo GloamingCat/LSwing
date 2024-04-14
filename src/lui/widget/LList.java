@@ -8,19 +8,13 @@ import javax.swing.DropMode;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public abstract class LList<T, ST> extends LTree<T, ST> {
-	private static final long serialVersionUID = 1L;
 	
 	protected boolean includeID = false;
 	
 	public LList(LContainer parent) {
 		this(parent, false);
 	}
-	
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
+
 	public LList(LContainer parent, boolean check) {
 		super(parent, check);
 	}
@@ -54,9 +48,6 @@ public abstract class LList<T, ST> extends LTree<T, ST> {
 	}
 	
 	@Override
-	public void refreshObject(DefaultMutableTreeNode item, T data) {
-
-	}
 	public void refreshObject(LPath path) {
 		DefaultMutableTreeNode item = toTreeItem(path);
 		if (item != null) {

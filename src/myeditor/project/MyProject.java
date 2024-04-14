@@ -38,17 +38,17 @@ public class MyProject extends LDefaultSerializer {
 	private LDataTree<MyContent> defaultContentTree(int n, int m, int l) {
 		LDataTree<MyContent> root = new LDataTree<>();
 		for (int i = 0; i < n; i++) {
-			MyContent data = new MyContent(i, i);
+			MyContent data = new MyContent(i*10, i);
 			data.name = "item " + i;
 			LDataTree<MyContent> node = new LDataTree<>(data, root);
 			for (int j = 0; j < m; j++) {
-				data = new MyContent(j, i);
+				data = new MyContent(j*10, i);
 				data.name = "item " + i + " " + j;
-				LDataTree<MyContent> subnode = new LDataTree<>(data, node);
+				LDataTree<MyContent> subNode = new LDataTree<>(data, node);
 				for (int k = 0; k < l; k++) {
-					data = new MyContent(k, j);
+					data = new MyContent(k*10, j);
 					data.name = "item " + i + " " + j + " " + k;
-					new LDataTree<>(data, subnode);
+					new LDataTree<>(data, subNode);
 				}
 			}
 		}

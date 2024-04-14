@@ -19,18 +19,11 @@ import lui.widget.LTree;
 
 /**
  * Holds common functionalities for LTreeEditor and LListEditor.
- *
  */
 public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST> {
-	private static final long serialVersionUID = 1L;
 	
 	protected ArrayList<LEditor> contentEditors = new ArrayList<>();
-	
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
+
 	public LAbstractTreeEditor(LContainer parent) {
 		super(parent);
 		setFillLayout(true);
@@ -69,14 +62,11 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	}
 	
 	public void addChild(LObjectEditor<?> editor) {
-		getCollectionWidget().addSelectionListener(new LSelectionListener() {
-			@Override
-			public void onSelect(LSelectionEvent event) {
-				LPath path = getCollectionWidget().getSelectedPath();
-				T obj = getCollectionWidget().toObject(path);
-				editor.setObject(obj, path);
-			}
-		});
+		getCollectionWidget().addSelectionListener(event -> {
+            LPath path = getCollectionWidget().getSelectedPath();
+            T obj = getCollectionWidget().toObject(path);
+            editor.setObject(obj, path);
+        });
 		editor.collectionEditor = this;
 		contentEditors.add(editor);
 		addChild((LView) editor);
@@ -102,12 +92,12 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	@Override
 	public String encodeData(LDataCollection<T> collection) {
 		LDataTree<T> node = (LDataTree<T>) collection;
-		return node.encode((e) -> encodeElement(e));
+		return node.encode(this::encodeElement);
 	}
 	
 	@Override
 	public LDataTree<T> decodeData(String str) {
-		return LDataTree.decode(str, (s) -> decodeElement(s));
+		return LDataTree.decode(str, this::decodeElement);
 	}
 	
 	public void setObject(Object obj) {
@@ -135,7 +125,7 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 		if (getObject() != null) {
 			LDataTree<T> tree = getObject().toTree();
 			getCollectionWidget().setItems(tree);
-			if (tree.children.size() > 0) {
+			if (!tree.children.isEmpty()) {
 				getCollectionWidget().forceSelection(new LPath(0));
 			} else {
 				getCollectionWidget().forceSelection(null);

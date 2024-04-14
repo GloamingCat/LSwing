@@ -40,9 +40,8 @@ public class MyContent implements LGraphical {
 	}
 	
 	public boolean equals(Object other) {
-		if (other instanceof MyContent) {
-			MyContent o = (MyContent) other;
-			return o.name.equals(name) && o.subContent.equals(subContent)
+		if (other instanceof MyContent o) {
+            return o.name.equals(name) && o.subContent.equals(subContent)
 					&& o.img.equals(img) && o.value == value;
 		} else {
 			return false;
