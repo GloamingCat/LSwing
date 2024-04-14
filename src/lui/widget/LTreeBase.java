@@ -1,20 +1,18 @@
 package lui.widget;
 
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseEvent;
+import java.util.EventObject;
 import java.util.Stack;
 
 import javax.swing.*;
 import javax.swing.JTree.DropLocation;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.tree.TreeSelectionModel;
+import javax.swing.tree.*;
 
-import lui.base.data.LDataList;
 import lui.container.LContainer;
 import lui.base.action.collection.LMoveAction;
 import lui.base.data.LDataCollection;
@@ -35,10 +33,12 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		public T data;
 		public int id;
 		public String name;
+		public boolean checked;
 		public ItemData(String name, int id, T data) {
 			this.data = data;
 			this.id = id;
 			this.name = name;
+			this.checked = false;
 		}
 		public String toString() {
 			return name;
@@ -67,27 +67,32 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		tree.setRootVisible(false);
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-		final Icon icon = null;
-		renderer.setLeafIcon(icon);
-		renderer.setIcon(icon);
-		renderer.setOpenIcon(icon);
-		renderer.setClosedIcon(icon);
-		renderer.setDisabledIcon(icon);
-		tree.setCellRenderer(renderer);
+		if (flags == 1) {
+			tree.setCellRenderer(new CheckBoxNodeRenderer());
+			tree.setCellEditor(new CheckBoxNodeEditor());
+			tree.setEditable(true);
+		} else {
+			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
+			final Icon icon = renderer.getLeafIcon();
+			renderer.setIcon(icon);
+			renderer.setOpenIcon(icon);
+			renderer.setClosedIcon(icon);
+			renderer.setDisabledIcon(icon);
+			tree.setCellRenderer(renderer);
+		}
 		setDragEnabled(true);
 		tree.setTransferHandler(new TreeTransferHandler());
 		tree.setDropMode(DropMode.ON_OR_INSERT);
 		add(tree);
 		tree.addTreeSelectionListener(e -> {
-            if (tree.getSelectionCount() > 0) {
-                DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-                LPath path = toPath(item);
-                LSelectionEvent event = new LSelectionEvent(path, toObject(path), getID(item));
-                //event.check = e.detail == SWT.CHECK;
-                notifySelectionListeners(event);
-            }
-        });
+			if (tree.getSelectionCount() > 0) {
+				DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				LPath path = toPath(item);
+				LSelectionEvent event = new LSelectionEvent(path, toObject(path), getID(item));
+				event.check = false;
+				notifySelectionListeners(event);
+			}
+		});
 	}
 	
 	@Override
@@ -512,25 +517,97 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		}
 	}
 
+	public boolean isChecked(LPath path) {
+		DefaultMutableTreeNode node = toTreeItem(path);
+		ItemData data = (ItemData) node.getUserObject();
+		return data.checked;
+	}
+
 	//endregion
 
 	///////////////////////////////////////////////////
 	//region Check
 
-	public void setChecked(LPath path, boolean value) {
-		//DefaultMutableTreeNode item = toTreeItem(path);
-		//item.setChecked(value);
+
+	class CheckBoxPanel extends JPanel {
+		public JCheckBox checkBox;
+		public JLabel label;
+		public CheckBoxPanel() {
+			super();
+			setLayout(new BorderLayout());
+			checkBox = new JCheckBox();
+			label = new JLabel();
+			add(checkBox, BorderLayout.WEST);
+			add(label, BorderLayout.CENTER);
+		}
 	}
 
-	public void checkAll(boolean value) {
-		//for (DefaultMutableTreeNode item : tree.getItems())
-		//	checkAll(item, value);
+	class CheckBoxNodeRenderer implements TreeCellRenderer  {
+		private final CheckBoxPanel checkBoxPanel = new CheckBoxPanel();
+		Color selectionBorderColor, selectionForeground, selectionBackground, textForeground, textBackground;
+
+		public CheckBoxNodeRenderer() {
+			Font fontValue;
+			fontValue = UIManager.getFont("Tree.font");
+			if (fontValue != null) {
+				checkBoxPanel.checkBox.setFont(fontValue);
+				checkBoxPanel.label.setFont(fontValue);
+			}
+			Boolean booleanValue = (Boolean) UIManager.get("Tree.drawsFocusBorderAroundIcon");
+			checkBoxPanel.checkBox.setFocusPainted((booleanValue != null) && booleanValue);
+			selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
+			selectionForeground = UIManager.getColor("Tree.selectionForeground");
+			selectionBackground = UIManager.getColor("Tree.selectionBackground");
+			textForeground = UIManager.getColor("Tree.textForeground");
+			textBackground = UIManager.getColor("Tree.textBackground");
+		}
+
+		public CheckBoxPanel getTreeCellRendererComponent(JTree tree, Object value,
+				boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+			checkBoxPanel.setEnabled(tree.isEnabled());
+			if (selected) {
+				checkBoxPanel.setForeground(selectionForeground);
+				checkBoxPanel.setBackground(selectionBackground);
+			} else {
+				checkBoxPanel.setForeground(textForeground);
+				checkBoxPanel.setBackground(textBackground);
+			}
+			if (value instanceof DefaultMutableTreeNode node) {
+				ItemData data = (ItemData) node.getUserObject();
+				checkBoxPanel.checkBox.setSelected(data.checked);
+				checkBoxPanel.label.setText(data.toString());
+			}
+			return checkBoxPanel;
+		}
 	}
 
-	protected void checkAll(DefaultMutableTreeNode item, boolean value) {
-		//item.setChecked(value);
-		//for(DefaultMutableTreeNode child : item.getItems())
-		//	checkAll(child, value);
+	private class CheckBoxNodeEditor extends AbstractCellEditor implements TreeCellEditor {
+
+		CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
+		ItemData data;
+
+		public boolean isCellEditable(EventObject event) {
+			return true;
+		}
+
+		public Component getTreeCellEditorComponent(JTree tree, Object value,
+						boolean selected, boolean expanded, boolean leaf, int row)  {
+			CheckBoxPanel editor = renderer.getTreeCellRendererComponent(tree, value,
+					true, expanded, leaf, row, true);
+			editor.checkBox.addItemListener(itemEvent -> {
+				if (stopCellEditing())
+					fireEditingStopped();
+			});
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+			data = (ItemData) node.getUserObject();
+			return editor;
+		}
+
+		public Object getCellEditorValue() {
+			data.checked = renderer.checkBoxPanel.checkBox.isSelected();
+			return data;
+		}
+
 	}
 
 	//endregion
