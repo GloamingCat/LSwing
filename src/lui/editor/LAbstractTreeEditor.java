@@ -65,10 +65,13 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	
 	public void addChild(LObjectEditor<?> editor) {
 		getCollectionWidget().addSelectionListener(event -> {
-            LPath path = getCollectionWidget().getSelectedPath();
-			LDataTree<T> node = getCollectionWidget().toNode(path);
-            editor.setObject(node.data);
-			editor.setSelection(path, getCollectionWidget().isChecked(path), node.id);
+			if (event.data == null) {
+				editor.setObject(null);
+				editor.setSelection(null, false, -1);
+			} else {
+				editor.setObject(event.data);
+				editor.setSelection(event.path, getCollectionWidget().isChecked(event.path), event.id);
+			}
         });
 		editor.collectionEditor = this;
 		contentEditors.add(editor);
