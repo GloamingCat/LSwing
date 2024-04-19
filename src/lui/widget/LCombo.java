@@ -33,30 +33,28 @@ public class LCombo extends LControlWidget<Integer> {
 		setFillLayout(true);
 		getCellData().setSpread(columns, 1);
 		getCellData().setExpand(true, false);
-		combo.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				int current = currentValue == null ? (optional ? -1 : 0) : currentValue;
-				if (getSelectionIndex() == current)
-					return;
-				newModifyAction(currentValue, getSelectionIndex());
-				currentValue = getSelectionIndex();
-			}
-		});
+		combo.addActionListener(arg0 -> {
+            int current = currentValue == null ? (optional ? -1 : 0) : currentValue;
+            if (getSelectionIndex() == current)
+                return;
+            newModifyAction(currentValue, getSelectionIndex());
+            currentValue = getSelectionIndex();
+        });
 	}
 	
 	@Override
 	protected void createContent(int flags) {
-		combo = new JComboBox<String>();
+		combo = new JComboBox<>();
 		combo.setEditable(flags == 0);
 		add(combo);
 	}
 
 	public int getSelectionIndex() {
+		int i = combo.getSelectedItem() == null ? 0 : combo.getSelectedIndex();
 		if (optional) {
-			return combo.getSelectedIndex() - 1;
+			return i - 1;
 		} else {
-			return combo.getSelectedIndex();
+			return i;
 		}
 	}
 	

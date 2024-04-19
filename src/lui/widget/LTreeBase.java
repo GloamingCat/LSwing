@@ -132,7 +132,6 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	protected void dragFinish(DefaultMutableTreeNode dragNode, boolean moved) {
 		if (!moved) {
 			DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
-			System.out.println("reinstert");
 			model.insertNodeInto(dragNode, dragParent, dragIndex);
 		}
 	}
@@ -170,7 +169,6 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		protected Transferable createTransferable(JComponent c) {
 			JTree tree = (JTree) c;
 			DefaultMutableTreeNode movedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-			System.out.println("drag start");
 			drag(movedNode);
 			return new NodeTransferable(movedNode);
 		}
@@ -187,7 +185,6 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
             try {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) support.getTransferable().getTransferData(flavors[0]);
 				tree.expandPath(dl.getPath());
-				System.out.println("can drop:" + canDrop(node, dl.getPath()));
 				return canDrop(node, dl.getPath());
             } catch (UnsupportedFlavorException | IOException e) {
                 e.printStackTrace();
@@ -197,7 +194,6 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
 		@Override
 		public boolean importData(TransferHandler.TransferSupport support) {
-			System.out.println("import data");
 			if (!canImport(support)) {
 				return false;
 			}
