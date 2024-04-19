@@ -1,9 +1,11 @@
 package myeditor.gui;
 
 import lui.base.LFlags;
+import lui.base.LPrefs;
 import lui.container.LContainer;
 import lui.container.LFrame;
 import lui.container.LImage;
+import lui.container.LPanel;
 import lui.editor.LObjectEditor;
 import lui.widget.LImageButton;
 import lui.widget.LLabel;
@@ -42,14 +44,17 @@ public class MyContentEditor extends LObjectEditor<MyContent> {
 		addControl(spnValue, "value");
 
 		LLabel lblImage = new LLabel(this, MyVocab.instance.IMAGE);
-		btnImage = new LImageButton(this, true);
-		btnImage.getCellData().setAlignment(LFlags.LEFT);
+		LPanel imageSelector = new LPanel(this);
+		imageSelector.setGridLayout(2);
+		imageSelector.getCellData().setExpand(true, true);
+
+		LImage image = new LImage(imageSelector);
+		image.getCellData().setExpand(true, true);
+
+		btnImage = new LImageButton(imageSelector, true);
+		btnImage.getCellData().setAlignment(LFlags.LEFT | LFlags.TOP);
 		btnImage.addMenu(lblImage);
 		addControl(btnImage, "img");
-
-		new LLabel(this, 1, 1);
-		LImage image = new LImage(this);
-		image.getCellData().setExpand(true, true);
 		btnImage.setImage(image);
 
 		LFrame frame = new LFrame(this, MyVocab.instance.SUBCONTENT);

@@ -1,10 +1,12 @@
 package lui.widget;
 
+import lui.base.LPrefs;
 import lui.container.*;
 
 import javax.swing.JComponent;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
+import java.awt.*;
 
 public class LSpinner extends LControlWidget<Integer> {
 
@@ -80,6 +82,11 @@ public class LSpinner extends LControlWidget<Integer> {
 	@Override
 	public Integer decodeData(String str) {
 		return Integer.parseInt(str);
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		return getMinimumSize();
 	}
 
 }

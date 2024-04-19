@@ -1,12 +1,13 @@
 package lui.widget;
 
+import lui.base.LPrefs;
 import lui.base.gui.LMenu;
 import lui.container.LContainer;
 import lui.container.LPanel;
 import lui.editor.LPopupMenu;
 import lui.LMenuInterface;
 
-import java.awt.GridLayout;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -113,5 +114,12 @@ public abstract class LWidget extends LPanel implements LPastable {
 	}
 	
 	//endregion
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension size = super.getMinimumSize();
+		size.height = Math.max(LPrefs.WIDGETHEIGHT, size.height);
+		return size;
+	}
 
 }

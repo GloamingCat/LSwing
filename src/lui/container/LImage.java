@@ -1,11 +1,10 @@
 package lui.container;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 import lui.LFlags;
+import lui.base.LPrefs;
 import lui.graphics.LColor;
 import lui.base.data.LPoint;
 import lui.graphics.LRect;
@@ -178,5 +177,12 @@ public class LImage extends LCanvas {
 	public void setRotation(float _r) {
 		rz = _r;
 	}
-	
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension size = super.getMinimumSize();
+		size.height = LPrefs.WIDGETHEIGHT;
+		return size;
+	}
+
 }

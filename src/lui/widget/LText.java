@@ -1,6 +1,9 @@
 package lui.widget;
 
+import lui.base.LPrefs;
 import lui.container.*;
+
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -128,5 +131,10 @@ public class LText extends LControlWidget<String> {
 	public boolean canDecode(String str) {
 		return true;
 	}
-	
+
+	@Override
+	public Dimension getPreferredSize() {
+		return getMinimumSize();
+	}
+
 }

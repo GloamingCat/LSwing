@@ -1,5 +1,6 @@
 package lui.widget;
 
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -7,6 +8,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
+import lui.base.data.LPoint;
 import lui.container.LContainer;
 import lui.graphics.LTexture;
 
@@ -77,6 +79,17 @@ public class LToggleButton extends LControlWidget<Boolean> {
 	@Override
 	public Boolean decodeData(String str) {
 		return Boolean.parseBoolean(str);
+	}
+
+	@Override
+	public Dimension getMinimumSize() {
+		LPoint p = imgFalse.getSize();
+		return new Dimension(p.x, p.y);
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		return getMinimumSize();
 	}
 
 }

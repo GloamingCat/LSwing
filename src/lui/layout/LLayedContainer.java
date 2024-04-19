@@ -1,5 +1,7 @@
 package lui.layout;
 
+import lui.base.LPrefs;
+import lui.base.data.LPoint;
 import lui.container.LContainer;
 
 import javax.swing.border.Border;
@@ -20,15 +22,18 @@ public interface LLayedContainer extends LContainer {
 		getContentComposite().setBorder(border);
 	}
 
+	default Border getBorder() {
+		return getContentComposite().getBorder();
+	}
+
 	/** Fill layout (spacing = 0).
 	 */
 	default void setFillLayout(boolean horizontal) {
 		GridLayout gl = horizontal ?
 				new GridLayout(0, 1) : new GridLayout(1, 0);
-		gl.setHgap(0);
-		gl.setVgap(0);
+		gl.setHgap(getHorizontalSpacing());
+		gl.setVgap(getVerticalSpacing());
 		setLayout(gl);
-		setBorder(new EmptyBorder(0, 0, 0, 0));
 	}
 
 	/** Grid layout (spacing = 5).
@@ -36,8 +41,9 @@ public interface LLayedContainer extends LContainer {
 	default void setGridLayout(int columns) {
 		GridBagLayout gbl = new GridBagLayout();
 		gbl.columnWeights = new double[columns];
-		setData("hSpacing", 5);
-		setData("vSpacing", 5);
+		setMargins(-LPrefs.GRIDSPACING, -LPrefs.GRIDSPACING);
+		setData("hSpacing", LPrefs.GRIDSPACING);
+		setData("vSpacing", LPrefs.GRIDSPACING);
 		setLayout(gbl);
 	}
 
@@ -46,8 +52,8 @@ public interface LLayedContainer extends LContainer {
 	default void setSequentialLayout(boolean horizontal) {
 		if (horizontal) {
 			FlowLayout fl = new FlowLayout();
-			fl.setHgap(5);
-			fl.setVgap(5);
+			fl.setHgap(LPrefs.GRIDSPACING);
+			fl.setVgap(LPrefs.GRIDSPACING);
 			setLayout(fl);
 		} else {
 			setGridLayout(1);
@@ -55,12 +61,18 @@ public interface LLayedContainer extends LContainer {
 	}
 
 	default void setMargins(int h, int v) {
+		v -= getVerticalSpacing();
+		h -= getHorizontalSpacing();
 		setBorder(new EmptyBorder(v, h, v, h));
 	}
 
+	default LPoint getMargins() {
+		EmptyBorder border = (EmptyBorder) getBorder();
+		return new LPoint(border.getBorderInsets().left + getHorizontalSpacing(),
+						  border.getBorderInsets().top + getVerticalSpacing());
+	}
+
 	default void setSpacing(int h, int v) {
-		setData("hSpacing", h);
-		setData("vSpacing", v);
 		LayoutManager l = getLayout();
 		if (l instanceof GridLayout gl) {
             gl.setHgap(h);
@@ -68,7 +80,14 @@ public interface LLayedContainer extends LContainer {
 		} else if (l instanceof FlowLayout fl) {
             fl.setHgap(h);
 			fl.setVgap(v);
+		} else {
+			LPoint margins = getMargins();
+			margins.x += getHorizontalSpacing() - h;
+			margins.y += getVerticalSpacing() - v;
+			setMargins(margins.x, margins.y);
 		}
+		setData("hSpacing", h);
+		setData("vSpacing", v);
 	}
 
 	default void setSpacing(int s) {

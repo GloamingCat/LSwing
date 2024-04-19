@@ -1,7 +1,10 @@
 package lui.widget;
 
+import java.awt.*;
 import java.lang.reflect.Type;
 import javax.swing.JComponent;
+
+import lui.base.LPrefs;
 import lui.base.LVocab;
 import lui.container.LContainer;
 import lui.dialog.LWindowFactory;
@@ -76,5 +79,10 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 	}
 	
 	protected abstract Type getType();
+
+	@Override
+	public Dimension getPreferredSize() {
+		return getMinimumSize();
+	}
 
 }

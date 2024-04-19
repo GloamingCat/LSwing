@@ -1,5 +1,6 @@
 package lui.widget;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
+import lui.base.LPrefs;
 import lui.container.LContainer;
 
 public class LCombo extends LControlWidget<Integer> {
@@ -124,6 +126,18 @@ public class LCombo extends LControlWidget<Integer> {
 	@Override
 	public Integer decodeData(String str) {
 		return Integer.parseInt(str);
+	}
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension size = super.getMinimumSize();
+		size.height = LPrefs.WIDGETHEIGHT;
+		return size;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		return getMinimumSize();
 	}
 
 }

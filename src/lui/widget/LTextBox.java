@@ -1,5 +1,6 @@
 package lui.widget;
 
+import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
@@ -9,6 +10,7 @@ import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
 
+import lui.base.LPrefs;
 import lui.container.LContainer;
 
 public class LTextBox extends LControlWidget<String> {
@@ -117,5 +119,5 @@ public class LTextBox extends LControlWidget<String> {
 	}
 
 	//endregion
-	
+
 }

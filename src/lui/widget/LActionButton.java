@@ -2,10 +2,13 @@ package lui.widget;
 
 import javax.swing.JComponent;
 
+import lui.base.LPrefs;
 import lui.container.LContainer;
 import lui.base.event.LSelectionEvent;
 import lui.base.event.listener.LSelectionListener;
 import lui.base.gui.LMenu;
+
+import java.awt.*;
 
 public class LActionButton extends LControlWidget<Object> {
 	private static final long serialVersionUID = 1L;
@@ -47,6 +50,11 @@ public class LActionButton extends LControlWidget<Object> {
 	@Override
 	public Object decodeData(String str) {
 		return null;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		return getMinimumSize();
 	}
 
 }

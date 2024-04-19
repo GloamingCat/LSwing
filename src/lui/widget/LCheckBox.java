@@ -1,12 +1,13 @@
 package lui.widget;
 
-import java.awt.Color;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 
+import lui.base.LPrefs;
 import lui.container.LContainer;
 
 public class LCheckBox extends LControlWidget<Boolean> {
@@ -70,4 +71,8 @@ public class LCheckBox extends LControlWidget<Boolean> {
 		return Boolean.parseBoolean(str);
 	}
 
+	@Override
+	public Dimension getPreferredSize() {
+		return getMinimumSize();
+	}
 }

@@ -3,6 +3,7 @@ package lui.widget;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 
+import lui.base.LPrefs;
 import lui.base.gui.LMenu;
 import lui.LFlags;
 import lui.container.LContainer;
@@ -25,6 +26,7 @@ public class LLabel extends LWidget {
 		super(parent);
 		setMargins(0, 3);
 		getCellData().setExpand((style & LFlags.EXPAND) > 0, false);
+		getCellData().setMinimumSize(LPrefs.LABELWIDTH, LPrefs.WIDGETHEIGHT);
 		int alignment = 0;
 		if ((style & LFlags.TOP) > 0) {
 			alignment = LFlags.LEFT | LFlags.TOP;
