@@ -28,6 +28,17 @@ public abstract class LSelectableCollection<T, ST> extends LCollection<T, ST> {
 			listener.onSelect(event);
 		}
 	}
+
+	protected ArrayList<LSelectionListener> checkListeners = new ArrayList<>();
+	public void addCheckListener(LSelectionListener listener) {
+		checkListeners.add(listener);
+	}
+
+	public void notifyCheckListeners(LSelectionEvent event) {
+		for(LSelectionListener listener : checkListeners) {
+			listener.onSelect(event);
+		}
+	}
 	
 	//-------------------------------------------------------------------------------------
 	// Selection

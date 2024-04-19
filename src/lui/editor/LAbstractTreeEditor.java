@@ -14,7 +14,6 @@ import lui.base.event.LInsertEvent;
 import lui.base.event.LMoveEvent;
 import lui.base.event.LSelectionEvent;
 import lui.base.event.listener.LCollectionListener;
-import lui.base.event.listener.LSelectionListener;
 import lui.widget.LTree;
 
 /**
@@ -59,13 +58,17 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 				getCollectionWidget().forceSelection(event.path);
 			}
 		});
+		getCollectionWidget().addCheckListener(e -> {
+			setChecked((T) e.data, e.checked);
+		});
 	}
 	
 	public void addChild(LObjectEditor<?> editor) {
 		getCollectionWidget().addSelectionListener(event -> {
             LPath path = getCollectionWidget().getSelectedPath();
-            T obj = getCollectionWidget().toObject(path);
-            editor.setObject(obj, path);
+			LDataTree<T> node = getCollectionWidget().toNode(path);
+            editor.setObject(node.data);
+			editor.setSelection(path, getCollectionWidget().isChecked(path), node.id);
         });
 		editor.collectionEditor = this;
 		contentEditors.add(editor);
@@ -77,6 +80,7 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	protected abstract T duplicateElement(T original);
 	protected abstract String encodeElement(T data);
 	protected abstract T decodeElement(String str);
+	protected abstract void setChecked(T data, boolean checked);
 
 	@Override
 	public LDataTree<T> duplicateData(LDataCollection<T> collection) {

@@ -15,7 +15,11 @@ import myeditor.data.MyContent;
 import myeditor.data.MySubContent;
 import myeditor.project.MyProject;
 
+import java.util.HashMap;
+
 public class MyContentTreeEditor extends LView {
+
+	HashMap<MyContent, Boolean> visibility = new HashMap<>();
 
     public MyContentTreeEditor(LContainer parent) {
 		super(parent, false);
@@ -25,7 +29,7 @@ public class MyContentTreeEditor extends LView {
 
 		LFlexPanel sashForm = new LFlexPanel(this, true);
 
-        LTreeEditor<MyContent, MySubContent> treeEditor = new MyContentTree(sashForm);
+        LTreeEditor<MyContent, MySubContent> treeEditor = new MyContentTree(sashForm, visibility);
 		treeEditor.getCollectionWidget().setInsertNewEnabled(true);
 		treeEditor.getCollectionWidget().setEditEnabled(true);
 		treeEditor.getCollectionWidget().setDuplicateEnabled(true);
@@ -55,8 +59,11 @@ public class MyContentTreeEditor extends LView {
 	}
 
 	private static class MyContentTree extends LTreeEditor<MyContent, MySubContent> {
-		public MyContentTree(LContainer parent) {
-			super(parent);
+
+		private HashMap<MyContent, Boolean> visibility;
+		public MyContentTree(LContainer parent, HashMap<MyContent, Boolean> visibility) {
+			super(parent, true);
+			this.visibility = visibility;
 		}
 		@Override
 		public LDataTree<MyContent> getDataCollection() {
@@ -78,6 +85,7 @@ public class MyContentTreeEditor extends LView {
 		protected MyContent decodeElement(String str) {
 			return MyContent.decode(str);
 		}
+
 		@Override
 		public boolean canDecode(String str) {
 			return MyContent.canDecode(str);
@@ -91,6 +99,15 @@ public class MyContentTreeEditor extends LView {
 		public void setEditableData(LPath path, MySubContent data) {
 			LDataTree<MyContent> node = getDataCollection().getNode(path);
 			node.data.subContent = data;
+		}
+
+		public boolean isChecked(MyContent data) {
+			return visibility.getOrDefault(data, true);
+		}
+
+		@Override
+		protected void setChecked(MyContent data, boolean checked) {
+			visibility.put(data, checked);
 		}
 
 	}

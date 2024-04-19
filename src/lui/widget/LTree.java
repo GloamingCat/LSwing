@@ -18,7 +18,6 @@ import java.awt.event.MouseListener;
 import java.io.IOException;
 
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 
 public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
@@ -75,7 +74,7 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 		DefaultMutableTreeNode item = toTreeItem(parentPath, index);
 		LDataTree<T> node = disposeTreeItem(item);
 		//refreshAll();
-		return new LDeleteEvent<T>(parentPath, index, node);
+		return new LDeleteEvent<>(parentPath, index, node);
 	}
 	
 	public LEditEvent<ST> edit(LPath path) {
@@ -200,7 +199,6 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 			newInsertAction(parentPath, index, newNode);
 		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
 			System.err.println(e.getMessage());
-			return;
 		}
 
 	}

@@ -1,5 +1,6 @@
 package lui.widget;
 
+import lui.base.event.LMoveEvent;
 import lui.container.LContainer;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
@@ -43,7 +44,7 @@ public abstract class LList<T, ST> extends LTree<T, ST> {
 			id = stringID(indexOf(item));
 		}
 		String name = dataToString(node.data);
-		ItemData data = new ItemData(id + name, node.id, node.data);
+		ItemData data = new ItemData(id + name, node.id, node.data, isDataChecked(node.data));
 		item.setUserObject(data);
 	}
 	
@@ -59,6 +60,7 @@ public abstract class LList<T, ST> extends LTree<T, ST> {
 			ItemData itemData = (ItemData) item.getUserObject();
 			itemData.data = toObject(path);
 			itemData.name = id + dataToString(itemData.data);
+			itemData.checked = isDataChecked(itemData.data);
 			item.setUserObject(itemData);
 		}
 	}
@@ -71,13 +73,25 @@ public abstract class LList<T, ST> extends LTree<T, ST> {
 				ItemData data = (LTreeBase<T, ST>.ItemData) node.getUserObject();
 				String name = dataToString(data.data);
 				data.name = stringID(i) + name;
+				data.checked = isDataChecked(data.data);
 			}
 		} else {
 			for (int i = 0; i < root.getChildCount(); i++) {
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(i);
 				ItemData data = (LTreeBase<T, ST>.ItemData) node.getUserObject();
 				data.name = dataToString(data.data);
+				data.checked = isDataChecked(data.data);
 			}
+		}
+	}
+
+	@Override
+	public LMoveEvent<T> drop(DefaultMutableTreeNode target, int targetIndex) {
+		if (targetIndex == -1) {
+			DefaultMutableTreeNode parent = (DefaultMutableTreeNode) target.getParent();
+			return super.drop(parent, parent.getIndex(target) + 1);
+		} else {
+			return super.drop(target, targetIndex);
 		}
 	}
 	

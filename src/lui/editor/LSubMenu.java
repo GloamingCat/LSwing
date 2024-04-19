@@ -32,12 +32,7 @@ public class LSubMenu extends JMenu implements LMenu {
 	}
 	
 	public void addSelectionListener(LSelectionListener listener) {
-		addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				listener.onSelect(new LSelectionEvent(null, null, -1));
-			}
-		});
+		addChangeListener(e -> listener.onSelect(new LSelectionEvent(null, null, -1, false)));
 	}
 	
 	public LSubMenu addSubMenu(String name, String key) {

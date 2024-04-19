@@ -31,7 +31,7 @@ public class LPopupMenu extends JPopupMenu implements LMenu {
 		addPopupMenuListener(new PopupMenuListener() {
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-				listener.onSelect(new LSelectionEvent(null, null, -1));
+				listener.onSelect(new LSelectionEvent(null, null, -1, false));
 			}
 			@Override
 			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}

@@ -33,6 +33,10 @@ public class MyConfigEditor extends LViewFolder {
 			protected String decodeElement(String str) {
 				return str;
 			}
+
+			@Override
+			protected void setChecked(String data, boolean checked) {}
+
 			@Override
 			public boolean canDecode(String str) {
 				return true;

@@ -22,10 +22,8 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 		setListeners();
 		list.setMenuInterface(getMenuInterface());
 	}
-	
-	@SuppressWarnings("serial")
-	protected LList<T, ST> createList(boolean check) { 
-		LListEditor<T, ST> self = this;
+
+	protected LList<T, ST> createList(boolean check) {
 		return new LList<T, ST>(this, check) {
 			@Override
 			public LEditEvent<ST> edit(LPath path) {
@@ -35,7 +33,7 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 			public T toObject(LPath path) {
 				if (path == null || path.index == -1)
 					return null;
-				return self.getDataCollection().get(path.index);
+				return LListEditor.this.getDataCollection().get(path.index);
 			}
 			@Override
 			public LDataTree<T> emptyNode() {
@@ -48,19 +46,23 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 			}
 			@Override
 			public LDataTree<T> toNode(LPath path) {
-				return self.getDataCollection().toTree().getNode(path);
+				return LListEditor.this.getDataCollection().toTree().getNode(path);
 			}
 			@Override
 			protected String encodeNode(LDataTree<T> node) {
-				return self.encodeData(node);
+				return LListEditor.this.encodeData(node);
 			}
 			@Override
 			protected LDataTree<T> decodeNode(String str) {
-				return self.decodeData(str);
+				return LListEditor.this.decodeData(str);
 			}
 			@Override
 			public boolean canDecode(String str) {
 				return true;
+			}
+			@Override
+			public boolean isDataChecked(T data) {
+				return LListEditor.this.isChecked(data);
 			}
 		};
 	}
@@ -72,7 +74,11 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 	public void setIncludeID(boolean value) {
 		list.setIncludeID(value);
 	}
-	
+
+	protected boolean isChecked(T data) {
+		return true;
+	}
+
 	protected abstract LDataList<T> getDataCollection();
 	
 }

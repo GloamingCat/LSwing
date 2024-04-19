@@ -4,13 +4,10 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseEvent;
-import java.util.EventObject;
+import java.io.IOException;
 import java.util.Stack;
 
 import javax.swing.*;
-import javax.swing.JTree.DropLocation;
 import javax.swing.tree.*;
 
 import lui.container.LContainer;
@@ -34,11 +31,11 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		public int id;
 		public String name;
 		public boolean checked;
-		public ItemData(String name, int id, T data) {
+		public ItemData(String name, int id, T data, boolean checked) {
 			this.data = data;
 			this.id = id;
 			this.name = name;
-			this.checked = false;
+			this.checked = checked;
 		}
 		public String toString() {
 			return name;
@@ -47,7 +44,6 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
 	//endregion
 
-		
 	//////////////////////////////////////////////////
 	//region Constructors
 	
@@ -62,7 +58,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	@Override
 	protected void createContent(int flags) {
 		root = new DefaultMutableTreeNode();
-		root.setUserObject(new ItemData("", -1, null));
+		root.setUserObject(new ItemData("", -1, null, false));
 		tree = new JTree(root);
 		tree.setRootVisible(false);
 		tree.getSelectionModel().setSelectionMode(
@@ -88,8 +84,8 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 			if (tree.getSelectionCount() > 0) {
 				DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 				LPath path = toPath(item);
-				LSelectionEvent event = new LSelectionEvent(path, toObject(path), getID(item));
-				event.check = false;
+				ItemData itemData = (ItemData) item.getUserObject();
+				LSelectionEvent event = new LSelectionEvent(path, itemData.data, itemData.id, itemData.checked);
 				notifySelectionListeners(event);
 			}
 		});
@@ -104,33 +100,49 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	
 	//////////////////////////////////////////////////
 	//region Drag
-	
+
+	private LDataTree<T> dragData;
+	private DefaultMutableTreeNode dragParent;
+	private int dragIndex;
+
 	public void setDragEnabled(boolean value) {
 		tree.setDragEnabled(value);
 	}
 	
-	protected boolean canDrop(DropLocation dl, int action) {
-		DefaultMutableTreeNode source = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-		DefaultMutableTreeNode target = (DefaultMutableTreeNode) dl.getPath().getLastPathComponent();
+	protected boolean canDrop(DefaultMutableTreeNode source, TreePath path) {
+		DefaultMutableTreeNode target = (DefaultMutableTreeNode) path.getLastPathComponent();
 		while (target != null) {
-			if (target == source)
+			if (target == source) {
+				new Exception("Source = target?").printStackTrace();
 				return false;
+			}
 			target = (DefaultMutableTreeNode) target.getParent();
 		}
 		return true;
 	}
-	
-	public LMoveEvent<T> drop(DefaultMutableTreeNode sourceItem, DropLocation dl) {
-		DefaultMutableTreeNode targetItem = (DefaultMutableTreeNode) dl.getPath().getLastPathComponent();
-		DefaultMutableTreeNode sourceParent = (DefaultMutableTreeNode) sourceItem.getParent();
-		int sourceIndex = sourceParent.getIndex(sourceItem);
-		LDataTree<T> node = disposeTreeItem(sourceItem);
-		DefaultMutableTreeNode destParent = (DefaultMutableTreeNode) targetItem.getParent();
-		int destIndex = destParent.getIndex(targetItem);
-		LMoveEvent<T> e = reinsert(node, sourceParent, sourceIndex, destParent, destIndex);
-		if (e == null) {
-			return null;
+
+	protected void drag(DefaultMutableTreeNode dragNode) {
+		dragParent = (DefaultMutableTreeNode) dragNode.getParent();
+		dragIndex = dragParent.getIndex(dragNode);
+		dragData = toNode(dragNode);
+		DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
+		model.removeNodeFromParent(dragNode);
+	}
+
+	protected void dragFinish(DefaultMutableTreeNode dragNode, boolean moved) {
+		if (!moved) {
+			DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+			System.out.println("reinstert");
+			model.insertNodeInto(dragNode, dragParent, dragIndex);
 		}
+	}
+	
+	public LMoveEvent<T> drop(DefaultMutableTreeNode targetParent, int targetIndex) {
+		if (targetIndex == -1)
+			targetIndex = targetParent.getChildCount();
+		LMoveEvent<T> e = reinsert(dragData, dragParent, dragIndex, targetParent, targetIndex);
+		if (e == null)
+			return null;
 		if (menuInterface != null) {
 			LMoveAction<T> action = new LMoveAction<>(this, e.sourceParent, e.sourceIndex, e.destParent, e.destIndex);
 			menuInterface.actionStack.newAction(action);
@@ -141,73 +153,79 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
 	class TreeTransferHandler extends TransferHandler {
 
-		DataFlavor nodesFlavor;
-		DataFlavor[] flavors = new DataFlavor[1];
-		DefaultMutableTreeNode[] nodesToRemove;
+		private DataFlavor[] flavors;
 
 		public TreeTransferHandler() {
-			// Create transfer flavor for the tree nodes
 			try {
 				String mimeType = DataFlavor.javaJVMLocalObjectMimeType + ";class=\"" +
-					DefaultMutableTreeNode.class.getName() + "\"";
-				nodesFlavor = new DataFlavor(mimeType);
-				flavors[0] = nodesFlavor;
-			} catch(ClassNotFoundException e) {
+					ItemData.class.getName() + "\"";
+				flavors = new DataFlavor[] { new DataFlavor(mimeType) };
+			} catch (ClassNotFoundException e) {
 				System.out.println("ClassNotFound: " + e.getMessage());
 			}
+		}
+
+		// Drag start
+		@Override
+		protected Transferable createTransferable(JComponent c) {
+			JTree tree = (JTree) c;
+			DefaultMutableTreeNode movedNode = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+			System.out.println("drag start");
+			drag(movedNode);
+			return new NodeTransferable(movedNode);
 		}
 
 		public boolean canImport(TransferHandler.TransferSupport support) {
 			if (!support.isDrop())
 				return false;
 			support.setShowDropLocation(true);
-			if (!support.isDataFlavorSupported(nodesFlavor))
+			if (!support.isDataFlavorSupported(flavors[0]))
 				return false;
 			if (support.getComponent() != tree)
 				return false;
-			// Do not allow a drop on the drag source selections.
 			JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
-			return canDrop(dl, support.getDropAction());
+            try {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) support.getTransferable().getTransferData(flavors[0]);
+				tree.expandPath(dl.getPath());
+				System.out.println("can drop:" + canDrop(node, dl.getPath()));
+				return canDrop(node, dl.getPath());
+            } catch (UnsupportedFlavorException | IOException e) {
+                e.printStackTrace();
+				return false;
+            }
 		}
 
-		// Drag start
 		@Override
-		protected Transferable createTransferable(JComponent c) {
-			JTree tree = (JTree)c;
-			DefaultMutableTreeNode source = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-			return new NodeTransferable(source);
-		}
+		public boolean importData(TransferHandler.TransferSupport support) {
+			System.out.println("import data");
+			if (!canImport(support)) {
+				return false;
+			}
+			try {
+				JTree.DropLocation dl = (JTree.DropLocation) support.getDropLocation();
+				DefaultMutableTreeNode parent = (DefaultMutableTreeNode) dl.getPath().getLastPathComponent();
+				tree.expandPath(new TreePath(parent.getPath()));
+				return drop(parent, dl.getChildIndex()) != null;
+			} catch (Exception e) {
+				e.printStackTrace();
+				return false;
+			}
+        }
 
 		// Drop
 		@Override
-		protected void exportDone(JComponent source, Transferable data, int action) {
-		}
+		protected void exportDone(JComponent source, Transferable transferable, int action) {
+            try {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) transferable.getTransferData(flavors[0]);
+				System.out.println(action);
+				dragFinish(node, action != NONE);
+            } catch (UnsupportedFlavorException | IOException e) {
+                e.printStackTrace();
+            }
+        }
 
 		public int getSourceActions(JComponent c) {
-			return MOVE | LINK;
-		}
-
-		// Drag finish
-		@Override
-		public boolean importData(TransferHandler.TransferSupport support) {
-			if(!canImport(support)) {
-				return false;
-			}
-			// Extract transfer data.
-			DefaultMutableTreeNode node = null;
-			try {
-				Transferable t = support.getTransferable();
-				node = (DefaultMutableTreeNode)t.getTransferData(nodesFlavor);
-			} catch(UnsupportedFlavorException ufe) {
-				System.out.println("UnsupportedFlavor: " + ufe.getMessage());
-			} catch(java.io.IOException ioe) {
-				System.out.println("I/O error: " + ioe.getMessage());
-			}
-			// Get drop location info.
-			JTree.DropLocation dl =
-					(JTree.DropLocation) support.getDropLocation();
-			drop(node, dl);
-			return true;
+			return COPY;
 		}
 
 		public String toString() {
@@ -232,7 +250,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 			}
 
 			public boolean isDataFlavorSupported(DataFlavor flavor) {
-				return nodesFlavor.equals(flavor);
+				return flavor.equals(flavors[0]);
 			}
 		}
 	}
@@ -265,9 +283,9 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
 	protected DefaultMutableTreeNode createTreeItem(DefaultMutableTreeNode parent, final int index, LDataTree<T> node) {
 		DefaultMutableTreeNode newItem = new DefaultMutableTreeNode();
-		ItemData data = new ItemData(dataToString(node.data), node.id, node.data);
+		ItemData data = new ItemData(dataToString(node.data), node.id, node.data, isDataChecked(node.data));
 		newItem.setUserObject(data);
-		((DefaultTreeModel) tree.getModel()).insertNodeInto(newItem, parent, index >= 0 ? index : parent.getChildCount());
+		((DefaultTreeModel) tree.getModel()).insertNodeInto(newItem, parent, index >= 0 ? index : parent.getChildCount());;
 		int childIndex = 0;
 		for (LDataTree<T> child : node.children) {
 			createTreeItem(newItem, childIndex, child);
@@ -290,7 +308,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	public LSelectionEvent select(LPath path) {
 		if (path == null) {
 			tree.clearSelection();
-			return new LSelectionEvent(null, null, -1);
+			return new LSelectionEvent(null, null, -1, false);
 		}
 		DefaultMutableTreeNode item = toTreeItem(path);
 		if (item == null) {
@@ -299,7 +317,8 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		}
 		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 		tree.setSelectionPath(new TreePath(model.getPathToRoot(item)));
-		return new LSelectionEvent(path, toObject(path), getID(item));
+		ItemData data = (ItemData) item.getUserObject();
+		return new LSelectionEvent(path, data.data, data.id, data.checked);
 	}
 
 	public LMoveEvent<T> move(LPath sourceParent, int sourceIndex, LPath destParent, int destIndex) {
@@ -437,13 +456,17 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	}
 
 	public void setItemNode(DefaultMutableTreeNode item, LDataTree<T> node) {
-		item.setUserObject(new ItemData(dataToString(node.data),
-				node.id, node.data));
+		ItemData data = new ItemData(dataToString(node.data), node.id, node.data, isDataChecked(node.data));
+		item.setUserObject(data);
 		((DefaultTreeModel) tree.getModel()).nodeChanged(item);
 	}
 
 	protected String dataToString(T data) {
 		return data.toString();
+	}
+
+	protected boolean isDataChecked(T data) {
+		return true;
 	}
 
 	//endregion
@@ -455,13 +478,13 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		DefaultMutableTreeNode item = toTreeItem(path);
 		if (item == null) {
 			tree.clearSelection();
-			notifySelectionListeners(new LSelectionEvent(null, null, -1));
+			notifySelectionListeners(new LSelectionEvent(null, null, -1, false));
 		} else {
 			DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 			tree.setSelectionPath(new TreePath(model.getPathToRoot(item)));
 			@SuppressWarnings("unchecked")
 			ItemData data = (ItemData) item.getUserObject();
-			notifySelectionListeners(new LSelectionEvent(path, data.data, getID(item)));
+			notifySelectionListeners(new LSelectionEvent(path, data.data, data.id, data.checked));
 		}
 	}
 
@@ -482,6 +505,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 			ItemData itemData = (ItemData) item.getUserObject();
 			itemData.data = data;
 			itemData.name = dataToString(itemData.data);
+			itemData.checked = isDataChecked(itemData.data);
 			item.setUserObject(itemData);
 			((DefaultTreeModel) tree.getModel()).nodeChanged(item);
 		}
@@ -528,8 +552,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	///////////////////////////////////////////////////
 	//region Check
 
-
-	class CheckBoxPanel extends JPanel {
+	private static class CheckBoxPanel extends JPanel {
 		public JCheckBox checkBox;
 		public JLabel label;
 		public CheckBoxPanel() {
@@ -542,7 +565,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		}
 	}
 
-	class CheckBoxNodeRenderer implements TreeCellRenderer  {
+	private class CheckBoxNodeRenderer implements TreeCellRenderer  {
 		private final CheckBoxPanel checkBoxPanel = new CheckBoxPanel();
 		Color selectionBorderColor, selectionForeground, selectionBackground, textForeground, textBackground;
 
@@ -585,26 +608,31 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
 		CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
 		ItemData data;
+		DefaultMutableTreeNode node;
 
-		public boolean isCellEditable(EventObject event) {
-			return true;
+		public CheckBoxNodeEditor() {
+			renderer.checkBoxPanel.checkBox.addItemListener(itemEvent -> {
+				if (data == null || node == null)
+					return;
+				if (data.checked != renderer.checkBoxPanel.checkBox.isSelected()) {
+					data.checked = renderer.checkBoxPanel.checkBox.isSelected();
+					notifyCheckListeners(new LSelectionEvent(toPath(node), data.data, data.id, data.checked));
+				}
+				if (stopCellEditing())
+					fireEditingStopped();
+			});
 		}
 
 		public Component getTreeCellEditorComponent(JTree tree, Object value,
 						boolean selected, boolean expanded, boolean leaf, int row)  {
 			CheckBoxPanel editor = renderer.getTreeCellRendererComponent(tree, value,
 					true, expanded, leaf, row, true);
-			editor.checkBox.addItemListener(itemEvent -> {
-				if (stopCellEditing())
-					fireEditingStopped();
-			});
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+			node = (DefaultMutableTreeNode) value;
 			data = (ItemData) node.getUserObject();
 			return editor;
 		}
 
 		public Object getCellEditorValue() {
-			data.checked = renderer.checkBoxPanel.checkBox.isSelected();
 			return data;
 		}
 

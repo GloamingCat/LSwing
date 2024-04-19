@@ -9,12 +9,8 @@ import myeditor.data.MyContent;
 import myeditor.project.MyProject;
 
 public class MyContentListEditor extends LView {
-	private static final long serialVersionUID = 1L;
 
-	private LDefaultListEditor<MyContent> listEditor;
-	private MyContentEditor contentEditor;
-	
-	/**
+    /**
 	 * Create the composite.
 	 * @wbp.parser.constructor
 	 * @wbp.eval.method.parameter parent new lwt.dialog.LShell()
@@ -26,8 +22,8 @@ public class MyContentListEditor extends LView {
 		createMenuInterface();
 		
 		LFlexPanel sashForm = new LFlexPanel(this, true);
-		
-		listEditor = new MyContentList(sashForm);
+
+        LDefaultListEditor<MyContent> listEditor = new MyContentList(sashForm);
 		listEditor.getCollectionWidget().setInsertNewEnabled(true);
 		listEditor.getCollectionWidget().setEditEnabled(false);
 		listEditor.getCollectionWidget().setDuplicateEnabled(true);
@@ -36,16 +32,15 @@ public class MyContentListEditor extends LView {
 		listEditor.getCollectionWidget().setCopyEnabled(true);
 		listEditor.getCollectionWidget().setPasteEnabled(true);
 		addChild(listEditor);
-		
-		contentEditor = new MyContentEditor(sashForm);
+
+        MyContentEditor contentEditor = new MyContentEditor(sashForm);
 		contentEditor.setMargins(5, 5);
 		listEditor.addChild(contentEditor);
 		
 		sashForm.setWeights(1, 2);
 	}
-	
-	@SuppressWarnings("serial")
-	private class MyContentList extends LDefaultListEditor<MyContent> {
+
+	private static class MyContentList extends LDefaultListEditor<MyContent> {
 		public MyContentList(LContainer parent) {
 			super(parent);
 		}
@@ -73,6 +68,13 @@ public class MyContentListEditor extends LView {
 		public boolean canDecode(String str) {
 			return MyContent.canDecode(str);
 		}
+
+		@Override
+		public boolean isChecked(MyContent data) { return true; }
+
+		@Override
+		protected void setChecked(MyContent data, boolean checked) {}
+
 	}
 	
 }

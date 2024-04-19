@@ -35,6 +35,8 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	public LCollectionEditor<?, ?> collectionEditor;
 	protected T currentObject;
 	protected LPath currentPath;
+	protected boolean checked;
+	protected int id;
 	protected ArrayList<LSelectionListener> selectionListeners = new ArrayList<>();
 	protected ArrayList<LControlListener<T>> modifyListeners = new ArrayList<>();
 	
@@ -149,7 +151,7 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 				}
 			}
 			for(LSelectionListener listener : selectionListeners) {
-				listener.onSelect(new LSelectionEvent(currentPath, obj, -1));
+				listener.onSelect(new LSelectionEvent(currentPath, obj, id, checked));
 			}
 		} catch (Exception e) {
 			System.err.println(this.getClass());
@@ -161,9 +163,10 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		return currentObject;
 	}
 	
-	public void setObject(Object obj, LPath path) {
-		setObject(obj);
+	public void setSelection(LPath path, boolean checked, int id) {
 		currentPath = path;
+		this.checked = checked;
+		this.id = id;
 	}
 	
 	public void saveObjectValues() {

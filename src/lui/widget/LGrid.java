@@ -142,7 +142,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
                 if (e0.button == LFlags.LEFT && e0.type == LFlags.PRESS) {
                     int i1 = indexOf(label);
                     select(data, i1);
-                    LSelectionEvent e = new LSelectionEvent(new LPath(i1), data, i1);
+                    LSelectionEvent e = new LSelectionEvent(new LPath(i1), data, i1, true);
                     notifySelectionListeners(e);
                 }
             });
@@ -305,10 +305,10 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 			@SuppressWarnings("unchecked")
 			T data = (T) l.getData("data");
 			select(data, path.index);
-			return new LSelectionEvent(path, data, path.index);
+			return new LSelectionEvent(path, data, path.index, true);
 		} else {
 			select((T) null, -1);
-			return new LSelectionEvent(path, null, path.index);
+			return new LSelectionEvent(path, null, path.index, true);
 		}
 	}
 	
