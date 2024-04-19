@@ -1,5 +1,6 @@
 package lui.dialog;
 
+import lui.base.LPrefs;
 import lui.container.LPanel;
 import lui.widget.LButton;
 
@@ -15,7 +16,7 @@ public abstract class LObjectDialog<T> extends LWindow {
 	public LObjectDialog(LWindow parent, int style) {
 		super(parent);
 		setGridLayout(1);
-		setMargins(5, 5);
+		setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
 		content = new LPanel(this);
 		content.setGridLayout(1);
 		content.getCellData().setExpand(true, true);

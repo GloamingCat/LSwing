@@ -1,5 +1,6 @@
 package myeditor.gui;
 
+import lui.base.LPrefs;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LEditEvent;
@@ -46,7 +47,7 @@ public class MyContentTreeEditor extends LView {
 		addChild(treeEditor);
 
         MyContentEditor contentEditor = new MyContentEditor(sashForm);
-		contentEditor.setMargins(5, 5);
+		contentEditor.setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
 		treeEditor.addChild(contentEditor);
 		treeEditor.getCollectionWidget().addEditListener(new LCollectionListener<>() {
 			public void onEdit(LEditEvent<MySubContent> event) {

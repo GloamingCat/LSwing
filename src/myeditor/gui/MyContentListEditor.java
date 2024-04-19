@@ -1,5 +1,6 @@
 package myeditor.gui;
 
+import lui.base.LPrefs;
 import lui.container.LContainer;
 import lui.container.LFlexPanel;
 import lui.container.LView;
@@ -34,7 +35,7 @@ public class MyContentListEditor extends LView {
 		addChild(listEditor);
 
         MyContentEditor contentEditor = new MyContentEditor(sashForm);
-		contentEditor.setMargins(5, 5);
+		contentEditor.setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
 		listEditor.addChild(contentEditor);
 		
 		sashForm.setWeights(1, 2);
