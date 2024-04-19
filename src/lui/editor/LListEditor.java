@@ -8,7 +8,6 @@ import lui.base.event.LEditEvent;
 import lui.widget.LList;
 
 public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
-	private static final long serialVersionUID = 1L;
 	
 	protected LList<T, ST> list;
 	
@@ -37,12 +36,12 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 			}
 			@Override
 			public LDataTree<T> emptyNode() {
-				return new LDataTree<T>(createNewElement());
+				return new LDataTree<>(createNewElement());
 			}
 			@Override
 			public LDataTree<T> duplicateNode(LDataTree<T> node) {
 				T data = duplicateElement(node.data);
-				return new LDataTree<T> (data);
+				return new LDataTree<> (data);
 			}
 			@Override
 			public LDataTree<T> toNode(LPath path) {
@@ -70,7 +69,7 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 	public LList<T, ST> getCollectionWidget() {
 		return list;
 	}
-	
+
 	public void setIncludeID(boolean value) {
 		list.setIncludeID(value);
 	}

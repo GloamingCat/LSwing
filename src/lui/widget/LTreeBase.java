@@ -4,7 +4,11 @@ import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.IOException;
+import java.util.EventObject;
 import java.util.Stack;
 
 import javax.swing.*;
@@ -67,6 +71,16 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 			tree.setCellRenderer(new CheckBoxNodeRenderer());
 			tree.setCellEditor(new CheckBoxNodeEditor());
 			tree.setEditable(true);
+			tree.addMouseMotionListener(new MouseAdapter() {
+				@Override
+				public void mouseMoved(MouseEvent e) {
+					int row = tree.getRowForLocation(e.getX(), e.getY());
+					TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+					if (row != -1) {
+						tree.startEditingAtPath(path);
+					}
+				}
+			});
 		} else {
 			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
 			final Icon icon = renderer.getLeafIcon();
@@ -213,7 +227,6 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		protected void exportDone(JComponent source, Transferable transferable, int action) {
             try {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) transferable.getTransferData(flavors[0]);
-				System.out.println(action);
 				dragFinish(node, action != NONE);
             } catch (UnsupportedFlavorException | IOException e) {
                 e.printStackTrace();
@@ -251,27 +264,6 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		}
 	}
  	
-	//endregion
-	
-	//////////////////////////////////////////////////
-	//region Auxiliary
-	
-	protected int indexOf(DefaultMutableTreeNode item) {
-		return item.getParent().getIndex(item);
-	}
-
-	protected boolean isOutOfBounds(DefaultMutableTreeNode parent, int i) {
-		return i >= parent.getChildCount();
-	}
-
-	protected int getID(DefaultMutableTreeNode item) {
-		if (item == null)
-			return -1;
-		@SuppressWarnings("unchecked")
-		ItemData data = (ItemData) item.getUserObject();
-		return data == null ? -1 : data.id;
-	}
-
 	//endregion
 
 	//////////////////////////////////////////////////
@@ -562,16 +554,13 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	}
 
 	private class CheckBoxNodeRenderer implements TreeCellRenderer  {
-		private final CheckBoxPanel checkBoxPanel = new CheckBoxPanel();
 		Color selectionBorderColor, selectionForeground, selectionBackground, textForeground, textBackground;
+		CheckBoxPanel checkBoxPanel = new CheckBoxPanel();
 
 		public CheckBoxNodeRenderer() {
-			Font fontValue;
-			fontValue = UIManager.getFont("Tree.font");
-			if (fontValue != null) {
-				checkBoxPanel.checkBox.setFont(fontValue);
+			Font fontValue = UIManager.getFont("Tree.font");
+			if (fontValue != null)
 				checkBoxPanel.label.setFont(fontValue);
-			}
 			Boolean booleanValue = (Boolean) UIManager.get("Tree.drawsFocusBorderAroundIcon");
 			checkBoxPanel.checkBox.setFocusPainted((booleanValue != null) && booleanValue);
 			selectionBorderColor = UIManager.getColor("Tree.selectionBorderColor");
@@ -602,33 +591,41 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
 	private class CheckBoxNodeEditor extends AbstractCellEditor implements TreeCellEditor {
 
-		CheckBoxNodeRenderer renderer = new CheckBoxNodeRenderer();
+		CheckBoxNodeRenderer renderer;
 		ItemData data;
 		DefaultMutableTreeNode node;
 
 		public CheckBoxNodeEditor() {
+			renderer = new CheckBoxNodeRenderer();
 			renderer.checkBoxPanel.checkBox.addItemListener(itemEvent -> {
 				if (data == null || node == null)
 					return;
-				if (data.checked != renderer.checkBoxPanel.checkBox.isSelected()) {
-					data.checked = renderer.checkBoxPanel.checkBox.isSelected();
-					notifyCheckListeners(new LSelectionEvent(toPath(node), data.data, data.id, data.checked));
-				}
 				if (stopCellEditing())
 					fireEditingStopped();
 			});
 		}
 
+		@Override
+		public boolean shouldSelectCell(EventObject anEvent) {
+			return false;
+		}
+
+		@Override
 		public Component getTreeCellEditorComponent(JTree tree, Object value,
 						boolean selected, boolean expanded, boolean leaf, int row)  {
 			CheckBoxPanel editor = renderer.getTreeCellRendererComponent(tree, value,
-					true, expanded, leaf, row, true);
+					selected, expanded, leaf, row, true);
 			node = (DefaultMutableTreeNode) value;
 			data = (ItemData) node.getUserObject();
 			return editor;
 		}
 
+		@Override
 		public Object getCellEditorValue() {
+			if (data.checked != renderer.checkBoxPanel.checkBox.isSelected()) {
+				data.checked = renderer.checkBoxPanel.checkBox.isSelected();
+				notifyCheckListeners(new LSelectionEvent(toPath(node), data.data, data.id, data.checked));
+			}
 			return data;
 		}
 

@@ -10,8 +10,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public abstract class LList<T, ST> extends LTree<T, ST> {
 	
-	protected boolean includeID = false;
-	
 	public LList(LContainer parent) {
 		this(parent, false);
 	}
@@ -24,11 +22,6 @@ public abstract class LList<T, ST> extends LTree<T, ST> {
 	protected void createContent(int flags) {
 		super.createContent(flags);
 		tree.setDropMode(DropMode.INSERT);
-	}
-	
-	@Override
-	public void setIncludeID(boolean value) {
-		includeID = value;
 	}
 	
 	@Override

@@ -58,10 +58,13 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	protected String stringID(int i) {
 		return String.format("[%03d] ", i);
 	}
+
+	protected int indexOf(DefaultMutableTreeNode item) {
+		return item.getParent().getIndex(item);
+	}
 	
-	//-------------------------------------------------------------------------------------
-	// Modify
-	//-------------------------------------------------------------------------------------
+	//////////////////////////////////////////////////
+	//region Modify
 	
 	public LInsertEvent<T> insert(LPath parentPath, int index, LDataTree<T> node) {
 		DefaultMutableTreeNode parent = toTreeItem(parentPath);
@@ -86,10 +89,11 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	protected abstract LDataTree<T> duplicateNode(LDataTree<T> node);
 	protected abstract String encodeNode(LDataTree<T> node);
 	protected abstract LDataTree<T> decodeNode(String node);
+
+	//endregion
 	
-	//-------------------------------------------------------------------------------------
-	// Modify Menu
-	//-------------------------------------------------------------------------------------
+	//////////////////////////////////////////////////
+	//region Menu Items
 	
 	public void setCopyEnabled(boolean value) {
 		super.setCopyEnabled(menu, value);
@@ -115,10 +119,11 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	public void setDeleteEnabled(boolean value) {
 		super.setDeleteEnabled(menu, value);
 	}
+
+	//endregion
 	
-	//-------------------------------------------------------------------------------------
-	// Menu Handlers
-	//-------------------------------------------------------------------------------------
+	//////////////////////////////////////////////////
+	//region Menu Handlers
 	
 	@Override
 	protected void onEditButton(LMenu menu) {
@@ -202,5 +207,7 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 		}
 
 	}
-	
+
+	//endregion
+
 }

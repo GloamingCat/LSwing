@@ -7,7 +7,6 @@ import lui.base.event.LEditEvent;
 import lui.widget.LTree;
 
 public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
-	private static final long serialVersionUID = 1L;
 	
 	protected LTree<T, ST> tree;
 	
@@ -21,8 +20,7 @@ public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 		setListeners();
 		tree.setMenuInterface(getMenuInterface());
 	}
-	
-	@SuppressWarnings("serial")
+
 	protected LTree<T, ST> createTree(boolean check) {
 		return new LTree<>(this, check) {
 			@Override
