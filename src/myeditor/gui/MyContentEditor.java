@@ -35,6 +35,8 @@ public class MyContentEditor extends LObjectEditor<MyContent> {
 
 		LLabel lblValue = new LLabel(this, MyVocab.instance.VALUE);
 		LSpinner spnValue = new LSpinner(this);
+		spnValue.setMaximum(1000);
+		spnValue.setMinimum(0);
 		spnValue.getCellData().setExpand(true, false);
 		spnValue.addMenu(lblValue);
 		addControl(spnValue, "value");

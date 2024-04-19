@@ -9,8 +9,9 @@ import javax.swing.SpinnerNumberModel;
 public class LSpinner extends LControlWidget<Integer> {
 
 	private JSpinner spinner;
-	private int minimum = 0;
-	private int maximum = 100;
+	private Integer minimum = 0;
+	private Integer maximum = 100;
+	private final Integer step = 1;
 
 	/**
 	 * @wbp.parser.constructor
@@ -31,37 +32,39 @@ public class LSpinner extends LControlWidget<Integer> {
 	protected void createContent(int flags) {
 		spinner = new JSpinner();
 		add(spinner);
-		spinner.setModel(new SpinnerNumberModel(minimum, minimum, maximum, 1));
+		spinner.setModel(new SpinnerNumberModel(0, 0, 100, 1));
 		spinner.addChangeListener(e -> {
             if (currentValue != null && spinner.getValue() == currentValue)
                 return;
             newModifyAction(currentValue, (Integer) spinner.getValue());
             currentValue = (Integer) spinner.getValue();
         });
+		spinner.setEnabled(true);
+		spinner.setEditor(new JSpinner.NumberEditor(spinner));
 	}
 	
 	@Override
 	public void setValue(Object obj) {
 		if (obj != null) {
 			Integer i = (Integer) obj;
+			currentValue = i;
 			spinner.setEnabled(true);
 			spinner.setValue(i);
-			currentValue = i;
 		} else {
+			currentValue = null;
 			spinner.setEnabled(false);
 			spinner.setValue(0);
-			currentValue = null;
 		}
 	}
 	
 	public void setMinimum(int i) {
 		minimum = i;
-		spinner.setModel(new SpinnerNumberModel((int) spinner.getValue(), minimum, maximum, 1));
+		spinner.setModel(new SpinnerNumberModel((Integer) spinner.getValue(), minimum, maximum, step));
 	}
 	
 	public void setMaximum(int i) {
 		maximum = i;
-		spinner.setModel(new SpinnerNumberModel((int) spinner.getValue(), minimum, maximum, 1));
+		spinner.setModel(new SpinnerNumberModel((Integer) spinner.getValue(), minimum, maximum, step));
 	}
 	
 	@Override

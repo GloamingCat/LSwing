@@ -72,13 +72,13 @@ public class LCombo extends LControlWidget<Integer> {
 	public void setValue(Object obj) {
 		if (obj != null) {
 			Integer i = (Integer) obj;
+			currentValue = i;
 			combo.setEnabled(true);
 			setSelectionIndex(i);
-			currentValue = i;
 		} else {
+			currentValue = null;
 			combo.setEnabled(false);
 			combo.setSelectedItem(null);
-			currentValue = null;
 		}
 	}
 	

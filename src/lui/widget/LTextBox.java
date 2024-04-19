@@ -81,13 +81,13 @@ public class LTextBox extends LControlWidget<String> {
 	public void setValue(Object value) {
 		if (value != null) {
 			String s = (String) value;
+			currentValue = s;
 			text.setEnabled(true);
 			text.setText(s);
-			currentValue = s;
 		} else {
+			currentValue = null;
 			text.setEnabled(false);
 			text.setText("");
-			currentValue = null;
 		}
 	}
 

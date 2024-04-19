@@ -35,13 +35,13 @@ public class LCheckBox extends LControlWidget<Boolean> {
 	public void setValue(Object obj) {
 		if (obj != null) {
 			Boolean i = (Boolean) obj;
+			currentValue = i;
 			button.setEnabled(true);
 			button.setSelected(i);
-			currentValue = i;
 		} else {
+			currentValue = null;
 			button.setEnabled(false);
 			button.setSelected(false);
-			currentValue = null;
 		}
 	}
 	
