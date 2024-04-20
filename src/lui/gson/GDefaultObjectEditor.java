@@ -1,4 +1,4 @@
-package gson.editor;
+package lui.gson;
 
 import java.lang.reflect.Type;
 

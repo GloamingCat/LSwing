@@ -1,4 +1,4 @@
-package gson.editor;
+package lui.gson;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
