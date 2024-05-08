@@ -11,12 +11,12 @@ import javax.swing.JToolBar;
 
 import lui.graphics.LTexture;
 
-public class LToolBar extends LPanel {
+public class LToolBar extends LView {
 
 	private final JToolBar toolBar;
 	
 	public LToolBar(LContainer parent) {
-		super(parent);
+		super(parent, false);
 		toolBar = new JToolBar();
 		parent.getContentComposite().add(toolBar);
 		setFillLayout(true);

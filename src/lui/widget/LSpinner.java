@@ -1,6 +1,5 @@
 package lui.widget;
 
-import lui.base.LPrefs;
 import lui.container.*;
 
 import javax.swing.JComponent;
@@ -61,12 +60,14 @@ public class LSpinner extends LControlWidget<Integer> {
 	
 	public void setMinimum(int i) {
 		minimum = i;
-		spinner.setModel(new SpinnerNumberModel((Integer) spinner.getValue(), minimum, maximum, step));
+		Integer value = Math.max(minimum, Math.min((Integer) spinner.getValue(), maximum));
+		spinner.setModel(new SpinnerNumberModel(value, minimum, maximum, step));
 	}
-	
+
 	public void setMaximum(int i) {
 		maximum = i;
-		spinner.setModel(new SpinnerNumberModel((Integer) spinner.getValue(), minimum, maximum, step));
+		Integer value = Math.max(minimum, Math.min((Integer) spinner.getValue(), maximum));
+		spinner.setModel(new SpinnerNumberModel(value, minimum, maximum, step));
 	}
 	
 	@Override

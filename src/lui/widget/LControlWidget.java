@@ -77,6 +77,8 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	}
 	
 	public LControlEvent<T> createEvent() {
+		if (currentValue == null)
+			return null;
 		LControlEvent<T> e = new LControlEvent<>(null, currentValue);
 		e.detail = -1;
 		return e;
@@ -98,7 +100,8 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	
 	public void notifyEmpty() {
 		LControlEvent<T> e = createEvent();
-		notifyListeners(e);
+		if (e != null)
+			notifyListeners(e);
 	}
 	
 	//-------------------------------------------------------------------------------------
@@ -122,7 +125,7 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 				return;
 			T newValue = decodeData(str);
 			if (newValue != null && !newValue.equals(currentValue))
-				modify(newValue);	
+				modify(newValue);
 		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
 			System.err.println(e.getMessage());
 		}

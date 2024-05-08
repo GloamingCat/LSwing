@@ -45,7 +45,7 @@ public class LGlobals {
 		if (key.charAt(0) == '&')
 			key = "" + key.charAt(1);
 		int code = accelerators.get(key);
-		return KeyStroke.getKeyStroke(code, ActionEvent.CTRL_MASK);
+		return KeyStroke.getKeyStroke(code, mask);
 	}
 	
 	private static Clipboard initClipboard() {
