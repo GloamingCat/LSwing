@@ -112,7 +112,7 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 		super.setObject(obj);
 		if (selectedPath != null) {
 			getCollectionWidget().forceSelection(selectedPath);
-		} else {  
+		} else {
 			forceFirstSelection();
 		}
 	}

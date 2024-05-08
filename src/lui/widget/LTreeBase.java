@@ -21,6 +21,7 @@ import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LMoveEvent;
 import lui.base.event.LSelectionEvent;
+import lui.graphics.LTexture;
 
 public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
@@ -65,9 +66,10 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		root.setUserObject(new ItemData("", -1, null, false));
 		tree = new JTree(root);
 		tree.setRootVisible(false);
+		tree.setBorder(UIManager.getBorder("ProgressBar.border"));
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
-		if (flags == 1) {
+		if (flags == 1) { // Check
 			tree.setCellRenderer(new CheckBoxNodeRenderer());
 			tree.setCellEditor(new CheckBoxNodeEditor());
 			tree.setEditable(true);
@@ -76,18 +78,17 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 				public void mouseMoved(MouseEvent e) {
 					int row = tree.getRowForLocation(e.getX(), e.getY());
 					TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-					if (row != -1) {
+					if (row != -1)
 						tree.startEditingAtPath(path);
-					}
 				}
 			});
 		} else {
 			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-			final Icon icon = renderer.getLeafIcon();
-			renderer.setIcon(icon);
-			renderer.setOpenIcon(icon);
-			renderer.setClosedIcon(icon);
-			renderer.setDisabledIcon(icon);
+			renderer.setIcon(renderer.getDefaultLeafIcon());
+			renderer.setLeafIcon(null);
+			renderer.setClosedIcon(null);
+			renderer.setOpenIcon(null);
+			renderer.setDisabledIcon(null);
 			tree.setCellRenderer(renderer);
 		}
 		setDragEnabled(true);
@@ -98,11 +99,25 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 			if (tree.getSelectionCount() > 0) {
 				DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
 				LPath path = toPath(item);
+				@SuppressWarnings("unchecked")
 				ItemData itemData = (ItemData) item.getUserObject();
 				LSelectionEvent event = new LSelectionEvent(path, itemData.data, itemData.id, itemData.checked);
 				notifySelectionListeners(event);
 			}
 		});
+	}
+
+	public void setIcon(LTexture image) {
+		if (tree.isEditable())
+			return;
+		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
+		final Icon icon = new ImageIcon(image.convert());
+		renderer.setIcon(icon);
+		renderer.setLeafIcon(icon);
+		renderer.setOpenIcon(icon);
+		renderer.setClosedIcon(icon);
+		renderer.setDisabledIcon(icon);
+		tree.setCellRenderer(renderer);
 	}
 	
 	@Override
@@ -305,6 +320,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		}
 		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 		tree.setSelectionPath(new TreePath(model.getPathToRoot(item)));
+		@SuppressWarnings("unchecked")
 		ItemData data = (ItemData) item.getUserObject();
 		return new LSelectionEvent(path, data.data, data.id, data.checked);
 	}
@@ -364,7 +380,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		while(path != null) {
 			if (path.index == -1)
 				path.index = item.getChildCount() - 1;
-			if (path.index < 0 || path.index > item.getChildCount())
+			if (path.index < 0 || path.index >= item.getChildCount())
 				return null;
 			item = item.getChildAt(path.index);
 			path = path.child;
@@ -531,6 +547,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
 	public boolean isChecked(LPath path) {
 		DefaultMutableTreeNode node = toTreeItem(path);
+		@SuppressWarnings("unchecked")
 		ItemData data = (ItemData) node.getUserObject();
 		return data.checked;
 	}
@@ -581,6 +598,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 				checkBoxPanel.setBackground(textBackground);
 			}
 			if (value instanceof DefaultMutableTreeNode node) {
+				@SuppressWarnings("unchecked")
 				ItemData data = (ItemData) node.getUserObject();
 				checkBoxPanel.checkBox.setSelected(data.checked);
 				checkBoxPanel.label.setText(data.toString());
@@ -616,7 +634,9 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 			CheckBoxPanel editor = renderer.getTreeCellRendererComponent(tree, value,
 					selected, expanded, leaf, row, true);
 			node = (DefaultMutableTreeNode) value;
-			data = (ItemData) node.getUserObject();
+			@SuppressWarnings("unchecked")
+			ItemData itemData = (ItemData) node.getUserObject();
+			data = itemData;
 			return editor;
 		}
 

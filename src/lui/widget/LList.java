@@ -16,6 +16,7 @@ public abstract class LList<T, ST> extends LTree<T, ST> {
 
 	public LList(LContainer parent, boolean check) {
 		super(parent, check);
+		tree.setShowsRootHandles(false);
 	}
 	
 	@Override

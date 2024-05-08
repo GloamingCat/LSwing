@@ -32,7 +32,6 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 
 	public LTree(LContainer parent, boolean check) {
 		super(parent, check);
-		LPopupMenu menu = new LPopupMenu(tree);
 		tree.addMouseListener(new MouseListener() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -48,7 +47,8 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 			@Override
 			public void mouseExited(MouseEvent e) {}
 		});
-		this.menu = menu;
+		tree.setShowsRootHandles(true);
+		this.menu = new LPopupMenu(tree);
 	}
 	
 	public void setIncludeID(boolean value) {
