@@ -61,12 +61,7 @@ public class LSubMenu extends JMenu implements LMenu {
 			if (item == null) {
 				item = new JMenuItem();
 				c.add(item);
-				item.addActionListener(new ActionListener() {
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						action.accept(e.paramString());
-					}
-				});
+				item.addActionListener(e -> action.accept(e.paramString()));
 				c.putClientProperty(buttonKey, item);
 				if (acc != null) {
 					String[] keys = acc.split("\\+");

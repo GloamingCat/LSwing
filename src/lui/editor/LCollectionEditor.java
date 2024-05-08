@@ -71,7 +71,7 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 		if (shellFactory == null)
 			return null;
 		ST oldData = getEditableData(path);
-		ST newData = shellFactory.openShell(getWindow(), oldData);
+		ST newData = shellFactory.openWindow(getWindow(), oldData);
 		if (newData != null) {
 			return new LEditEvent<>(path, oldData, newData);
 		}

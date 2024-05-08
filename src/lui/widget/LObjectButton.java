@@ -4,7 +4,6 @@ import java.awt.*;
 import java.lang.reflect.Type;
 import javax.swing.JComponent;
 
-import lui.base.LPrefs;
 import lui.base.LVocab;
 import lui.container.LContainer;
 import lui.dialog.LWindowFactory;
@@ -23,7 +22,7 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 	protected void createContent(int flags) {
 		button = new LButton(this, LVocab.instance.SELECT);
 		button.onClick = arg0 -> {
-            T newValue = shellFactory.openShell(getWindow(), currentValue);
+            T newValue = shellFactory.openWindow(getWindow(), currentValue);
             if (newValue != null) {
                 newModifyAction(currentValue, newValue);
                 setValue(newValue);
