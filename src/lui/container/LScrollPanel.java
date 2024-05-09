@@ -47,6 +47,7 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 	public void setContentSize(int width, int height) {
 		content.setPreferredSize(new Dimension(width, height));
 	}
+
 	//endregion
 
 	//////////////////////////////////////////////////

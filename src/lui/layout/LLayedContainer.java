@@ -42,7 +42,7 @@ public interface LLayedContainer extends LContainer {
 	default void setGridLayout(int columns) {
 		LPoint margins = getMargins();
 		GridBagLayout gbl = new GridBagLayout();
-		gbl.columnWeights = new double[columns];
+		setData("columns", columns);
 		setData("hSpacing", LPrefs.GRIDSPACING);
 		setData("vSpacing", LPrefs.GRIDSPACING);
 		setLayout(gbl);
@@ -142,7 +142,7 @@ public interface LLayedContainer extends LContainer {
 			boolean equalRows = hasEqualRows();
 			int hSpacing = getHorizontalSpacing();
 			int vSpacing = getVerticalSpacing();
-			int cols = gbl.columnWeights.length;
+			int cols = (int) getData("columns");
 			int i = 0;
 			int minWidth = 0, minHeight = 0, prefWidth = 0, prefHeight = 0;
 			HashMap<String, Integer> skip = new HashMap<>();
@@ -165,6 +165,7 @@ public interface LLayedContainer extends LContainer {
 						}
 					}
 					c.setPreferredSize(null);
+					c.setMinimumSize(null);
 					Dimension p = c.getPreferredSize();
 					Dimension m = c.getMinimumSize();
 					if (equalCols) {
@@ -189,10 +190,7 @@ public interface LLayedContainer extends LContainer {
 					c.setMinimumSize(new Dimension(equalCols ? minWidth : m.width, equalRows ? minHeight : m.height));
 				}
 			}
-			getContentComposite().setPreferredSize(null);
-			getTopComposite().setPreferredSize(null);
 		}
-
 	}
 
 }

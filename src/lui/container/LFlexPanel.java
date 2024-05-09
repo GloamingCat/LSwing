@@ -35,12 +35,15 @@ public class LFlexPanel extends JSplitPane implements LContainer, LLayedCell {
 	//region Interfaces
 
 	public void setWeights(float first, float second) {
-		setResizeWeight(first / (first + second));
 		Dimension minimumSize = new Dimension(0, 0);
 		leftComponent.setMinimumSize(minimumSize);
 		rightComponent.setMinimumSize(minimumSize);
+		leftComponent.setPreferredSize(minimumSize);
+		rightComponent.setPreferredSize(minimumSize);
+		setResizeWeight(first / (first + second));
+		setDividerLocation(first / (first + second));
 	}
-	
+
 	@Override
 	public JComponent getContentComposite() {
 		return this;

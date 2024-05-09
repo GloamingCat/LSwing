@@ -87,6 +87,10 @@ public class LCellData extends LLayoutData {
 			d.width = width;
 		if (height != -1)
 			d.height = height;
+		if (minWidth > 0)
+			d.width = Math.max(d.width, minWidth);
+		if (minHeight > 0)
+			d.height = Math.max(d.height, minHeight);
 	}
 
 	public void storeMinimumSize(Dimension d, Dimension p) {

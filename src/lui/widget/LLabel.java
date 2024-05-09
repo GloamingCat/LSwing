@@ -27,6 +27,7 @@ public class LLabel extends LWidget {
 		setMargins(0, LPrefs.LABELPADDING);
 		setAlignment(style);
 		getCellData().setExpand((style & LFlags.EXPAND) > 0, false);
+		getCellData().setAlignment(LFlags.FILL);
 		getCellData().setMinimumSize(LPrefs.LABELWIDTH, LPrefs.WIDGETHEIGHT);
 	}
 
@@ -68,18 +69,18 @@ public class LLabel extends LWidget {
 	//region Label Text
 
 	public void setAlignment(int a) {
-		if ((a & LFlags.TOP) > 0) {
-			label.setVerticalAlignment(JLabel.TOP);
-		} else if ((a & LFlags.BOTTOM) > 0) {
+		if ((a & LFlags.BOTTOM) > 0) {
 			label.setVerticalAlignment(JLabel.BOTTOM);
 		} else if ((a & LFlags.MIDDLE) > 0){
 			label.setVerticalAlignment(JLabel.CENTER);
+		} else {
+			label.setVerticalAlignment(JLabel.TOP);
 		}
 		if ((a & LFlags.RIGHT) > 0) {
 			label.setHorizontalAlignment(JLabel.RIGHT);
 		} else if ((a & LFlags.CENTER) > 0) {
 			label.setHorizontalAlignment(JLabel.CENTER);
-		} else if ((a & LFlags.LEFT) > 0) {
+		} else {
 			label.setHorizontalAlignment(JLabel.LEFT);
 		}
 	}
