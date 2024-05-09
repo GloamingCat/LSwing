@@ -4,6 +4,7 @@ import lui.base.LPrefs;
 import lui.base.data.LPoint;
 import lui.container.LContainer;
 
+import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -47,6 +48,8 @@ public interface LLayedContainer extends LContainer {
 		setData("vSpacing", LPrefs.GRIDSPACING);
 		setLayout(gbl);
 		setMargins(margins.x, margins.y);
+		getContentComposite().setAlignmentX(SwingConstants.LEFT);
+		getContentComposite().setAlignmentY(SwingConstants.TOP);
 	}
 
 	/** Column/row layout (spacing = 5).

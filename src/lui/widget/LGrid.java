@@ -61,7 +61,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 	
 	@SuppressWarnings("unchecked")
 	public LDataList<T> getDataCollection() {
-		LDataList<T> list = new LDataList<T>();
+		LDataList<T> list = new LDataList<>();
 		for (Component c : getComponents()) {
 			LImage img = (LImage) c;
 			list.add((T) img.getData());
@@ -118,8 +118,9 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 	
 	private LImage addLabel(int i, T data, boolean placeholder) {
 		LImage label = new LImage(this);
-		label.getCellData().setMinimumSize(cellWidth, 0);
-		label.setMinimumSize(new Dimension(0, cellHeight));
+		label.getCellData().setPreferredSize(cellWidth, cellHeight);
+		label.getCellData().setMinimumSize(cellWidth, cellHeight);
+		label.getCellData().setAlignment(LFlags.FILL);
 		LPopupMenu menu = new LPopupMenu(label);
 		menu.putClientProperty("label", label);
 		if (placeholder) {

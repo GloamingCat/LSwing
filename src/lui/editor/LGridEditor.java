@@ -10,7 +10,6 @@ import lui.base.event.LEditEvent;
 import lui.widget.LGrid;
 
 public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
-	private static final long serialVersionUID = 1L;
 
 	protected LGrid<T, ST> grid;
 	
@@ -19,11 +18,9 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 		grid = createGrid();
 		setListeners();
 	}
-	
-	@SuppressWarnings("serial")
+
 	protected LGrid<T, ST> createGrid() {
-		LGridEditor<T, ST> self = this;
-		return new LGrid<T, ST>(this) {
+		return new LGrid<>(this) {
 			@Override
 			public LEditEvent<ST> edit(LPath path) {
 				return onEditItem(path);
@@ -32,19 +29,19 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 			public T toObject(LPath path) {
 				if (path == null)
 					return null;
-				return self.getDataCollection().get(path.index);
+				return LGridEditor.this.getDataCollection().get(path.index);
 			}
 			@Override
 			public LDataTree<T> emptyNode() {
-				return new LDataTree<T>(createNewElement());
+				return new LDataTree<>(createNewElement());
 			}
 			@Override
 			public LDataTree<T> duplicateNode(LPath path) {
-				return new LDataTree<T> (duplicateElement(getDataCollection().get(path.index)));
+				return new LDataTree<> (duplicateElement(getDataCollection().get(path.index)));
 			}
 			@Override
 			protected void setImage(LImage img, int i) {
-				self.setImage(img, i);
+				LGridEditor.this.setImage(img, i);
 			}
 			@Override
 			public boolean canDecode(String str) {
@@ -85,18 +82,17 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 	@Override
 	public String encodeData(LDataCollection<T> collection) {
 		LDataList<T> list = (LDataList<T>) collection;
-		LDataList<String> text = new LDataList<String>();
+		LDataList<String> text = new LDataList<>();
 		for (T obj : list)
 			text.add(obj.toString());
-		String str = String.join( " | ", text);
-		return str;
+        return String.join( " | ", text);
 	}
 	
 	@Override
 	public LDataList<T> decodeData(String str) {
-		String[] elements = str.split(" | ");
+		String[] elements = str.split(" \\| ");
 		// Get children
-		LDataList<T> list = new LDataList<T>();
+		LDataList<T> list = new LDataList<>();
 		for (String element : elements) {
 			list.add(decodeElement(element));
 		}

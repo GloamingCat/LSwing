@@ -35,10 +35,15 @@ public interface LContainer {
 	}
 	
 	default void dispose() {
+		getTopComposite().getParent().remove(getTopComposite());
+		onDispose();
+	}
+
+	default void onDispose() {
 		for (int i = 0; i < getChildCount(); i++) {
 			Object c = getChild(i);
 			if (c instanceof LContainer lc) {
-				lc.dispose();
+				lc.onDispose();
 			}
 		}
 	}
