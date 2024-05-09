@@ -3,6 +3,7 @@ package lui.layout;
 import lui.base.LPrefs;
 import lui.base.data.LPoint;
 import lui.container.LContainer;
+import thirdparty.WrapLayout;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -56,7 +57,7 @@ public interface LLayedContainer extends LContainer {
 	 */
 	default void setSequentialLayout(boolean horizontal) {
 		if (horizontal) {
-			FlowLayout fl = new FlowLayout();
+			WrapLayout fl = new WrapLayout();
 			fl.setHgap(LPrefs.GRIDSPACING);
 			fl.setVgap(LPrefs.GRIDSPACING);
 			setLayout(fl);
@@ -84,7 +85,7 @@ public interface LLayedContainer extends LContainer {
 		if (l instanceof GridLayout gl) {
             gl.setHgap(h);
 			gl.setVgap(v);
-		} else if (l instanceof FlowLayout fl) {
+		} else if (l instanceof WrapLayout fl) {
             fl.setHgap(h);
 			fl.setVgap(v);
 		} else {

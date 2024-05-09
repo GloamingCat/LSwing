@@ -22,7 +22,7 @@ public class MyContentGridEditor extends LView {
         LDefaultGridEditor<MyContent> gridEditor = new MyContentGrid(sashForm);
 		gridEditor.getCollectionWidget().cellWidth = 40;
 		gridEditor.getCollectionWidget().cellHeight = 40;
-		gridEditor.getCollectionWidget().setColumns(4);
+		gridEditor.getCollectionWidget().setColumns(0);
 		addChild(gridEditor);
 
         MyContentEditor contentEditor = new MyContentEditor(sashForm);

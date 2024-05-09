@@ -71,7 +71,7 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 	@Override
 	public LDataList<T> duplicateData(LDataCollection<T> collection) {
 		LDataList<T> list = (LDataList<T>) collection;
-		LDataList<T> copy = new LDataList<T>();
+		LDataList<T> copy = new LDataList<>();
 		for(T child : list) {
 			T childCopy = duplicateElement(child);
 			copy.add(childCopy);

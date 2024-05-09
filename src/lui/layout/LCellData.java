@@ -1,11 +1,10 @@
 package lui.layout;
 
 import lui.base.LFlags;
-import lui.base.gui.LLayoutData;
 
 import java.awt.*;
 
-public class LCellData extends LLayoutData {
+public class LCellData extends lui.base.gui.LCellData {
 
 	private int anchor = GridBagConstraints.CENTER;
 	private int fill = GridBagConstraints.NONE;
