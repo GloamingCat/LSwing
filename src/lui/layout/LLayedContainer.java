@@ -7,13 +7,14 @@ import lui.container.LContainer;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.util.HashMap;
 
 public interface LLayedContainer extends LContainer {
-
 
 	default LayoutManager getLayout() {
 		return getContentComposite().getLayout();
 	}
+
 	default void setLayout(LayoutManager layout) {
 		getContentComposite().setLayout(layout);
 	}
@@ -30,7 +31,7 @@ public interface LLayedContainer extends LContainer {
 	 */
 	default void setFillLayout(boolean horizontal) {
 		GridLayout gl = horizontal ?
-				new GridLayout(0, 1) : new GridLayout(1, 0);
+				new GridLayout(1, 0) : new GridLayout(0, 1);
 		gl.setHgap(getHorizontalSpacing());
 		gl.setVgap(getVerticalSpacing());
 		setLayout(gl);
@@ -39,12 +40,13 @@ public interface LLayedContainer extends LContainer {
 	/** Grid layout (spacing = 5).
 	 */
 	default void setGridLayout(int columns) {
+		LPoint margins = getMargins();
 		GridBagLayout gbl = new GridBagLayout();
 		gbl.columnWeights = new double[columns];
-		setMargins(-LPrefs.GRIDSPACING, -LPrefs.GRIDSPACING);
 		setData("hSpacing", LPrefs.GRIDSPACING);
 		setData("vSpacing", LPrefs.GRIDSPACING);
 		setLayout(gbl);
+		setMargins(margins.x, margins.y);
 	}
 
 	/** Column/row layout (spacing = 5).
@@ -61,15 +63,17 @@ public interface LLayedContainer extends LContainer {
 	}
 
 	default void setMargins(int h, int v) {
+		setData("hMargin", h);
+		setData("vMargin", v);
 		v -= getVerticalSpacing();
 		h -= getHorizontalSpacing();
 		setBorder(new EmptyBorder(v, h, v, h));
 	}
 
 	default LPoint getMargins() {
-		EmptyBorder border = (EmptyBorder) getBorder();
-		return new LPoint(border.getBorderInsets().left + getHorizontalSpacing(),
-						  border.getBorderInsets().top + getVerticalSpacing());
+		Integer h = (Integer) getData("hMargin");
+		Integer v = (Integer) getData("vMargin");
+		return new LPoint(h == null ? 0 : h, v == null ? 0 : v);
 	}
 
 	default void setSpacing(int h, int v) {
@@ -97,6 +101,10 @@ public interface LLayedContainer extends LContainer {
 	default void setEqualCells(boolean horizontal, boolean vertical) {
 		setData("equalCols", horizontal);
 		setData("equalRows", vertical);
+	}
+
+	default void setEqualCells(boolean horizontal) {
+		setEqualCells(horizontal, horizontal);
 	}
 
 	default int getHorizontalSpacing() {
@@ -130,47 +138,61 @@ public interface LLayedContainer extends LContainer {
 	default void refreshLayoutData() {
 		LayoutManager l = getLayout();
 		if (l instanceof GridBagLayout gbl) {
+			boolean equalCols = hasEqualCols();
+			boolean equalRows = hasEqualRows();
 			int hSpacing = getHorizontalSpacing();
 			int vSpacing = getVerticalSpacing();
 			int cols = gbl.columnWeights.length;
-			int minWidth = 0;
-			int minHeight = 0;
-			int sumWidth = 0;
-			int sumHeight = 0;
 			int i = 0;
+			int minWidth = 0, minHeight = 0, prefWidth = 0, prefHeight = 0;
+			HashMap<String, Integer> skip = new HashMap<>();
 			for (Component c : getContentComposite().getComponents()) {
 				if (c instanceof LLayedCell lc) {
 					LCellData cd = lc.getCellData();
-					minWidth = Math.max(minWidth, cd.minWidth);
-					minHeight = Math.max(minHeight, cd.minHeight);
-					Dimension size = c.getPreferredSize();
-					sumWidth += size.width;
-					sumHeight += size.height;
-					gbl.setConstraints(c, cd.getGridBagConstraints(i, cols, hSpacing, vSpacing));
-				}
-				i++;
-			}
-			boolean equalCols = hasEqualCols();
-			boolean equalRows = hasEqualRows();
-			if (equalCols || equalRows) {
-				int rows = Math.ceilDiv(getChildCount(), cols);
-				int width = sumWidth / cols;
-				int height = sumHeight / rows;
-				for (var c : getContentComposite().getComponents()) {
-					if (c instanceof LLayedCell lc) {
-						LCellData cd = lc.getCellData();
-						if (equalCols) {
-							cd.minWidth = minWidth;
-							cd.width = width;
-						}
-						if (equalRows) {
-							cd.minHeight = minHeight;
-							cd.height = height;
+					GridBagConstraints gbc = cd.getGridBagConstraints(i, cols, hSpacing, vSpacing);
+					for (String pos = gbc.gridx+","+gbc.gridy; skip.containsKey(pos); pos = gbc.gridx+","+gbc.gridy) {
+						gbc.gridx += skip.get(pos);
+						if (gbc.gridx + gbc.gridwidth > cols) {
+							gbc.gridy++;
+							gbc.gridx = 0;
+							i = gbc.gridy * cols;
 						}
 					}
+					if (gbc.gridheight > 1) {
+						for (int h = 1; h < gbc.gridheight; h++) {
+							String pos = gbc.gridx+","+(gbc.gridy + h);
+							skip.put(pos, gbc.gridwidth);
+						}
+					}
+					c.setPreferredSize(null);
+					Dimension p = c.getPreferredSize();
+					Dimension m = c.getMinimumSize();
+					if (equalCols) {
+						prefWidth = Math.max(prefWidth, p.width);
+						minWidth = Math.max(minWidth, m.width);
+						gbc.weightx = 1;
+					}
+					if (equalRows) {
+						prefHeight = Math.max(prefHeight, p.height);
+						minHeight = Math.max(minHeight, m.height);
+						gbc.weighty = 1;
+					}
+					gbl.setConstraints(c, gbc);
+					i += gbc.gridwidth;
 				}
 			}
+			if (equalRows || equalCols) {
+				for (Component c : getContentComposite().getComponents()) {
+					Dimension p = c.getPreferredSize();
+					Dimension m = c.getMinimumSize();
+					c.setPreferredSize(new Dimension(equalCols ? prefWidth : p.width, equalRows ? prefHeight : p.height));
+					c.setMinimumSize(new Dimension(equalCols ? minWidth : m.width, equalRows ? minHeight : m.height));
+				}
+			}
+			getContentComposite().setPreferredSize(null);
+			getTopComposite().setPreferredSize(null);
 		}
+
 	}
 
 }

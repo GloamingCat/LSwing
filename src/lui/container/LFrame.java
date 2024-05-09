@@ -2,7 +2,7 @@ package lui.container;
 
 import lui.base.LPrefs;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -19,10 +19,12 @@ public class LFrame extends LPanel {
 	 */
 	LFrame(JComponent parent) {
 		super(parent);
-		lineBorder = new LineBorder(Color.GRAY, 1);
-		titledBorder = new TitledBorder(lineBorder);
-		titledBorder.setTitleColor(Color.GRAY);
-		setBorder(titledBorder);
+		Color color = UIManager.getColor("Table.gridColor");
+		lineBorder = new LineBorder(color, 1);
+		titledBorder = new TitledBorder("");
+		titledBorder.setTitleColor(color);
+		titledBorder.setTitlePosition(TitledBorder.TOP);
+		titledBorder.setTitleJustification(TitledBorder.CENTER);
 		setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
 	}
 
@@ -47,7 +49,8 @@ public class LFrame extends LPanel {
 	
 	@Override
 	public void setMargins(int h, int v) {
-		CompoundBorder border = new CompoundBorder(lineBorder, new EmptyBorder(v, h, v, h));
+		super.setMargins(h, v);
+		CompoundBorder border = new CompoundBorder(lineBorder, getBorder());
 		titledBorder.setBorder(border);
 		setBorder(titledBorder);
 	}

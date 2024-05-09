@@ -7,14 +7,12 @@ import java.awt.*;
 
 public class LCellData extends LLayoutData {
 
-    public int minWidth, minHeight;
-    public int width = -1, height = -1;
 	private int anchor = GridBagConstraints.CENTER;
 	private int fill = GridBagConstraints.NONE;
 
     public GridBagConstraints getGridBagConstraints(int i, int cols, int hSpacing, int vSpacing) {
 		return new GridBagConstraints(i % cols, i / cols,
-			hSpread, vSpread,
+			Math.min(hSpread, cols), vSpread,
 			hExpand ? 1 : 0, vExpand ? 1 : 0,
 			anchor, fill,
 			new Insets(vSpacing, hSpacing, vSpacing, hSpacing),
@@ -82,6 +80,23 @@ public class LCellData extends LLayoutData {
 					fill = GridBagConstraints.BOTH;
 			}
 		}
+	}
+
+	public void storePreferredSize(Dimension d) {
+		if (width != -1)
+			d.width = width;
+		if (height != -1)
+			d.height = height;
+	}
+
+	public void storeMinimumSize(Dimension d, Dimension p) {
+		d.width = Math.max(d.width, minWidth);
+		d.height = Math.max(d.height, minHeight);
+		storePreferredSize(p);
+		if (!hExpand)
+			d.width = Math.max(d.width, p.width);
+		if (!vExpand)
+			d.height = Math.max(d.height, p.height);
 	}
 
 }

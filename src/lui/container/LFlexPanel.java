@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 
+import lui.base.data.LPoint;
 import lui.layout.LCellData;
 import lui.layout.LLayedCell;
 
@@ -33,11 +34,6 @@ public class LFlexPanel extends JSplitPane implements LContainer, LLayedCell {
 	//////////////////////////////////////////////////
 	//region Interfaces
 
-
-
-	//////////////////////////////////////////////////
-	//region Interfaces
-
 	public void setWeights(float first, float second) {
 		setResizeWeight(first / (first + second));
 		Dimension minimumSize = new Dimension(0, 0);
@@ -60,25 +56,29 @@ public class LFlexPanel extends JSplitPane implements LContainer, LLayedCell {
 	@Override
 	public Dimension getPreferredSize() {
 		Dimension d = super.getPreferredSize();
-		if (gridData != null) {
-			if (gridData.width != -1)
-				d.width = Math.max(d.width, gridData.width);
-			if (gridData.height != -1)
-				d.height = Math.max(d.height, gridData.height);
-		}
+		if (gridData != null)
+			gridData.storePreferredSize(d);
 		return d;
 	}
 
 	@Override
 	public Dimension getMinimumSize() {
 		Dimension d = super.getMinimumSize();
-		if (gridData != null) {
-			d.width = Math.max(d.width, gridData.minWidth);
-			d.height = Math.max(d.height, gridData.minHeight);
-		}
+		if (gridData != null)
+			gridData.storeMinimumSize(d, super.getPreferredSize());
 		return d;
 	}
-	
+
+	@Override
+	public LPoint getCurrentSize() {
+		return LContainer.super.getCurrentSize();
+	}
+
+	@Override
+	public LPoint getTargetSize() {
+		return LContainer.super.getTargetSize();
+	}
+
 	//endregion
 
 }

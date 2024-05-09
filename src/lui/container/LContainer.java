@@ -1,9 +1,10 @@
 package lui.container;
 
-import java.awt.Container;
+import java.awt.*;
 
 import javax.swing.JComponent;
 
+import lui.base.data.LPoint;
 import lui.dialog.LWindow;
 
 public interface LContainer {
@@ -57,5 +58,15 @@ public interface LContainer {
 	default void setData(String key, Object data) {
 		getTopComposite().putClientProperty(key, data);
 	}
-	
+
+    default LPoint getCurrentSize() {
+        Dimension size = getTopComposite().getSize();
+        return new LPoint(size.width, size.height);
+    }
+
+    default LPoint getTargetSize() {
+        Dimension size = getTopComposite().getPreferredSize();
+        return new LPoint(size.width, size.height);
+    }
+
 }

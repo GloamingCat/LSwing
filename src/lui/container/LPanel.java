@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import lui.base.LFlags;
+import lui.base.data.LPoint;
 import lui.base.event.LMouseEvent;
 import lui.base.event.listener.LMouseListener;
 import lui.layout.LLayedCell;
@@ -21,7 +22,7 @@ import lui.layout.LCellData;
 public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 
 	private ArrayList<LMouseListener> mouseListeners = null;
-	protected LCellData layoutData;
+	protected LCellData gridData;
 	
 	//////////////////////////////////////////////////
 	//region Constructors
@@ -145,15 +146,20 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 
 		@Override
 	public LCellData getCellData() {
-		if (layoutData == null)
-			layoutData = new LCellData();
-		return layoutData;
+		if (gridData == null)
+			gridData = new LCellData();
+		return gridData;
 	}
-	
-	//endregion
-	
-	//////////////////////////////////////////////////
-	//region Interfaces
+
+	@Override
+	public LPoint getCurrentSize() {
+		return LLayedCell.super.getCurrentSize();
+	}
+
+	@Override
+	public LPoint getTargetSize() {
+		return LLayedCell.super.getTargetSize();
+	}
 
 	@Override
 	public JComponent getContentComposite() {
@@ -166,15 +172,17 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 		Dimension d2 = super.getMinimumSize();
 		d.width = Math.max(d.width, d2.width);
 		d.height = Math.max(d.height, d2.height);
+		if (gridData != null) {
+			gridData.storePreferredSize(d);
+		}
 		return d;
 	}
 
 	@Override
 	public Dimension getMinimumSize() {
 		Dimension d = super.getMinimumSize();
-		if (layoutData != null) {
-			d.width = Math.max(d.width, layoutData.minWidth);
-			d.height = Math.max(d.height, layoutData.minHeight);
+		if (gridData != null) {
+			gridData.storeMinimumSize(d, super.getPreferredSize());
 		}
 		return d;
 	}
