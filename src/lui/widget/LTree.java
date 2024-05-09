@@ -59,10 +59,27 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 		return String.format("[%03d] ", i);
 	}
 
+	protected String dataToString(T data) {
+		return data.toString();
+	}
+
+	protected boolean isDataChecked(T data) {
+		return true;
+	}
+
 	protected int indexOf(DefaultMutableTreeNode item) {
 		return item.getParent().getIndex(item);
 	}
-	
+
+	@Override
+	protected void refreshItemData(LDataTree<T> node, ItemData itemData) {
+		itemData.data = node.data;
+		itemData.name = dataToString(itemData.data);
+		if (includeID)
+			itemData.name = stringID(node.id) + itemData.name;
+		itemData.checked = isDataChecked(itemData.data);
+	}
+
 	//////////////////////////////////////////////////
 	//region Modify
 	

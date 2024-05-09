@@ -6,7 +6,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.IOException;
 import java.util.EventObject;
 import java.util.Stack;
@@ -32,15 +31,12 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	//region Node Data
 
 	protected class ItemData {
-		public T data;
+		public T data = null;
 		public int id;
-		public String name;
-		public boolean checked;
-		public ItemData(String name, int id, T data, boolean checked) {
-			this.data = data;
+		public String name = "";
+		public boolean checked = false;
+		public ItemData (int id) {
 			this.id = id;
-			this.name = name;
-			this.checked = checked;
 		}
 		public String toString() {
 			return name;
@@ -63,7 +59,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	@Override
 	protected void createContent(int flags) {
 		root = new DefaultMutableTreeNode();
-		root.setUserObject(new ItemData("", -1, null, false));
+		root.setUserObject(new ItemData(-1));
 		tree = new JTree(root);
 		tree.setRootVisible(false);
 		tree.setBorder(UIManager.getBorder("ProgressBar.border"));
@@ -124,7 +120,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	public void setHoverText(String text) {
 		tree.setToolTipText(text);
 	}
-	
+
 	//endregion
 	
 	//////////////////////////////////////////////////
@@ -286,7 +282,8 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
 	protected DefaultMutableTreeNode createTreeItem(DefaultMutableTreeNode parent, final int index, LDataTree<T> node) {
 		DefaultMutableTreeNode newItem = new DefaultMutableTreeNode();
-		ItemData data = new ItemData(dataToString(node.data), node.id, node.data, isDataChecked(node.data));
+		ItemData data = new ItemData(node.id);
+		refreshItemData(node, data);
 		newItem.setUserObject(data);
 		((DefaultTreeModel) tree.getModel()).insertNodeInto(newItem, parent, index >= 0 ? index : parent.getChildCount());;
 		int childIndex = 0;
@@ -460,17 +457,10 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	}
 
 	public void setItemNode(DefaultMutableTreeNode item, LDataTree<T> node) {
-		ItemData data = new ItemData(dataToString(node.data), node.id, node.data, isDataChecked(node.data));
+		ItemData data = new ItemData(node.id);
+		refreshItemData(node, data);
 		item.setUserObject(data);
 		((DefaultTreeModel) tree.getModel()).nodeChanged(item);
-	}
-
-	protected String dataToString(T data) {
-		return data.toString();
-	}
-
-	protected boolean isDataChecked(T data) {
-		return true;
 	}
 
 	//endregion
@@ -504,16 +494,16 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	public void refreshObject(LPath path) {
 		DefaultMutableTreeNode item = toTreeItem(path);
 		if (item != null) {
-			T data = toObject(path);
+			LDataTree<T> node = toNode(path);
 			@SuppressWarnings("unchecked")
 			ItemData itemData = (ItemData) item.getUserObject();
-			itemData.data = data;
-			itemData.name = dataToString(itemData.data);
-			itemData.checked = isDataChecked(itemData.data);
+			refreshItemData(node, itemData);
 			item.setUserObject(itemData);
 			((DefaultTreeModel) tree.getModel()).nodeChanged(item);
 		}
 	}
+
+	protected abstract void refreshItemData(LDataTree<T> node, ItemData itemData);
 
 	public void refreshAll() {
 		((DefaultTreeModel) tree.getModel()).nodeStructureChanged(this.root);
