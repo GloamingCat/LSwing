@@ -3,9 +3,9 @@ package lui.widget;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 
+import lui.base.LFlags;
 import lui.base.LPrefs;
 import lui.base.gui.LMenu;
-import lui.LFlags;
 import lui.container.LContainer;
 
 public class LLabel extends LWidget {
@@ -15,29 +15,19 @@ public class LLabel extends LWidget {
 	//////////////////////////////////////////////////
 	//region Basic Constructors
 
-	public LLabel(LContainer parent, int hfill, int vfill) {
-		this(parent, 0);
-		getCellData().setAlignment(0);
+	public LLabel(LContainer parent, int hFill, int vFill) {
+		this(parent, LFlags.FILL);
 		setEnabled(false);
-		getCellData().setSpread(hfill, vfill);
+		getCellData().setSpread(hFill, vFill);
 	}
 
 	public LLabel(LContainer parent, int style) {
 		super(parent);
-		setMargins(0, 3);
+		setFillLayout(true);
+		setMargins(0, LPrefs.LABELPADDING);
+		setAlignment(style);
 		getCellData().setExpand((style & LFlags.EXPAND) > 0, false);
 		getCellData().setMinimumSize(LPrefs.LABELWIDTH, LPrefs.WIDGETHEIGHT);
-		int alignment = 0;
-		if ((style & LFlags.TOP) > 0) {
-			alignment = LFlags.LEFT | LFlags.TOP;
-		} else if ((style & LFlags.BOTTOM) > 0) {
-			alignment = LFlags.LEFT | LFlags.BOTTOM;
-		} else if ((style & LFlags.RIGHT) > 0) {
-			alignment = LFlags.RIGHT | LFlags.CENTER;
-		} else if ((style & LFlags.CENTER) > 0) {
-			label.setHorizontalTextPosition(JLabel.CENTER);
-		}
-		getCellData().setAlignment(alignment);
 	}
 
 	@Override
@@ -74,6 +64,26 @@ public class LLabel extends LWidget {
 
 	//endregion
 
+	//////////////////////////////////////////////////
+	//region Label Text
+
+	public void setAlignment(int a) {
+		if ((a & LFlags.TOP) > 0) {
+			label.setVerticalAlignment(JLabel.TOP);
+		} else if ((a & LFlags.BOTTOM) > 0) {
+			label.setVerticalAlignment(JLabel.BOTTOM);
+		} else if ((a & LFlags.MIDDLE) > 0){
+			label.setVerticalAlignment(JLabel.CENTER);
+		}
+		if ((a & LFlags.RIGHT) > 0) {
+			label.setHorizontalAlignment(JLabel.RIGHT);
+		} else if ((a & LFlags.CENTER) > 0) {
+			label.setHorizontalAlignment(JLabel.CENTER);
+		} else if ((a & LFlags.LEFT) > 0) {
+			label.setHorizontalAlignment(JLabel.LEFT);
+		}
+	}
+
 	public void setText(String text) {
 		label.setText(text);
 		refreshLayout();
@@ -88,15 +98,17 @@ public class LLabel extends LWidget {
 	public String toString() {
 		return getClass().getName() + " " + label.getText();
 	}
-	
+
+	//endregion
+
+	//////////////////////////////////////////////////
+	//region Menu
+
 	@Override
 	public void setComponentPopupMenu(JPopupMenu menu) {
 		super.setComponentPopupMenu(menu);
 		label.setComponentPopupMenu(menu);
 	}
-
-	//////////////////////////////////////////////////
-	//region Menu
 
 	@Override
 	public void onCopyButton(LMenu menu) {}

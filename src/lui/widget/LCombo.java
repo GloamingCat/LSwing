@@ -12,7 +12,6 @@ import lui.base.LPrefs;
 import lui.container.LContainer;
 
 public class LCombo extends LControlWidget<Integer> {
-	private static final long serialVersionUID = 1L;
 
 	private JComboBox<String> combo;
 	private boolean includeID = true;

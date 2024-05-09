@@ -2,11 +2,10 @@ package lui.widget;
 
 import java.awt.*;
 
-import lui.LFlags;
+import lui.base.LFlags;
 import lui.container.LContainer;
 import lui.container.LImage;
 import lui.editor.LPopupMenu;
-import lui.base.action.LActionStack;
 import lui.base.data.LDataCollection;
 import lui.base.data.LDataList;
 import lui.base.data.LDataTree;
@@ -22,7 +21,6 @@ import lui.graphics.LPainter;
 
 public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 
-	protected LActionStack actionStack;
 	protected int selectedIndex = -1;
 	protected T selectedObj = null;
 

@@ -11,9 +11,9 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import lui.base.LFlags;
 import lui.base.event.LMouseEvent;
 import lui.base.event.listener.LMouseListener;
-import lui.LFlags;
 import lui.layout.LLayedCell;
 import lui.layout.LLayedContainer;
 import lui.layout.LCellData;

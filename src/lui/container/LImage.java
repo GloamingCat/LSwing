@@ -3,7 +3,7 @@ package lui.container;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
-import lui.LFlags;
+import lui.base.LFlags;
 import lui.base.LPrefs;
 import lui.graphics.LColor;
 import lui.base.data.LPoint;
