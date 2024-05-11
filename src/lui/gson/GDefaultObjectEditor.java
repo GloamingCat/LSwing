@@ -9,15 +9,13 @@ import lui.container.LContainer;
 import lui.editor.LObjectEditor;
 
 public abstract class GDefaultObjectEditor<T> extends LObjectEditor<T> {
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * No layout.
-	 * @param parent
-	 * @param doubleBuffered
-	 */
+
 	public GDefaultObjectEditor(LContainer parent, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
+	}
+
+	public GDefaultObjectEditor(LContainer parent, int style, boolean doubleBuffered) {
+		super(parent, style, doubleBuffered);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -31,12 +29,11 @@ public abstract class GDefaultObjectEditor<T> extends LObjectEditor<T> {
 	public String encodeData(T data) {
 		return GGlobals.gson.toJson(data, getType());
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public T decodeData(String str) {
 		try {
-			return (T) GGlobals.gson.fromJson(str, getType());
+			return GGlobals.gson.fromJson(str, getType());
 		} catch(JsonParseException e) {
 			return null;
 		}

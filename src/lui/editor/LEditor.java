@@ -18,16 +18,10 @@ import lui.widget.LButton;
 import lui.widget.LWidget;
 
 public abstract class LEditor extends LView implements LPastable {
-	private static final long serialVersionUID = 1L;
 
 	//////////////////////////////////////////////////
 	//region Constructors
-	
-	/**
-	 * No layout.
-	 * @param parent
-	 * @param doubleBuffered
-	 */
+
 	public LEditor(LContainer parent, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
 	}
@@ -47,19 +41,9 @@ public abstract class LEditor extends LView implements LPastable {
 	
 	private void addHeaderButtons(LContainer parent) {
 		LButton copyButton = new LButton(parent, LVocab.instance.COPY);
-		copyButton.onClick = new LSelectionListener() {
-			@Override
-			public void onSelect(LSelectionEvent event) {
-				onCopyButton(null);
-			}
-		};
+		copyButton.onClick = event -> onCopyButton(null);
 		LButton pasteButton = new LButton(parent, LVocab.instance.PASTE);
-		pasteButton.onClick = new LSelectionListener() {
-			@Override
-			public void onSelect(LSelectionEvent event) {
-				onPasteButton(null);
-			}
-		};
+		pasteButton.onClick = event -> onPasteButton(null);
 	}
 	
 	private LPopupMenu addMenu(JComponent parent) {

@@ -28,7 +28,7 @@ public class LLabel extends LWidget {
 		setAlignment(style);
 		getCellData().setExpand((style & LFlags.EXPAND) > 0, false);
 		getCellData().setAlignment(LFlags.FILL);
-		getCellData().setMinimumSize(LPrefs.LABELWIDTH, LPrefs.WIDGETHEIGHT);
+		getCellData().setRequiredSize(LPrefs.LABELWIDTH, LPrefs.WIDGETHEIGHT);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ public class LLabel extends LWidget {
 	
 	@Override
 	public void setHoverText(String text) {
-		label.setToolTipText(text);
+		label.setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
 	}
 	
 	@Override

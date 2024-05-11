@@ -38,6 +38,8 @@ public class LFlexPanel extends JSplitPane implements LContainer, LLayedCell {
 		Dimension minimumSize = new Dimension(0, 0);
 		leftComponent.setMinimumSize(minimumSize);
 		rightComponent.setMinimumSize(minimumSize);
+		leftComponent.setPreferredSize(minimumSize);
+		rightComponent.setPreferredSize(minimumSize);
 		setResizeWeight(first / (first + second));
 		setDividerLocation(first / (first + second));
 	}
@@ -68,16 +70,6 @@ public class LFlexPanel extends JSplitPane implements LContainer, LLayedCell {
 		if (gridData != null)
 			gridData.storeMinimumSize(d, super.getPreferredSize());
 		return d;
-	}
-
-	@Override
-	public LPoint getCurrentSize() {
-		return LContainer.super.getCurrentSize();
-	}
-
-	@Override
-	public LPoint getTargetSize() {
-		return LContainer.super.getTargetSize();
 	}
 
 	//endregion

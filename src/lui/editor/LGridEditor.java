@@ -14,13 +14,13 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 	protected LGrid<T, ST> grid;
 	
 	public LGridEditor(LContainer parent) {
-		super(parent);
-		grid = createGrid();
+		super(parent, 0);
 		setListeners();
+		grid.setMenuInterface(getMenuInterface());
 	}
 
-	protected LGrid<T, ST> createGrid() {
-		return new LGrid<>(this) {
+	protected void createContent(int style) {
+		grid = new LGrid<>(this) {
 			@Override
 			public LEditEvent<ST> edit(LPath path) {
 				return onEditItem(path);

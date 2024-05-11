@@ -17,24 +17,25 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 	/**
 	 * Internal, no layout.
 	 */
-	LScrollPanel(JComponent parent) {
+	protected LScrollPanel(JComponent parent, boolean large) {
 		super();
 		parent.add(this);
 		content = new JPanel();
 		content.setLayout(new GridLayout());
 		setViewportView(content);
-	}
+		setAutoscrolls(true);
 
-	public LScrollPanel(LContainer parent, boolean large) {
-		this(parent.getContentComposite());
 		if (large) {
-			setAutoscrolls(true);
 			getCellData().setExpand(true, true);
 		}
 	}
 
+	public LScrollPanel(LContainer parent, boolean large) {
+		this(parent.getContentComposite(), large);
+	}
+
 	public LScrollPanel(LContainer parent) {
-		this(parent, false);
+		this(parent.getContentComposite(), false);
 	}
 
 	//////////////////////////////////////////////////
@@ -54,13 +55,13 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 	//region Container Methods
 
 	@Override
-	public JComponent getContentComposite() {
-		return content;
+	public JComponent getTopComposite() {
+		return this;
 	}
 
 	@Override
-	public JComponent getTopComposite() {
-		return this;
+	public JComponent getContentComposite() {
+		return content;
 	}
 
 	@Override
@@ -72,10 +73,7 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 
 	@Override
 	public Dimension getPreferredSize() {
-		Dimension d = super.getPreferredSize();
-		if (gridData != null)
-			gridData.storePreferredSize(d);
-		return d;
+		return content.getPreferredSize();
 	}
 
 	@Override
@@ -84,16 +82,6 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 		if (gridData != null)
 			gridData.storeMinimumSize(d, super.getPreferredSize());
 		return d;
-	}
-
-	@Override
-	public LPoint getCurrentSize() {
-		return LContainer.super.getCurrentSize();
-	}
-
-	@Override
-	public LPoint getTargetSize() {
-		return LContainer.super.getTargetSize();
 	}
 
 	//endregion

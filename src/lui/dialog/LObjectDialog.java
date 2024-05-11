@@ -49,9 +49,9 @@ public abstract class LObjectDialog<T> extends LWindow {
             result = null;
             close();
         };
-		btnOk.getCellData().setMinimumSize(LPrefs.BUTTONWIDTH, 0);
+		btnOk.getCellData().setRequiredSize(LPrefs.BUTTONWIDTH, 0);
 		btnOk.getCellData().setAlignment(0);
-		btnCancel.getCellData().setMinimumSize(LPrefs.BUTTONWIDTH, 0);
+		btnCancel.getCellData().setRequiredSize(LPrefs.BUTTONWIDTH, 0);
 	}
 
 	public void open(T initial) {

@@ -46,7 +46,7 @@ public class LImageDialog extends LObjectDialog<String> {
 		selFile.addSelectionListener(event -> resetImage());
 
 		form.setWeights(1, 1);
-		setMinimumSize(300, 200);
+		setRequiredSize(300, 200);
 	}
 
 	public void setRootPath(String path) {

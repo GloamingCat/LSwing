@@ -20,6 +20,10 @@ public class MySubContentEditor extends LObjectEditor<MySubContent> {
 	 */
 	public MySubContentEditor(LContainer parent) {
 		super(parent, true);
+	}
+
+	@Override
+	protected void createContent(int style) {
 		setGridLayout(2);
 
 		new LLabel(this, MyVocab.instance.TYPE);

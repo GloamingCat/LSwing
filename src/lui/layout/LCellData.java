@@ -95,7 +95,7 @@ public class LCellData extends lui.base.gui.LCellData {
 	public void storeMinimumSize(Dimension d, Dimension p) {
 		d.width = Math.max(d.width, minWidth);
 		d.height = Math.max(d.height, minHeight);
-		storePreferredSize(p);
+		//storePreferredSize(p);
 		if (!hExpand)
 			d.width = Math.max(d.width, p.width);
 		if (!vExpand)

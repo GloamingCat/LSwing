@@ -118,7 +118,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	
 	@Override
 	public void setHoverText(String text) {
-		tree.setToolTipText(text);
+		tree.setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
 	}
 
 	//endregion

@@ -37,6 +37,8 @@ public interface LLayedContainer extends LContainer {
 		gl.setHgap(getHorizontalSpacing());
 		gl.setVgap(getVerticalSpacing());
 		setLayout(gl);
+		getContentComposite().setAlignmentX(SwingConstants.LEFT);
+		getContentComposite().setAlignmentY(SwingConstants.TOP);
 	}
 
 	/** Grid layout (spacing = 5).
@@ -100,6 +102,12 @@ public interface LLayedContainer extends LContainer {
 
 	default void setSpacing(int s) {
 		setSpacing(s, s);
+	}
+
+	default LPoint getSpacing() {
+		Integer h = (Integer) getData("hSpacing");
+		Integer v = (Integer) getData("vSpacing");
+		return new LPoint(h == null ? 0 : h, v == null ? 0 : v);
 	}
 
 	default void setEqualCells(boolean horizontal, boolean vertical) {

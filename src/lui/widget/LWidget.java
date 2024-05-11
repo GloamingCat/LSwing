@@ -49,7 +49,7 @@ public abstract class LWidget extends LPanel implements LPastable {
 	}
 
 	public void setHoverText(String text) {
-		setToolTipText(text);
+		setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
 	}
 	
 	//////////////////////////////////////////////////
@@ -118,7 +118,7 @@ public abstract class LWidget extends LPanel implements LPastable {
 	@Override
 	public Dimension getMinimumSize() {
 		Dimension size = super.getMinimumSize();
-		size.height = Math.max(LPrefs.WIDGETHEIGHT, size.height);
+		size.height = LPrefs.WIDGETHEIGHT;
 		return size;
 	}
 

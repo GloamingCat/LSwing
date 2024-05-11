@@ -15,14 +15,14 @@ public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 	}
 	
 	public LTreeEditor(LContainer parent, boolean check) {
-		super(parent);
-		tree = createTree(check);
+		super(parent, check ? 1 : 0);
 		setListeners();
 		tree.setMenuInterface(getMenuInterface());
 	}
 
-	protected LTree<T, ST> createTree(boolean check) {
-		return new LTree<>(this, check) {
+	@Override
+	protected void createContent(int style) {
+		tree = new LTree<>(this, style == 1) {
 			@Override
 			public LEditEvent<ST> edit(LPath path) {
 				return onEditItem(path);

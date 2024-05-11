@@ -9,7 +9,6 @@ import lui.base.data.LDataList;
 import lui.editor.LGridForm;
 
 public abstract class GGridForm<T> extends LGridForm<T> {
-	private static final long serialVersionUID = 1L;
 
 	public GGridForm(LContainer parent, int columns) {
 		super(parent, columns);
@@ -17,11 +16,8 @@ public abstract class GGridForm<T> extends LGridForm<T> {
 
 	@SuppressWarnings("unchecked")
 	public LDataList<T> duplicateData(LDataList<T> obj) {
-		LDataList<T> copy = new LDataList<>();		
-		if (!copy.getClass().isInstance(obj))
-			throw new ClassCastException("Object cannot be cast to " + copy.getClass().getTypeName());
-		LDataList<T> list = (LDataList<T>) obj;
-		for (T original : list) {
+		LDataList<T> copy = new LDataList<>();
+		for (T original : obj) {
 			String json = GGlobals.gson.toJson(original, original.getClass());
 			copy.add((T) GGlobals.gson.fromJson(json, original.getClass()));
 		}

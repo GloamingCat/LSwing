@@ -57,7 +57,7 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	
 	@Override
 	public void setHoverText(String text) {
-		getControl().setToolTipText(text);
+		getControl().setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
 	}
 	
 	@Override

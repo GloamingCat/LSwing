@@ -40,7 +40,7 @@ public class LButton extends LWidget {
 	}
 	
 	public void setHoverText(String text) {
-		button.setToolTipText(text);
+		button.setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
 	}
 	
 	@Override

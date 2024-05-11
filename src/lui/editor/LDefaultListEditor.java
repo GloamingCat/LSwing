@@ -6,13 +6,7 @@ import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 
 public abstract class LDefaultListEditor<T> extends LListEditor<T, T> {
-	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
 	public LDefaultListEditor(LContainer parent) {
 		super(parent);
 	}

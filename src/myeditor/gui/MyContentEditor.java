@@ -17,8 +17,8 @@ import myeditor.project.MyProject;
 
 public class MyContentEditor extends LObjectEditor<MyContent> {
 
-	private final LImageButton btnImage;
-	public final MySubContentEditor subEditor;
+	private LImageButton btnImage;
+	public MySubContentEditor subEditor;
 
 	/**
 	 * Create the composite.
@@ -27,6 +27,10 @@ public class MyContentEditor extends LObjectEditor<MyContent> {
 	 */
 	public MyContentEditor(LContainer parent) {
 		super(parent, true);
+	}
+
+	@Override
+	protected void createContent(int style) {
 		setGridLayout(2);
 
 		LLabel lblName = new LLabel(this, MyVocab.instance.NAME);

@@ -16,7 +16,6 @@ public class LViewFolder extends LView {
 	 */
 	public LViewFolder(LContainer parent, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
-		setFillLayout(true);
 		tabFolder = new JTabbedPane();
 		add(tabFolder);
 		tabFolder.addChangeListener(e -> {
@@ -26,6 +25,7 @@ public class LViewFolder extends LView {
                 children.get(i).onVisible();
             }
         });
+		setFillLayout(true);
 	}
 	
 	public void addTab(String name, LView child) {

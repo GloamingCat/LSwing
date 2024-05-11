@@ -16,14 +16,14 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 	}
 	
 	public LListEditor(LContainer parent, boolean check) {
-		super(parent);	
-		list = createList(check);
+		super(parent, check ? 1 : 0);
 		setListeners();
 		list.setMenuInterface(getMenuInterface());
 	}
 
-	protected LList<T, ST> createList(boolean check) {
-		return new LList<T, ST>(this, check) {
+	@Override
+	protected void createContent(int style) {
+		list = new LList<>(this, style == 1) {
 			@Override
 			public LEditEvent<ST> edit(LPath path) {
 				return onEditItem(path);

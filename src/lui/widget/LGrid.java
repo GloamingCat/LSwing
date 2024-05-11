@@ -119,7 +119,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 	private LImage addLabel(int i, T data, boolean placeholder) {
 		LImage label = new LImage(this);
 		label.getCellData().setTargetSize(cellWidth, cellHeight);
-		label.getCellData().setMinimumSize(cellWidth, cellHeight);
+		label.getCellData().setRequiredSize(cellWidth, cellHeight);
 		label.getCellData().setAlignment(LFlags.FILL);
 		LPopupMenu menu = new LPopupMenu(label);
 		menu.putClientProperty("label", label);

@@ -8,9 +8,11 @@ import javax.swing.JFrame;
 
 import lui.container.LPanel;
 import lui.editor.LMenuBar;
+import lui.layout.LCellData;
+import lui.layout.LLayedCell;
 import lui.layout.LLayedContainer;
 
-public class LWindow implements LLayedContainer, lui.base.gui.LWindow {
+public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindow {
 
 	private final LWindow parent;
 	protected final JDialog jdialog;
@@ -38,7 +40,7 @@ public class LWindow implements LLayedContainer, lui.base.gui.LWindow {
 	 */
 	public LWindow(int width, int height) {
 		this();
-		setMinimumSize(width, height);
+		setRequiredSize(width, height);
 		setSize(width, height);
 	}
 
@@ -82,25 +84,67 @@ public class LWindow implements LLayedContainer, lui.base.gui.LWindow {
 			jdialog.setTitle(title);
 	}
 
-	public void setMinimumSize(int width, int height) {
+	public void setMenuBar(LMenuBar bar) {
 		if (jframe != null)
-			jframe.setMinimumSize(new Dimension(width, height));
+			jframe.setJMenuBar(bar);
 		else
-			jdialog.setMinimumSize(new Dimension(width, height));
+			jdialog.setJMenuBar(bar);
 	}
-	
+
+	//////////////////////////////////////////////////
+	//region Size
+
+	@Override
+	public LCellData getCellData() {
+		return null;
+	}
+
+	@Override
 	public void setSize(int width, int height) {
 		if (jframe != null)
 			jframe.setSize(width, height);
 		else
 			jdialog.setSize(width, height);
 	}
-	
-	public void setMenuBar(LMenuBar bar) {
+
+	@Override
+	public Dimension getSize(Dimension d) {
 		if (jframe != null)
-			jframe.setJMenuBar(bar);
+			return jframe.getSize(d);
 		else
-			jdialog.setJMenuBar(bar);
+			return jdialog.getSize(d);
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		if (jframe != null)
+			return jframe.getPreferredSize();
+		else
+			return jdialog.getPreferredSize();
+	}
+
+	@Override
+	public void setPreferredSize(Dimension d) {
+		if (jframe != null)
+			jframe.setPreferredSize(d);
+		else
+			jdialog.setPreferredSize(d);
+	}
+
+	@Override
+	public Dimension getMinimumSize() {
+		if (jframe != null)
+			return jframe.getMinimumSize();
+		else
+			return jdialog.getMinimumSize();
+	}
+
+	@Override
+	public void setMinimumSize(Dimension d) {
+		if (jframe != null)
+			jframe.setMinimumSize(d);
+		else
+			jdialog.setMinimumSize(d);
 	}
 
 	//endregion
@@ -169,7 +213,7 @@ public class LWindow implements LLayedContainer, lui.base.gui.LWindow {
 
 	//endregion
 
-	protected class LShellPanel extends LPanel {
+	protected static class LShellPanel extends LPanel {
 		
 		LWindow shell;
 		public LShellPanel(LWindow shell, JDialog jdialog) {

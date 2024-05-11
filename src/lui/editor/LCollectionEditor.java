@@ -27,9 +27,10 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 	public String fieldName = "";
 	protected LWindowFactory<ST> shellFactory;
 
-	public LCollectionEditor(LContainer parent) {
-		super(parent, false);
+	public LCollectionEditor(LContainer parent, int style) {
+		super(parent, style, false);
 		setFillLayout(true);
+		addMenu();
 	}
 	
 	protected void setListeners() {

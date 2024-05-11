@@ -43,10 +43,16 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	//////////////////////////////////////////////////
 	//region Constructors
 
-	public LObjectEditor(LContainer parent, boolean doubleBuffered) {
+	public LObjectEditor(LContainer parent, int style, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
+		createContent(style);
 		addMenu();
 	}
+	public LObjectEditor(LContainer parent, boolean doubleBuffered) {
+		this(parent, 0, doubleBuffered);
+	}
+
+	protected abstract void createContent(int style);
 
 	//endregion
 

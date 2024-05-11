@@ -12,7 +12,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import lui.base.LFlags;
-import lui.base.data.LPoint;
 import lui.base.event.LMouseEvent;
 import lui.base.event.listener.LMouseListener;
 import lui.layout.LLayedCell;
@@ -149,16 +148,6 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 		if (gridData == null)
 			gridData = new LCellData();
 		return gridData;
-	}
-
-	@Override
-	public LPoint getCurrentSize() {
-		return LLayedCell.super.getCurrentSize();
-	}
-
-	@Override
-	public LPoint getTargetSize() {
-		return LLayedCell.super.getTargetSize();
 	}
 
 	@Override

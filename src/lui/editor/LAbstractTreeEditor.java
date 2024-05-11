@@ -23,19 +23,19 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	
 	protected ArrayList<LEditor> contentEditors = new ArrayList<>();
 
-	public LAbstractTreeEditor(LContainer parent) {
-		super(parent);
+	public LAbstractTreeEditor(LContainer parent, int style) {
+		super(parent, style);
 		setFillLayout(true);
 	}
 	
 	protected void setListeners() {
 		super.setListeners();
-		getCollectionWidget().addInsertListener(new LCollectionListener<T>() {
+		getCollectionWidget().addInsertListener(new LCollectionListener<>() {
 			public void onInsert(LInsertEvent<T> event) {
 				getCollectionWidget().forceSelection(event.parentPath, event.index);
 			}
 		});
-		getCollectionWidget().addDeleteListener(new LCollectionListener<T>() {
+		getCollectionWidget().addDeleteListener(new LCollectionListener<>() {
 			public void onDelete(LDeleteEvent<T> event) {
 				try {
 					getCollectionWidget().forceSelection(event.parentPath, event.index);
@@ -48,18 +48,20 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 				}
 			}
 		});
-		getCollectionWidget().addMoveListener(new LCollectionListener<T>() {
+		getCollectionWidget().addMoveListener(new LCollectionListener<>() {
 			public void onMove(LMoveEvent<T> event) {
 				getCollectionWidget().forceSelection(event.destParent, event.destIndex);
 			}
 		});
-		getCollectionWidget().addEditListener(new LCollectionListener<ST>() {
+		getCollectionWidget().addEditListener(new LCollectionListener<>() {
 			public void onEdit(LEditEvent<ST> event) {
 				getCollectionWidget().forceSelection(event.path);
 			}
 		});
 		getCollectionWidget().addCheckListener(e -> {
-			setChecked((T) e.data, e.checked);
+			@SuppressWarnings("unchecked")
+			T data = (T) e.data;
+			setChecked(data, e.checked);
 		});
 	}
 	
@@ -88,7 +90,7 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	@Override
 	public LDataTree<T> duplicateData(LDataCollection<T> collection) {
 		LDataTree<T> node = (LDataTree<T>) collection;
-		LDataTree<T> copy = new LDataTree<T>(duplicateElement(node.data));
+		LDataTree<T> copy = new LDataTree<>(duplicateElement(node.data));
 		for(LDataTree<T> child : node.children) {
 			LDataTree<T> childCopy = duplicateData(child);
 			childCopy.setParent(copy);

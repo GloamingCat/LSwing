@@ -44,7 +44,7 @@ public class LFrame extends LPanel {
 	}
 
 	public void setHoverText(String text) {
-		setToolTipText(text);
+		setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
 	}
 	
 	@Override
