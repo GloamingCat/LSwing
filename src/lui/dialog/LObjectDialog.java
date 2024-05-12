@@ -10,17 +10,23 @@ import lui.base.LVocab;
 public abstract class LObjectDialog<T> extends LWindow {
 
 	protected LPanel content;
+	protected LPanel buttons;
 	protected T result = null;
 	protected T initial = null;
 
 	public LObjectDialog(LWindow parent, int minWidth, int minHeight, int style) {
 		super(parent, minWidth, minHeight);
 		createContent(style);
-		createButtons(content);
+		createButtons();
 		setGridLayout(1);
 		setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
 		content.getCellData().setExpand(true, true);
-		content.refreshLayout();
+		content.setPreferredSize(null);
+		content.refreshLayoutData();
+		content.revalidate();
+		buttons.setPreferredSize(null);
+		buttons.refreshLayoutData();
+		buttons.revalidate();
 		pack();
 	}
 
@@ -48,8 +54,8 @@ public abstract class LObjectDialog<T> extends LWindow {
 		content.setGridLayout(1);
 	}
 
-	protected void createButtons(LPanel content) {
-		LPanel buttons = new LPanel(this);
+	protected void createButtons() {
+		buttons = new LPanel(this);
 		buttons.setGridLayout(2);
 		buttons.getCellData().setExpand(true, false);
 		buttons.getCellData().setAlignment(LFlags.RIGHT);

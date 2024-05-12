@@ -1,12 +1,14 @@
 package lui.dialog;
 
+import lui.base.LPrefs;
 import lui.base.LVocab;
 import lui.widget.LLabel;
 import lui.widget.LText;
+import lui.widget.LTextBox;
 
 public class LStringDialog extends LObjectDialog<String> {
 	
-	private LText txtName;
+	private LTextBox txtName;
 
 	public LStringDialog(LWindow parent, String title) {
 		super(parent, title);
@@ -17,10 +19,10 @@ public class LStringDialog extends LObjectDialog<String> {
 		super.createContent(style);
 		content.setGridLayout(2);
 
-		new LLabel(content, LVocab.instance.TEXT).getCellData().setTargetSize(50, 50);
-		txtName = new LText(content);
+		new LLabel(content, LVocab.instance.TEXT).getCellData();
+		txtName = new LTextBox(content);
 		txtName.getCellData().setExpand(true, false);
-		txtName.getCellData().setRequiredSize(100, 50);
+		txtName.getCellData().setTargetSize(LPrefs.LISTWIDTH, LPrefs.LISTHEIGHT);
 	}
 	
 	public void open(String initial) {

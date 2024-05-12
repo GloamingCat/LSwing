@@ -46,9 +46,9 @@ public class GObjectDialog<T> extends LObjectDialog<T> {
 
 	@SuppressWarnings("unchecked")
 	public void open(T initial) {
-		super.open(initial);
 		T copy = (T) gson.fromJson(gson.toJson(initial), initial.getClass());
 		contentEditor.setObject(copy);
+		super.open(initial);
 	}
 
 	//endregion

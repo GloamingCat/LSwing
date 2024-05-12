@@ -17,8 +17,8 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 	private final LWindow parent;
 	protected final JDialog jdialog;
 	protected final JFrame jframe;
-	private final LPanel panel;
 
+	private final LPanel panel;
 	private final Component shell;
 	
 	//////////////////////////////////////////////////
@@ -43,9 +43,9 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 		this.parent = parent;
 		jframe = null;
 		if (parent.jframe != null)
-			jdialog = new JDialog(parent.jframe);
+			jdialog = new JDialog(parent.jframe, Dialog.ModalityType.APPLICATION_MODAL);
 		else
-			jdialog = new JDialog(parent.jdialog);
+			jdialog = new JDialog(parent.jdialog, Dialog.ModalityType.APPLICATION_MODAL);
 		jdialog.setLayout(new GridLayout(1, 1));
 		jdialog.setLocationRelativeTo(parent.shell);
 		shell = jdialog;
@@ -86,8 +86,11 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 
 	@Override
 	public void pack() {
+		panel.refreshLayoutData();
 		panel.setPreferredSize(null);
-		panel.refreshLayout();
+		panel.revalidate();
+		shell.setPreferredSize(null);
+		shell.revalidate();
 		if (jframe != null)
 			jframe.pack();
 		else
