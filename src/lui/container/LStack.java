@@ -7,7 +7,6 @@ import lui.widget.LWidget;
 
 public class LStack extends LPanel {
 
-	private static final long serialVersionUID = 1L;
 	private final CardLayout stack;
 	
 	public LStack(LContainer parent) {

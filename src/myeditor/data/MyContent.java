@@ -4,7 +4,7 @@ import lui.datainterface.LGraphical;
 import lui.graphics.LTexture;
 import myeditor.project.MyProject;
 
-public class MyContent implements LGraphical {
+public class MyContent implements LGraphical, Cloneable {
 
 	public String name;
 	public String img;
@@ -34,6 +34,20 @@ public class MyContent implements LGraphical {
 		return name;
 	}
 
+    @Override
+    public MyContent clone() {
+        try {
+            MyContent clone = (MyContent) super.clone();
+			clone.name = name;
+			clone.img = img;
+			clone.value = value;
+			clone.subContent = subContent.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
+
 	@Override
 	public LTexture toImage() {
 		return new LTexture(MyProject.current.imagePath() + img);
@@ -46,10 +60,6 @@ public class MyContent implements LGraphical {
 		} else {
 			return false;
 		}
-	}
-	
-	public MyContent clone() {
-		return new MyContent(name, value, img, subContent.clone());
 	}
 	
 	public String encode() {
@@ -86,5 +96,5 @@ public class MyContent implements LGraphical {
 			return false;
 		}
 	}
-	
+
 }

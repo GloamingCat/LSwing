@@ -6,8 +6,7 @@ public abstract class LWindowFactory<T> {
 	public T openWindow(LWindow parent, T initial) {
 		LObjectDialog<T> shell = createWindow(parent);
 		shell.open(initial);
-		T result = shell.getResult();
-		return result;
+        return shell.getResult();
 	}
 	
 }

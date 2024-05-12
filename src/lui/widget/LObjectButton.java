@@ -12,7 +12,7 @@ import gson.GGlobals;
 public abstract class LObjectButton<T> extends LControlWidget<T> {
 	
 	protected LWindowFactory<T> shellFactory;
-	private LButton button;
+	LButton button;
 
 	public LObjectButton(LContainer parent) {
 		super(parent);
@@ -20,6 +20,7 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 
 	@Override
 	protected void createContent(int flags) {
+		setFillLayout(true);
 		button = new LButton(this, LVocab.instance.SELECT);
 		button.onClick = arg0 -> {
             T newValue = shellFactory.openWindow(getWindow(), currentValue);
@@ -80,8 +81,13 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 	protected abstract Type getType();
 
 	@Override
+	public Dimension getMinimumSize() {
+		return button.getMinimumSize();
+	}
+
+	@Override
 	public Dimension getPreferredSize() {
-		return getMinimumSize();
+		return button.getPreferredSize();
 	}
 
 }

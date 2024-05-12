@@ -2,28 +2,20 @@ package lui.widget;
 
 import javax.swing.JComponent;
 
-import lui.base.LPrefs;
 import lui.container.LContainer;
-import lui.base.event.LSelectionEvent;
-import lui.base.event.listener.LSelectionListener;
 import lui.base.gui.LMenu;
 
 import java.awt.*;
 
 public class LActionButton extends LControlWidget<Object> {
-	private static final long serialVersionUID = 1L;
 
-	private LButton button;
-	
+	protected LButton button;
+
+	@SuppressWarnings({"DataFlowIssue"})
 	public LActionButton(LContainer parent, String text) {
 		super(parent);
 		button.setText(text);
-		button.onClick = new LSelectionListener() {
-			@Override
-			public void onSelect(LSelectionEvent arg0) {
-				notifyEmpty();
-			}
-		};
+		button.onClick = arg0 -> notifyEmpty();
 	}
 
 	@Override
@@ -53,8 +45,13 @@ public class LActionButton extends LControlWidget<Object> {
 	}
 
 	@Override
+	public Dimension getMinimumSize() {
+		return button.getMinimumSize();
+	}
+
+	@Override
 	public Dimension getPreferredSize() {
-		return getMinimumSize();
+		return button.getPreferredSize();
 	}
 
 }

@@ -13,25 +13,19 @@ import lui.dialog.LErrorDialog;
 import lui.dialog.LConfirmDialog;
 import lui.base.LVocab;
 import lui.base.action.LActionManager;
-import lui.base.event.LSelectionEvent;
-import lui.base.event.listener.LSelectionListener;
 import lui.base.serialization.LSerializer;
 
 public class LCommandButton extends LButton {
-	private static final long serialVersionUID = 1L;
 
 	public LSerializer projectSerializer = null;
 	public String command = null;
 	
 	public LCommandButton(LContainer parent, String text) {
 		super(parent, text);
-		onClick = new LSelectionListener() {
-			@Override
-			public void onSelect(LSelectionEvent event) {
-				if (askSave())
-					execute(command);
-			}
-		};
+		onClick = event -> {
+            if (askSave())
+                execute(command);
+        };
 	}
 
 	protected boolean execute(String command) {
@@ -47,14 +41,11 @@ public class LCommandButton extends LButton {
 				return true;
 			System.err.println("Program exit with code: " + exitCode);
 			return false;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		} catch (InterruptedException e) {
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 			return false;
 		}
-	}
+    }
 	
 	protected boolean askSave() {
 		if (projectSerializer == null)
@@ -77,19 +68,15 @@ public class LCommandButton extends LButton {
 					LActionManager.getInstance().onSave();
 					return true;
 				}
-			} else if (result == LConfirmDialog.NO) {
-				return true;
-			} else {
-				return false;
-			}
+			} else return result == LConfirmDialog.NO;
 		} else {
 			return true;
 		}
 	}
 
 	private static class StreamGobbler implements Runnable {
-		private InputStream inputStream;
-		private Consumer<String> consumer;
+		private final InputStream inputStream;
+		private final Consumer<String> consumer;
 
 		public StreamGobbler(InputStream inputStream, Consumer<String> consumer) {
 			this.inputStream = inputStream;

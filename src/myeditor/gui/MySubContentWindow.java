@@ -8,7 +8,7 @@ public class MySubContentWindow extends LObjectDialog<MySubContent> {
 
     private final MySubContentEditor editor;
     public MySubContentWindow(LWindow parent) {
-        super(parent, 0);
+        super(parent, "Sub-content");
         editor = new MySubContentEditor(content);
     }
 

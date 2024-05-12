@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import javax.swing.JComponent;
 import javax.swing.JSplitPane;
 
-import lui.base.data.LPoint;
 import lui.layout.LCellData;
 import lui.layout.LLayedCell;
 
@@ -35,11 +34,19 @@ public class LFlexPanel extends JSplitPane implements LContainer, LLayedCell {
 	//region Interfaces
 
 	public void setWeights(float first, float second) {
-		Dimension minimumSize = new Dimension(0, 0);
-		leftComponent.setMinimumSize(minimumSize);
-		rightComponent.setMinimumSize(minimumSize);
-		leftComponent.setPreferredSize(minimumSize);
-		rightComponent.setPreferredSize(minimumSize);
+		Dimension pl = leftComponent.getPreferredSize();
+		Dimension ml = leftComponent.getMinimumSize();
+		Dimension pr = rightComponent.getPreferredSize();
+		Dimension mr = rightComponent.getMinimumSize();
+		if (getOrientation() == VERTICAL_SPLIT) {
+			pl.height = pr.height = ml.height = mr.height = 0;
+		} else {
+			pl.width = pr.width = ml.width = mr.width = 0;
+		}
+		leftComponent.setMinimumSize(ml);
+		rightComponent.setMinimumSize(mr);
+		leftComponent.setPreferredSize(pl);
+		rightComponent.setPreferredSize(pr);
 		setResizeWeight(first / (first + second));
 		setDividerLocation(first / (first + second));
 	}
@@ -68,7 +75,7 @@ public class LFlexPanel extends JSplitPane implements LContainer, LLayedCell {
 	public Dimension getMinimumSize() {
 		Dimension d = super.getMinimumSize();
 		if (gridData != null)
-			gridData.storeMinimumSize(d, super.getPreferredSize());
+			gridData.storeMinimumSize(d);
 		return d;
 	}
 

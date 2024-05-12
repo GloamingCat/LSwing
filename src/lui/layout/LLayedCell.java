@@ -5,15 +5,14 @@ import java.awt.*;
 
 public interface LLayedCell extends lui.base.gui.LLayedCell {
 
+    @Override
     LCellData getCellData();
 
     Dimension getSize(Dimension d);
     Dimension getPreferredSize();
     Dimension getMinimumSize();
-
+    void revalidate();
     void setSize(int width, int height);
-    void setPreferredSize(Dimension d);
-    void setMinimumSize(Dimension d);
 
     @Override
     default LPoint getCurrentSize() {
@@ -23,6 +22,7 @@ public interface LLayedCell extends lui.base.gui.LLayedCell {
 
     @Override
     default LPoint getTargetSize() {
+        //revalidate();
         Dimension size = getPreferredSize();
         return new LPoint(size.width, size.height);
     }
@@ -36,16 +36,6 @@ public interface LLayedCell extends lui.base.gui.LLayedCell {
     @Override
     default void setCurrentSize(int width, int height) {
         setSize(width, height);
-    }
-
-    @Override
-    default void setTargetSize(int width, int height) {
-        setPreferredSize(new Dimension(width, height));
-    }
-
-    @Override
-    default void setRequiredSize(int width, int height) {
-        setMinimumSize(new Dimension(width, height));
     }
 
 }

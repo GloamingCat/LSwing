@@ -13,18 +13,29 @@ public abstract class LObjectDialog<T> extends LWindow {
 	protected T result = null;
 	protected T initial = null;
 
-	public LObjectDialog(LWindow parent, int style) {
-		super(parent);
+	public LObjectDialog(LWindow parent, int minWidth, int minHeight, int style) {
+		super(parent, minWidth, minHeight);
+		createContent(style);
+		createButtons(content);
 		setGridLayout(1);
 		setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
-		content = new LPanel(this);
-		content.setGridLayout(1);
 		content.getCellData().setExpand(true, true);
-		createContent(style);
+		content.refreshLayout();
+		pack();
+	}
+
+	public LObjectDialog(LWindow parent, int minWidth, int minHeight, int style, String title) {
+		this(parent, minWidth, minHeight, style);
+		setTitle(title);
+	}
+
+	public LObjectDialog(LWindow parent, int minWidth, int minHeight, String title) {
+		this(parent, minWidth, minHeight, 0);
+		setTitle(title);
 	}
 
 	public LObjectDialog(LWindow parent, int style, String title) {
-		this(parent, style);
+		this(parent, 0, 0, style);
 		setTitle(title);
 	}
 
@@ -33,6 +44,11 @@ public abstract class LObjectDialog<T> extends LWindow {
 	}
 
 	protected void createContent(int style) {
+		content = new LPanel(this);
+		content.setGridLayout(1);
+	}
+
+	protected void createButtons(LPanel content) {
 		LPanel buttons = new LPanel(this);
 		buttons.setGridLayout(2);
 		buttons.getCellData().setExpand(true, false);

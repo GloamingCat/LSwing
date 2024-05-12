@@ -7,7 +7,6 @@ import lui.container.LContainer;
 import lui.editor.LDefaultTreeEditor;
 
 public abstract class GDefaultTreeEditor<T> extends LDefaultTreeEditor<T> {
-	private static final long serialVersionUID = 1L;
 
 	public GDefaultTreeEditor(LContainer parent) {
 		super(parent);
@@ -21,28 +20,26 @@ public abstract class GDefaultTreeEditor<T> extends LDefaultTreeEditor<T> {
 		} else if (getType() == Integer.class) {
 			return (T) (Integer) 0;
 		} else {
-			return (T) GGlobals.gson.fromJson("{}", getType());
+			return GGlobals.gson.fromJson("{}", getType());
 		}
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	@Override
 	public T duplicateElement(T original) {
 		if (getType() != original.getClass())
 			throw new ClassCastException("Object cannot be cast to " + getType().getTypeName());
 		String json = GGlobals.gson.toJson(original, getType());
-		return (T) GGlobals.gson.fromJson(json, getType());
+		return GGlobals.gson.fromJson(json, getType());
 	}
 	
 	@Override
 	protected String encodeElement(T data) {
 		return GGlobals.gson.toJson(data, getType());
 	}
-	
-	@SuppressWarnings("unchecked")
+
 	@Override
 	protected T decodeElement(String str) {
-		return (T) GGlobals.gson.fromJson(str, getType());
+		return GGlobals.gson.fromJson(str, getType());
 	}
 
 	@Override

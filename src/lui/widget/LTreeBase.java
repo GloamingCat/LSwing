@@ -13,6 +13,7 @@ import java.util.Stack;
 import javax.swing.*;
 import javax.swing.tree.*;
 
+import lui.base.LPrefs;
 import lui.container.LContainer;
 import lui.base.action.collection.LMoveAction;
 import lui.base.data.LDataCollection;
@@ -24,8 +25,8 @@ import lui.graphics.LTexture;
 
 public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
-	protected JTree tree;
-	protected DefaultMutableTreeNode root;
+	JTree tree;
+	DefaultMutableTreeNode root;
 
 	//////////////////////////////////////////////////
 	//region Node Data
@@ -135,6 +136,8 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	}
 	
 	protected boolean canDrop(DefaultMutableTreeNode source, TreePath path) {
+		if (path == null)
+			return false;
 		DefaultMutableTreeNode target = (DefaultMutableTreeNode) path.getLastPathComponent();
 		while (target != null) {
 			if (target == source) {
@@ -285,7 +288,7 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		ItemData data = new ItemData(node.id);
 		refreshItemData(node, data);
 		newItem.setUserObject(data);
-		((DefaultTreeModel) tree.getModel()).insertNodeInto(newItem, parent, index >= 0 ? index : parent.getChildCount());;
+		((DefaultTreeModel) tree.getModel()).insertNodeInto(newItem, parent, index >= 0 ? index : parent.getChildCount());
 		int childIndex = 0;
 		for (LDataTree<T> child : node.children) {
 			createTreeItem(newItem, childIndex, child);
@@ -642,5 +645,28 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 	}
 
 	//endregion
-	
+
+	//////////////////////////////////////////////////
+	//region Properties
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension size = new Dimension(LPrefs.LISTWIDTH, LPrefs.LISTHEIGHT);
+		if (gridData != null)
+			gridData.storeMinimumSize(size);
+		return size;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension size = super.getPreferredSize();
+		size.width = Math.max(size.width, LPrefs.LISTWIDTH);
+		size.height = Math.max(size.height, LPrefs.LISTHEIGHT);
+		if (gridData != null)
+			gridData.storePreferredSize(size);
+		return size;
+	}
+
+	//endregion
+
 }

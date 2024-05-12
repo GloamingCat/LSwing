@@ -30,7 +30,10 @@ public class LFileSelector extends LNodeSelector<String> {
 		File f = new File(path);
 		if (!f.exists())
 			return;
-		for (File entry : f.listFiles()) {
+		File[] entries = f.listFiles();
+		if (entries == null)
+			return;
+		for (File entry : entries) {
 			if (entry.isDirectory()) {
 				LDataTree<String> subFolder = new LDataTree<>(entry.getName(), tree);
 				setFiles(subFolder, path + entry.getName() + "/");

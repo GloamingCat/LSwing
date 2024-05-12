@@ -13,26 +13,14 @@ import lui.container.LContainer;
 import lui.graphics.LTexture;
 
 public class LToggleButton extends LControlWidget<Boolean> {
-	private static final long serialVersionUID = 1L;
 
-	private JLabel icon;
-	private LTexture imgTrue;
-	private LTexture imgFalse;
+	JLabel icon;
+	LTexture imgTrue;
+	LTexture imgFalse;
 	private boolean enabled = true;
-	
+
 	public LToggleButton(LContainer parent) {
 		super(parent);
-		icon.setHorizontalAlignment(JLabel.CENTER);
-		icon.setVerticalAlignment(JLabel.CENTER);
-		icon.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent arg0) {
-				newModifyAction(currentValue, !currentValue);
-				if (enabled) {
-					setValue(!currentValue);
-				}
-			}
-		});
 	}
 	
 	public LToggleButton(LContainer parent, String imgTrue, String imgFalse) {
@@ -40,10 +28,20 @@ public class LToggleButton extends LControlWidget<Boolean> {
 		this.imgFalse = new LTexture(imgFalse);
 		this.imgTrue = new LTexture(imgTrue);
 		icon.setIcon(new ImageIcon(this.imgFalse.convert()));
+		icon.setHorizontalAlignment(JLabel.CENTER);
+		icon.setVerticalAlignment(JLabel.CENTER);
+		icon.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent arg0) {
+				newModifyAction(currentValue, !currentValue);
+				if (enabled)
+					setValue(!currentValue);
+			}
+		});
 	}
 
 	@Override
-	protected void createContent(int flags) {
+	protected final void createContent(int flags) {
 		icon = new JLabel();
 		add(icon);
 	}
@@ -81,6 +79,9 @@ public class LToggleButton extends LControlWidget<Boolean> {
 		return Boolean.parseBoolean(str);
 	}
 
+	//////////////////////////////////////////////////
+	//region Properties
+
 	@Override
 	public Dimension getMinimumSize() {
 		LPoint p = imgFalse.getSize();
@@ -91,5 +92,7 @@ public class LToggleButton extends LControlWidget<Boolean> {
 	public Dimension getPreferredSize() {
 		return getMinimumSize();
 	}
+
+	//endregion
 
 }

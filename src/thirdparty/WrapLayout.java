@@ -6,7 +6,7 @@ import javax.swing.SwingUtilities;
 
 /**
  *  FlowLayout subclass that fully supports wrapping of components.
- *  Source: https://github.com/tips4java/tips4java/tree/main
+ *  <a href="https://github.com/tips4java/tips4java/tree/main">Source</a>
  */
 public class WrapLayout extends FlowLayout
 {
@@ -94,7 +94,6 @@ public class WrapLayout extends FlowLayout
 		//  When the container width = 0, the preferred width of the container
 		//  has not yet been calculated so lets ask for the maximum.
 
-		int targetWidth = target.getSize().width;
 		Container container = target;
 
 		while (container.getSize().width == 0 && container.getParent() != null)
@@ -102,9 +101,9 @@ public class WrapLayout extends FlowLayout
 			container = container.getParent();
 		}
 
-		targetWidth = container.getSize().width;
+		int targetWidth = container.getSize().width;
 
-		if (targetWidth == 0)
+		if (targetWidth == 0 || preferred)
 			targetWidth = Integer.MAX_VALUE;
 
 		int hgap = getHgap();

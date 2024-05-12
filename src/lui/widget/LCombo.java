@@ -1,9 +1,8 @@
 package lui.widget;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -13,7 +12,7 @@ import lui.container.LContainer;
 
 public class LCombo extends LControlWidget<Integer> {
 
-	private JComboBox<String> combo;
+	JComboBox<String> combo;
 	private boolean includeID = true;
 	private boolean optional = true;
 	
@@ -83,17 +82,14 @@ public class LCombo extends LControlWidget<Integer> {
 	
 	public void setItems(Object[] items) {
 		ArrayList<Object> array = new ArrayList<>();
-		if (items != null) {
-			for(Object item : items) {
-				array.add(item);
-			}
-		}
+		if (items != null)
+            Collections.addAll(array, items);
 		setItems(array);
 	}
 	
 	public void setItems(ArrayList<?> array) {
 		if (array == null)
-			array = new ArrayList<Object>();
+			array = new ArrayList<>();
 		if (optional)
 			combo.addItem("");
 		int id = 0;
@@ -125,18 +121,6 @@ public class LCombo extends LControlWidget<Integer> {
 	@Override
 	public Integer decodeData(String str) {
 		return Integer.parseInt(str);
-	}
-
-	@Override
-	public Dimension getMinimumSize() {
-		Dimension size = super.getMinimumSize();
-		size.height = LPrefs.WIDGETHEIGHT;
-		return size;
-	}
-
-	@Override
-	public Dimension getPreferredSize() {
-		return getMinimumSize();
 	}
 
 }

@@ -9,7 +9,7 @@ import java.awt.*;
 
 public class LSpinner extends LControlWidget<Integer> {
 
-	private JSpinner spinner;
+	JSpinner spinner;
 	private Integer minimum = 0;
 	private Integer maximum = 100;
 	private final Integer step = 1;
@@ -27,6 +27,12 @@ public class LSpinner extends LControlWidget<Integer> {
 		setFillLayout(true);
 		getCellData().setExpand(true, false);
 		getCellData().setSpread(columns, 1);
+		spinner.addChangeListener(e -> {
+            if (currentValue != null && spinner.getValue() == currentValue)
+                return;
+            newModifyAction(currentValue, (Integer) spinner.getValue());
+            currentValue = (Integer) spinner.getValue();
+        });
 	}
 	
 	@Override
@@ -34,12 +40,6 @@ public class LSpinner extends LControlWidget<Integer> {
 		spinner = new JSpinner();
 		add(spinner);
 		spinner.setModel(new SpinnerNumberModel(0, 0, 100, 1));
-		spinner.addChangeListener(e -> {
-            if (currentValue != null && spinner.getValue() == currentValue)
-                return;
-            newModifyAction(currentValue, (Integer) spinner.getValue());
-            currentValue = (Integer) spinner.getValue();
-        });
 		spinner.setEnabled(true);
 		spinner.setEditor(new JSpinner.NumberEditor(spinner));
 	}
@@ -83,11 +83,6 @@ public class LSpinner extends LControlWidget<Integer> {
 	@Override
 	public Integer decodeData(String str) {
 		return Integer.parseInt(str);
-	}
-
-	@Override
-	public Dimension getPreferredSize() {
-		return getMinimumSize();
 	}
 
 }

@@ -12,7 +12,6 @@ import lui.base.event.listener.LSelectionListener;
 import lui.base.gui.LMenu;
 
 public class LPopupMenu extends JPopupMenu implements LMenu {
-	private static final long serialVersionUID = 1L;
 	
 	public LPopupMenu(JComponent c) {
 		c.setComponentPopupMenu(this);

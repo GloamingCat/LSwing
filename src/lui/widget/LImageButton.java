@@ -11,7 +11,7 @@ import lui.dialog.LObjectDialog;
 
 public class LImageButton extends LObjectButton<String> {
 
-	protected LImage image;
+	protected LImage image = null;
 	protected String folder = "";
 
 	public LImageButton(LContainer parent, boolean optional) {

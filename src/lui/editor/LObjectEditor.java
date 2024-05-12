@@ -22,6 +22,8 @@ import lui.container.LControlView;
 import lui.container.LView;
 import lui.widget.LControlWidget;
 
+import javax.swing.*;
+
 /**
  * A specific type of Editor that edits a single object.
  * It has a collection of different Controls to edit the
@@ -43,13 +45,17 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	//////////////////////////////////////////////////
 	//region Constructors
 
-	public LObjectEditor(LContainer parent, int style, boolean doubleBuffered) {
+	protected LObjectEditor(JComponent parent, int style, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
 		createContent(style);
 		addMenu();
 	}
+
+	public LObjectEditor(LContainer parent, int style, boolean doubleBuffered) {
+		this(parent.getContentComposite(), style, doubleBuffered);
+	}
 	public LObjectEditor(LContainer parent, boolean doubleBuffered) {
-		this(parent, 0, doubleBuffered);
+		this(parent.getContentComposite(), 0, doubleBuffered);
 	}
 
 	protected abstract void createContent(int style);
@@ -240,7 +246,7 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	}
 	
 	public void notifyListeners(LControlEvent<T> event) {
-		for(LControlListener<T> listener : modifyListeners) {
+		for (LControlListener<T> listener : modifyListeners) {
 			listener.onModify(event);
 		}
 	}

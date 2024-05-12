@@ -5,7 +5,6 @@ import lui.base.data.LPoint;
 import lui.container.LContainer;
 import thirdparty.WrapLayout;
 
-import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
@@ -37,32 +36,28 @@ public interface LLayedContainer extends LContainer {
 		gl.setHgap(getHorizontalSpacing());
 		gl.setVgap(getVerticalSpacing());
 		setLayout(gl);
-		getContentComposite().setAlignmentX(SwingConstants.LEFT);
-		getContentComposite().setAlignmentY(SwingConstants.TOP);
+		LPoint margin = getMargins();
+		setMargins(margin.x, margin.y);
 	}
 
 	/** Grid layout (spacing = 5).
 	 */
 	default void setGridLayout(int columns) {
-		LPoint margins = getMargins();
 		GridBagLayout gbl = new GridBagLayout();
 		setData("columns", columns);
 		setData("hSpacing", LPrefs.GRIDSPACING);
 		setData("vSpacing", LPrefs.GRIDSPACING);
 		setLayout(gbl);
-		setMargins(margins.x, margins.y);
-		getContentComposite().setAlignmentX(SwingConstants.LEFT);
-		getContentComposite().setAlignmentY(SwingConstants.TOP);
 	}
 
 	/** Column/row layout (spacing = 5).
 	 */
 	default void setSequentialLayout(boolean horizontal) {
 		if (horizontal) {
-			WrapLayout fl = new WrapLayout();
-			fl.setHgap(LPrefs.GRIDSPACING);
-			fl.setVgap(LPrefs.GRIDSPACING);
-			setLayout(fl);
+			WrapLayout wl = new WrapLayout();
+			wl.setHgap(LPrefs.GRIDSPACING);
+			wl.setVgap(LPrefs.GRIDSPACING);
+			setLayout(wl);
 		} else {
 			setGridLayout(1);
 		}
@@ -71,8 +66,6 @@ public interface LLayedContainer extends LContainer {
 	default void setMargins(int h, int v) {
 		setData("hMargin", h);
 		setData("vMargin", v);
-		v -= getVerticalSpacing();
-		h -= getHorizontalSpacing();
 		setBorder(new EmptyBorder(v, h, v, h));
 	}
 
@@ -83,6 +76,8 @@ public interface LLayedContainer extends LContainer {
 	}
 
 	default void setSpacing(int h, int v) {
+		setData("hSpacing", h);
+		setData("vSpacing", v);
 		LayoutManager l = getLayout();
 		if (l instanceof GridLayout gl) {
             gl.setHgap(h);
@@ -90,14 +85,7 @@ public interface LLayedContainer extends LContainer {
 		} else if (l instanceof WrapLayout fl) {
             fl.setHgap(h);
 			fl.setVgap(v);
-		} else {
-			LPoint margins = getMargins();
-			margins.x += getHorizontalSpacing() - h;
-			margins.y += getVerticalSpacing() - v;
-			setMargins(margins.x, margins.y);
 		}
-		setData("hSpacing", h);
-		setData("vSpacing", v);
 	}
 
 	default void setSpacing(int s) {

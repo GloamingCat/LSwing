@@ -118,6 +118,10 @@ public abstract class LPainter {
 	public void setFillColor(LColor color) {
 		gc.setColor(color.convert());
 	}
+
+	public void setLineWidth(int w) {
+		gc.setStroke(new BasicStroke(w));
+	}
 	
 	public void dispose() {
 		gc.dispose();

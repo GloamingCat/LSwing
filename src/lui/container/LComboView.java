@@ -7,7 +7,6 @@ import lui.widget.LControlWidget;
 
 public class LComboView extends LControlView<Integer> {
 
-	private static final long serialVersionUID = 1L;
 	protected LCombo combo;
 	
 	public LComboView(LContainer parent) {
@@ -32,6 +31,6 @@ public class LComboView extends LControlView<Integer> {
 		return combo;
 	}
 	
-	protected ArrayList<?> getArray() { return new ArrayList<Object>(); }
+	protected ArrayList<?> getArray() { return new ArrayList<>(); }
 	
 }

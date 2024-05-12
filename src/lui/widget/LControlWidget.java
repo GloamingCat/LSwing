@@ -65,10 +65,9 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 		super.setComponentPopupMenu(menu);
 		getControl().setComponentPopupMenu(menu);
 	}
-	
-	//-------------------------------------------------------------------------------------
-	// Modify Events
-	//-------------------------------------------------------------------------------------
+
+	//////////////////////////////////////////////////
+	//region Modify Events
 
 	protected void newModifyAction(T oldValue, T newValue) {
 		LControlEvent<T> event = new LControlEvent<>(oldValue, newValue);
@@ -103,10 +102,11 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 		if (e != null)
 			notifyListeners(e);
 	}
-	
-	//-------------------------------------------------------------------------------------
-	// Copy / Paste
-	//-------------------------------------------------------------------------------------
+
+	//endregion
+
+	//////////////////////////////////////////////////
+	//region Copy / Paste
 	
 	@Override
 	public void onCopyButton(LMenu menu) {
@@ -143,4 +143,6 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 		}
 	}
 
+	//endregion
+	
 }

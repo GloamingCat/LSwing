@@ -8,6 +8,8 @@ import lui.base.action.LActionStack;
 import lui.base.action.LState;
 import lui.editor.LEditor;
 
+import javax.swing.*;
+
 public class LView extends LPanel implements lui.base.gui.LView {
 	
 	protected LView parent;
@@ -17,13 +19,20 @@ public class LView extends LPanel implements lui.base.gui.LView {
 	protected ArrayList<LView> children = new ArrayList<>();
 	protected ArrayList<LEditor> subEditors = new ArrayList<>();
 	
-	/**
-	 * No layout.
-	 */
-	public LView(LContainer parent, boolean doubleBuffered) {
-		super(parent.getContentComposite());
+
+	//////////////////////////////////////////////////
+	//region Constructors
+
+	protected LView(JComponent parent, boolean doubleBuffered) {
+		super(parent);
 		this.doubleBuffered = doubleBuffered;
 	}
+
+	public LView(LContainer parent, boolean doubleBuffered) {
+		this(parent.getContentComposite(), doubleBuffered);
+	}
+
+	//endregion
 
 	public void addChild(LView child) {
 		if (child.parent != null) {
@@ -75,7 +84,7 @@ public class LView extends LPanel implements lui.base.gui.LView {
 	}
 	
 	public void onChildVisible() {
-		for(LView child : children) {
+		for (LView child : children) {
 			child.onVisible();
 		}
 	}

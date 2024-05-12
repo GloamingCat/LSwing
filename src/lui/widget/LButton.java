@@ -1,8 +1,6 @@
 package lui.widget;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 
@@ -13,13 +11,11 @@ import lui.base.gui.LMenu;
 
 public class LButton extends LWidget {
 	
-	public LSelectionListener onClick;
-	protected JButton button;
-	
+	public LSelectionListener onClick = null;
+	JButton button;
+
 	public LButton(LContainer parent, String text) {
 		super(parent);
-		setFillLayout(true);
-		button.addActionListener(e -> execute());
 		button.setText(text);
 	}
 
@@ -27,12 +23,12 @@ public class LButton extends LWidget {
 	protected void createContent(int flags) {
 		button = new JButton();
 		add(button);
+		button.addActionListener(e -> execute());
 	}
 	
 	protected void execute() {
-		if (onClick != null) {
+		if (onClick != null)
 			onClick.onSelect(null);
-		}
 	}
 	
 	public void setText(String text) {
@@ -54,9 +50,27 @@ public class LButton extends LWidget {
 		return false;
 	}
 
+	//////////////////////////////////////////////////
+	//region Properties
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension size = new Dimension(LPrefs.BUTTONWIDTH, LPrefs.WIDGETHEIGHT);
+		if (gridData != null)
+			gridData.storeMinimumSize(size);
+		return size;
+	}
+
 	@Override
 	public Dimension getPreferredSize() {
-		return getMinimumSize();
+		Dimension size = button.getPreferredSize();
+		size.width = Math.max(size.width, LPrefs.BUTTONWIDTH);
+		size.height = LPrefs.WIDGETHEIGHT;
+		if (gridData != null)
+			gridData.storePreferredSize(size);
+		return size;
 	}
+
+	//endregion
 
 }

@@ -30,6 +30,13 @@ public class LColor {
 		blue = 255;
 		alpha = 255;
 	}
+
+	public LColor(Color c) {
+		red = c.getRed();
+		green = c.getGreen();
+		blue = c.getBlue();
+		alpha = c.getAlpha();
+	}
 	
 	public Color convert() {
 		return new Color(red, green, blue);
@@ -38,7 +45,7 @@ public class LColor {
 	//////////////////////////////////////////////////
 	//region Map
 	
-	private static HashMap<String, LColor> colorMap = new HashMap<String, LColor>();
+	private static final HashMap<String, LColor> colorMap = new HashMap<>();
 	
 	public static void setColor(String name, int r, int g, int b, int a) {
 		colorMap.put(name, new LColor(r, g, b, a));

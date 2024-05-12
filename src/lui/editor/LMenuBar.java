@@ -7,7 +7,6 @@ import lui.base.gui.LMenu;
 import lui.dialog.LWindow;
 
 public class LMenuBar extends JMenuBar implements LMenu {
-	private static final long serialVersionUID = 1L;
 
 	public LMenuBar(LWindow w) {
 		w.setMenuBar(this);

@@ -1,5 +1,6 @@
 package lui;
 
+import lui.base.LPrefs;
 import lui.container.LStack;
 import lui.container.LView;
 import lui.dialog.LErrorDialog;
@@ -40,10 +41,9 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 	 * @wbp.eval.method.parameter initialWidth 800
 	 * @wbp.eval.method.parameter initialHeight 600
 	 */
-	public LApplicationWindow(int initialWidth, int initialHeight, String icon, String... args) {
-		super();
+	public LApplicationWindow(int minWidth, int minHeight, String icon, String... args) {
+		super(minWidth, minHeight);
 		LTexture.rootClass = getClass();
-		setSize(initialWidth, initialHeight);
 		if (icon != null) {
 			jframe.setIconImage(LTexture.getBufferedImage(icon));
 		}
@@ -63,6 +63,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 			System.out.println(folder);
 		}
 		loadDefault(folder);
+		setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
 		refreshLayout();
 	}
 

@@ -10,11 +10,17 @@ public class LCellData extends lui.base.gui.LCellData {
 	private int fill = GridBagConstraints.NONE;
 
     public GridBagConstraints getGridBagConstraints(int i, int cols, int hSpacing, int vSpacing) {
+		if (cols == 0)
+			cols = i + 1;
+		if (i < cols) // First row
+			vSpacing = 0;
+		if (i % cols == 0) // First column
+			hSpacing = 0;
 		return new GridBagConstraints(i % cols, i / cols,
 			Math.min(hSpread, cols), vSpread,
 			hExpand ? 1 : 0, vExpand ? 1 : 0,
 			anchor, fill,
-			new Insets(vSpacing, hSpacing, vSpacing, hSpacing),
+			new Insets(vSpacing, hSpacing, 0, 0),
 			0, 0);
 	}
 
@@ -92,14 +98,9 @@ public class LCellData extends lui.base.gui.LCellData {
 			d.height = Math.max(d.height, minHeight);
 	}
 
-	public void storeMinimumSize(Dimension d, Dimension p) {
+	public void storeMinimumSize(Dimension d) {
 		d.width = Math.max(d.width, minWidth);
 		d.height = Math.max(d.height, minHeight);
-		//storePreferredSize(p);
-		if (!hExpand)
-			d.width = Math.max(d.width, p.width);
-		if (!vExpand)
-			d.height = Math.max(d.height, p.height);
 	}
 
 }

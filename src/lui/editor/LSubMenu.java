@@ -1,14 +1,10 @@
 package lui.editor;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.function.Consumer;
 
 import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import lui.base.event.LSelectionEvent;
 import lui.base.event.listener.LSelectionListener;
@@ -16,7 +12,6 @@ import lui.base.gui.LMenu;
 import lui.LGlobals;
 
 public class LSubMenu extends JMenu implements LMenu {
-	private static final long serialVersionUID = 1L;
 	
 	public LSubMenu(JComponent c) {
 		c.add(this);

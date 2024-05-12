@@ -4,10 +4,10 @@ import java.lang.reflect.Type;
 
 import gson.GGlobals;
 import lui.container.LContainer;
+import lui.datainterface.LInitializable;
 import lui.editor.LDefaultListEditor;
 
 public abstract class GDefaultListEditor<T> extends LDefaultListEditor<T> {
-	private static final long serialVersionUID = 1L;
 
 	public GDefaultListEditor(LContainer parent) {
 		super(parent);
@@ -21,17 +21,19 @@ public abstract class GDefaultListEditor<T> extends LDefaultListEditor<T> {
 		} else if (getType() == Integer.class) {
 			return (T) (Integer) 0;
 		} else {
-			return (T) GGlobals.gson.fromJson("{}", getType());
+			T data = GGlobals.gson.fromJson("{}", getType());
+			if (data instanceof LInitializable i)
+				i.initialize();
+			return data;
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public T duplicateElement(T original) {
 		if (getType() != original.getClass())
 			throw new ClassCastException("Object cannot be cast to " + getType().getTypeName());
 		String json = GGlobals.gson.toJson(original, getType());
-		return (T) GGlobals.gson.fromJson(json, getType());
+		return GGlobals.gson.fromJson(json, getType());
 	}
 	
 	@Override
@@ -39,10 +41,9 @@ public abstract class GDefaultListEditor<T> extends LDefaultListEditor<T> {
 		return GGlobals.gson.toJson(data, getType());
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected T decodeElement(String str) {
-		return (T) GGlobals.gson.fromJson(str, getType());
+		return GGlobals.gson.fromJson(str, getType());
 	}
 
 	@Override

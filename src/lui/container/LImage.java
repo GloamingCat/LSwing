@@ -4,7 +4,6 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 import lui.base.LFlags;
-import lui.base.LPrefs;
 import lui.graphics.LColor;
 import lui.base.data.LPoint;
 import lui.graphics.LRect;
@@ -178,11 +177,29 @@ public class LImage extends LCanvas {
 		rz = _r;
 	}
 
+	//////////////////////////////////////////////////
+	//region Properties
+
 	@Override
 	public Dimension getMinimumSize() {
-		Dimension size = super.getMinimumSize();
-		size.height = LPrefs.WIDGETHEIGHT;
+		if (buffer == null)
+			return super.getMinimumSize();
+		Dimension size = new Dimension(buffer.getWidth(), buffer.getHeight());
+		if (gridData != null)
+			gridData.storeMinimumSize(size);
 		return size;
 	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		if (buffer == null)
+			return super.getPreferredSize();
+		Dimension size = new Dimension(buffer.getWidth(), buffer.getHeight());
+		if (gridData != null)
+			gridData.storePreferredSize(size);
+		return size;
+	}
+
+	//endregion
 
 }

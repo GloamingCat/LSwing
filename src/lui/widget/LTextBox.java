@@ -15,7 +15,7 @@ import lui.container.LContainer;
 
 public class LTextBox extends LControlWidget<String> {
 	
-	private JTextArea text;
+	JTextArea text;
 
 	//////////////////////////////////////////////////
 	//region Constructors
@@ -63,7 +63,6 @@ public class LTextBox extends LControlWidget<String> {
 		text.setLineWrap(true);
 		text.setWrapStyleWord(true);
 		JScrollPane pane = new JScrollPane(text);
-		//pane.add(text);
 		add(pane);
 	}
 
@@ -116,6 +115,29 @@ public class LTextBox extends LControlWidget<String> {
 	@Override
 	public boolean canDecode(String str) {
 		return true;
+	}
+
+	//endregion
+
+	//////////////////////////////////////////////////
+	//region Properties
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension size = new Dimension(LPrefs.LISTWIDTH, LPrefs.LISTHEIGHT);
+		if (gridData != null)
+			gridData.storeMinimumSize(size);
+		return size;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension size = super.getPreferredSize();
+		size.width = Math.max(size.width, LPrefs.LISTWIDTH);
+		size.height = Math.max(size.height, LPrefs.LISTHEIGHT);
+		if (gridData != null)
+			gridData.storePreferredSize(size);
+		return size;
 	}
 
 	//endregion

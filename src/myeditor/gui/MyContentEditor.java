@@ -1,7 +1,6 @@
 package myeditor.gui;
 
 import lui.base.LFlags;
-import lui.base.LPrefs;
 import lui.container.LContainer;
 import lui.container.LFrame;
 import lui.container.LImage;

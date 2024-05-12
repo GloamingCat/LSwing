@@ -219,7 +219,7 @@ public class LTexture {
 	}
 	
 	
-	private static final HashMap<String, BufferedImage> loadedImages = new HashMap<String, BufferedImage>();	
+	private static final HashMap<String, BufferedImage> loadedImages = new HashMap<>();
 	
 	public static BufferedImage getBufferedImage(String fileName) {
 		BufferedImage image = loadedImages.get(fileName);

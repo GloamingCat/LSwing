@@ -45,6 +45,7 @@ public class LGlobals {
 		if (key.charAt(0) == '&')
 			key = "" + key.charAt(1);
 		int code = accelerators.get(key);
+		//noinspection MagicConstant
 		return KeyStroke.getKeyStroke(code, mask);
 	}
 	

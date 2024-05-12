@@ -11,8 +11,6 @@ import lui.container.LContainer;
 import lui.container.LPanel;
 import lui.container.LView;
 import lui.base.LVocab;
-import lui.base.event.LSelectionEvent;
-import lui.base.event.listener.LSelectionListener;
 import lui.base.gui.LPastable;
 import lui.widget.LButton;
 import lui.widget.LWidget;
@@ -23,6 +21,10 @@ public abstract class LEditor extends LView implements LPastable {
 	//region Constructors
 
 	public LEditor(LContainer parent, boolean doubleBuffered) {
+		super(parent, doubleBuffered);
+	}
+
+	public LEditor(JComponent parent, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
 	}
 
@@ -61,7 +63,8 @@ public abstract class LEditor extends LView implements LPastable {
 			@Override
 			public void mousePressed(MouseEvent e) {
 				if (e.getButton() == MouseEvent.BUTTON1) { // Left button
-					getMenuInterface().setFocusEditor(editor);
+					if (getMenuInterface() != null)
+						getMenuInterface().setFocusEditor(editor);
 				}
 			}
 		});

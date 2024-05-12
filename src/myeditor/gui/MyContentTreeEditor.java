@@ -61,7 +61,7 @@ public class MyContentTreeEditor extends LView {
 
 	private static class MyContentTree extends LTreeEditor<MyContent, MySubContent> {
 
-		private HashMap<MyContent, Boolean> visibility;
+		private final HashMap<MyContent, Boolean> visibility;
 		public MyContentTree(LContainer parent, HashMap<MyContent, Boolean> visibility) {
 			super(parent, true);
 			this.visibility = visibility;

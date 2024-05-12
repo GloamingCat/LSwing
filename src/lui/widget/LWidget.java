@@ -22,6 +22,9 @@ public abstract class LWidget extends LPanel implements LPastable {
 
 	protected LMenuInterface menuInterface;
 
+	//////////////////////////////////////////////////
+	//region Constructors
+
 	public LWidget(LContainer parent, int style) {
 		super(parent);
 		setLayout(new GridLayout(1, 1));
@@ -38,19 +41,7 @@ public abstract class LWidget extends LPanel implements LPastable {
 	
 	protected abstract void createContent(int flags);
 
-	public void setMenuInterface(LMenuInterface mi) {
-		menuInterface = mi;
-	}
-
-	public void newAction(LAction action) {
-		if (menuInterface != null) {
-			menuInterface.actionStack.newAction(action);
-		}
-	}
-
-	public void setHoverText(String text) {
-		setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
-	}
+	//endregion
 	
 	//////////////////////////////////////////////////
 	//region Menus
@@ -115,11 +106,49 @@ public abstract class LWidget extends LPanel implements LPastable {
 	
 	//endregion
 
+	//////////////////////////////////////////////////
+	//region Properties
+
+	public void setMenuInterface(LMenuInterface mi) {
+		menuInterface = mi;
+	}
+
+	public void newAction(LAction action) {
+		if (menuInterface != null) {
+			menuInterface.actionStack.newAction(action);
+		}
+	}
+
+	public void setHoverText(String text) {
+		setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
+	}
+
 	@Override
 	public Dimension getMinimumSize() {
+		// Default height for label/spinner/combo/text field/check box
+		// For tree/list/text box, override to expand
+		// For grid/image/toggle, override to consider images
+		// For button, override to change width
 		Dimension size = super.getMinimumSize();
 		size.height = LPrefs.WIDGETHEIGHT;
+		if (gridData != null)
+			gridData.storeMinimumSize(size);
 		return size;
 	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		// Default height for label/spinner/combo/text field/check box
+		// For tree/list/text box, override to expand
+		// For grid/image/toggle, override to consider images
+		// For button, override to change width
+		Dimension size = super.getPreferredSize();
+		size.height = LPrefs.WIDGETHEIGHT;
+		if (gridData != null)
+			gridData.storePreferredSize(size);
+		return size;
+	}
+
+	//endregion
 
 }

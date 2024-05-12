@@ -53,8 +53,8 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 	protected abstract LDataList<T> getDataCollection();
 	
 	public void onVisible() {
-		onChildVisible();
 		grid.setDataCollection(getDataCollection());
+		onChildVisible();
 	}
 		
 	@Override

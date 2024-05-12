@@ -31,22 +31,23 @@ public class LImageDialog extends LObjectDialog<String> {
 
 	public void createContent(int style) {
 		super.createContent(style);
-		LFlexPanel form = new LFlexPanel(content, true);
-		form.getCellData().setExpand(true, true);
 		content.setFillLayout(true);
+		content.getCellData().setRequiredSize(300, 200);
 
-		selFile = new LFileSelector(form, (style & LFlags.OPTIONAL) > 0);
+		LFlexPanel sash = new LFlexPanel(content, true);
+		sash.getCellData().setExpand(true, true);
+
+		selFile = new LFileSelector(sash, (style & LFlags.OPTIONAL) > 0);
 		selFile.addFileRestriction(this::isImage);
 
-		scroll = new LScrollPanel(form);
+		scroll = new LScrollPanel(sash);
 
 		imgQuad = new LImage(scroll);
 		imgQuad.setAlignment(LFlags.TOP | LFlags.LEFT);
 
 		selFile.addSelectionListener(event -> resetImage());
 
-		form.setWeights(1, 1);
-		setRequiredSize(300, 200);
+		sash.setWeights(1, 1);
 	}
 
 	public void setRootPath(String path) {

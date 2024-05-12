@@ -8,7 +8,13 @@ import gson.GGlobals;
 import lui.container.LContainer;
 import lui.editor.LObjectEditor;
 
+import javax.swing.*;
+
 public abstract class GDefaultObjectEditor<T> extends LObjectEditor<T> {
+
+	protected GDefaultObjectEditor(JComponent parent, int style, boolean doubleBuffered) {
+		super(parent, style, doubleBuffered);
+	}
 
 	public GDefaultObjectEditor(LContainer parent, boolean doubleBuffered) {
 		super(parent, doubleBuffered);

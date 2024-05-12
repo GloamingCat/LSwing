@@ -15,39 +15,39 @@ import com.goxr3plus.streamplayer.stream.StreamPlayerListener;
 
 public class LSoundPlayer {
 
-	private static ArrayList<LClip> sfx = new ArrayList<>();
+	private static final ArrayList<LClip> sfx = new ArrayList<>();
 	private static LClip bgm = null;
 
 	private interface LClip {
-		public void play() throws Exception;
-		public void setVolume(float v);
-		public void setPitch(float v);
-		public void stop();
-		public boolean isPlaying();
+		void play() throws Exception;
+		void setVolume(float v);
+		void setPitch(float v);
+		void stop();
+		boolean isPlaying();
 	}
 
 	private static LClip playAudio(String path, float volume, float pitch, boolean loop) {
-		LClip clip = null;
 		System.out.println(path + " " + volume + " " + pitch);
 		try {
 			File file = new File(path);
 			try {
-				clip = new JavaxClip(loop ? null : sfx, file);
+				LClip clip = new JavaxClip(loop ? null : sfx, file);
 				clip.setPitch(pitch);
 				clip.setVolume(volume);
 				clip.play();
+				return clip;
 			} catch (Exception e) {
 				e.printStackTrace();
-				clip = new G3PClip(loop ? null : sfx, file);
+				LClip clip = new G3PClip(loop ? null : sfx, file);
 				clip.setPitch(pitch);
 				clip.setVolume(volume);
 				clip.play();
+				return clip;
 			}
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
-			clip = null;
+			return null;
 		}
-		return clip;
 	}
 
 	public static void playBGM(String path, float volume, float pitch) {
@@ -56,8 +56,7 @@ public class LSoundPlayer {
 		if (bgm != null) {
 			bgm.stop();
 		}
-		var clip = playAudio(path, volume, pitch, true);
-		bgm = clip;
+        bgm = playAudio(path, volume, pitch, true);
 	}
 
 	public static void playSFX(String path, float volume, float pitch) {
@@ -97,26 +96,23 @@ public class LSoundPlayer {
 
 	private static class JavaxClip implements LClip {
 
-		private Clip clip;
+		private final Clip clip;
 		private boolean stopped = false;
 		private float pitch;
-		private AudioInputStream baseAis;
+		private final AudioInputStream baseAis;
 
 		public JavaxClip (ArrayList<LClip> sfx, File file) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 			baseAis = AudioSystem.getAudioInputStream(file);
 			clip = AudioSystem.getClip();
 			final LClip self = this;
-			clip.addLineListener(new LineListener() {
-				@Override
-				public void update(LineEvent event) {
-					if (event.getType() == LineEvent.Type.STOP && !stopped) {
-						if (sfx == null)
-							replay();
-						else
-							sfx.remove(self);
-					}
-				}
-			});
+			clip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP && !stopped) {
+                    if (sfx == null)
+                        replay();
+                    else
+                        sfx.remove(self);
+                }
+            });
 		}
 		
 		private void open(float sampleRate) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
@@ -161,8 +157,6 @@ public class LSoundPlayer {
 			FloatControl control = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
 			float g = (float) (20.0 * Math.log10(v));
 			control.setValue(g);
-			//FloatControl volumeControl = (FloatControl) mixer.getControl(FloatControl.Type.VOLUME);
-			//volumeControl.setValue(v);
 		}
 
 		public void stop() {
@@ -177,16 +171,16 @@ public class LSoundPlayer {
 
 	}
 	
-	private static Logger quietLogger = Logger.getLogger(StreamPlayer.class.getName());
+	private static final Logger quietLogger = Logger.getLogger(StreamPlayer.class.getName());
 	static {
 		quietLogger.setLevel(Level.SEVERE);
 	}
 
 	private static class G3PClip extends StreamPlayer implements LClip {
 
-		private File file;
+		private final File file;
 
-		public G3PClip(ArrayList<LClip> sfx, File file) throws StreamPlayerException {
+		public G3PClip(ArrayList<LClip> sfx, File file) {
 			super(quietLogger);
 			this.file = file;
 			G3PClip self = this;

@@ -3,7 +3,6 @@ package lui.container;
 import lui.base.LPrefs;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.border.CompoundBorder;
@@ -40,7 +39,6 @@ public class LFrame extends LPanel {
 
 	public void setTitle(String text) {
 		titledBorder.setTitle(text);
-		//setBorder(titledBorder);
 	}
 
 	public void setHoverText(String text) {

@@ -10,7 +10,7 @@ import lui.container.LContainer;
 
 public class LLabel extends LWidget {
 
-	private JLabel label;
+	JLabel label;
 
 	//////////////////////////////////////////////////
 	//region Basic Constructors
@@ -28,7 +28,6 @@ public class LLabel extends LWidget {
 		setAlignment(style);
 		getCellData().setExpand((style & LFlags.EXPAND) > 0, false);
 		getCellData().setAlignment(LFlags.FILL);
-		getCellData().setRequiredSize(LPrefs.LABELWIDTH, LPrefs.WIDGETHEIGHT);
 	}
 
 	@Override

@@ -1,18 +1,15 @@
 package lui.widget;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 
-import lui.base.LPrefs;
 import lui.container.LContainer;
 
 public class LCheckBox extends LControlWidget<Boolean> {
 
-	private JCheckBox button;
+	JCheckBox button;
 
 	public LCheckBox(LContainer parent) {
 		super(parent);
@@ -22,15 +19,12 @@ public class LCheckBox extends LControlWidget<Boolean> {
 	protected void createContent(int flags) {
 		button = new JCheckBox();
 		add(button);
-		button.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				if (button.isSelected() == currentValue)
-					return;
-				newModifyAction(currentValue, button.isSelected());
-				currentValue = button.isSelected();
-			}
-		});
+		button.addActionListener(e -> {
+            if (button.isSelected() == currentValue)
+                return;
+            newModifyAction(currentValue, button.isSelected());
+            currentValue = button.isSelected();
+        });
 	}
 
 	public void setValue(Object obj) {
@@ -75,4 +69,5 @@ public class LCheckBox extends LControlWidget<Boolean> {
 	public Dimension getPreferredSize() {
 		return getMinimumSize();
 	}
+
 }

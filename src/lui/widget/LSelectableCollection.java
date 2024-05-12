@@ -8,7 +8,6 @@ import lui.base.event.LSelectionEvent;
 import lui.base.event.listener.LSelectionListener;
 
 public abstract class LSelectableCollection<T, ST> extends LCollection<T, ST> {
-	private static final long serialVersionUID = 1L;
 	
 	public LSelectableCollection(LContainer parent) {
 		super(parent);

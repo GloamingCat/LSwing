@@ -25,10 +25,16 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 	
 	//////////////////////////////////////////////////
 	//region Constructors
-	
+
+	/** No layout.
+	 */
+	public LPanel(LContainer parent) {
+		this(parent.getContentComposite());
+	}
+
 	/** Internal, no layout.
 	 */
-	LPanel(JComponent parent) {
+	protected LPanel(JComponent parent) {
 		super();
 		parent.add(this);
 	}
@@ -46,11 +52,15 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 		super();
 		parent.add(this);
 	}
-	
-	/** No layout.
-	 */
-	public LPanel(LContainer parent) {
-		this(parent.getContentComposite());
+
+	// For ambiguity.
+	public LPanel(LPanel parent) {
+		this((LContainer) parent);
+	}
+
+	// For ambiguity.
+	public LPanel(LFrame parent) {
+		this((LContainer) parent);
 	}
 
 	//endregion
@@ -83,13 +93,13 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 			}
 			@Override
 			public void mousePressed(MouseEvent e0) {
-				LMouseEvent e = createMouseEvent(e0, true, false);
+				LMouseEvent e = createMouseEvent(e0, false, false);
 				for (LMouseListener l : mouseListeners)
 					l.onMouseChange(e);
 			}
 			@Override
 			public void mouseReleased(MouseEvent e0) {
-				LMouseEvent e = createMouseEvent(e0, false, false);
+				LMouseEvent e = createMouseEvent(e0, true, false);
 				for (LMouseListener l : mouseListeners)
 					l.onMouseChange(e);
 			}
@@ -102,7 +112,10 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 		});
 		super.addMouseMotionListener(new MouseMotionListener() {
 			@Override
-			public void mouseDragged(MouseEvent e) {
+			public void mouseDragged(MouseEvent e0) {
+				LMouseEvent e = createMouseEvent(e0, false, false);
+				for (LMouseListener l : mouseListeners)
+					l.onMouseChange(e);
 			}
 			@Override
 			public void mouseMoved(MouseEvent e0) {
@@ -158,21 +171,19 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 	@Override
 	public Dimension getPreferredSize() {
 		Dimension d = super.getPreferredSize();
-		Dimension d2 = super.getMinimumSize();
+		Dimension d2 = getMinimumSize();
 		d.width = Math.max(d.width, d2.width);
 		d.height = Math.max(d.height, d2.height);
-		if (gridData != null) {
+		if (gridData != null)
 			gridData.storePreferredSize(d);
-		}
 		return d;
 	}
 
 	@Override
 	public Dimension getMinimumSize() {
 		Dimension d = super.getMinimumSize();
-		if (gridData != null) {
-			gridData.storeMinimumSize(d, super.getPreferredSize());
-		}
+		if (gridData != null)
+			gridData.storeMinimumSize(d);
 		return d;
 	}
 

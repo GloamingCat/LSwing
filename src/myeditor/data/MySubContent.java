@@ -1,6 +1,6 @@
 package myeditor.data;
 
-public class MySubContent {
+public class MySubContent implements Cloneable {
 
 	public String description = "No description";
 	public int value = 0;
@@ -16,16 +16,22 @@ public class MySubContent {
 	}
 	
 	public boolean equals(Object other) {
-		if (other instanceof MySubContent) {
-			MySubContent o = (MySubContent) other;
-			return o.description.equals(description) && o.value == value;
+		if (other instanceof MySubContent o) {
+            return o.description.equals(description) && o.value == value;
 		} else {
 			return false;
 		}
 	}
 	
 	public MySubContent clone() {
-		return new MySubContent(value, description);
+        try {
+            MySubContent clone = (MySubContent) super.clone();
+			clone.value = value;
+			clone.description = description;
+			return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
 	}
 	
 	public String encode() {

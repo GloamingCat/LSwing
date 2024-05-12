@@ -20,8 +20,7 @@ public class MyContentGridEditor extends LView {
 		LFlexPanel sashForm = new LFlexPanel(this, true);
 
         LDefaultGridEditor<MyContent> gridEditor = new MyContentGrid(sashForm);
-		gridEditor.getCollectionWidget().cellWidth = 40;
-		gridEditor.getCollectionWidget().cellHeight = 40;
+		gridEditor.getCollectionWidget().setCellSize(40, 40);
 		gridEditor.getCollectionWidget().setColumns(0);
 		addChild(gridEditor);
 

@@ -1,58 +1,44 @@
 package lui.widget;
 
+import lui.base.LPrefs;
 import lui.container.LContainer;
 import lui.base.LVocab;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
-import lui.base.event.LSelectionEvent;
 import lui.base.event.listener.LSelectionListener;
 
 import javax.swing.JComponent;
 
 public class LNodeSelector<T> extends LControlWidget<Integer> {
-	private static final long serialVersionUID = 1L;
 	
 	protected LDataTree<T> collection;
 	protected LTree<T, T> tree;
 	protected LButton btnNull;
-	
-	/**
-	 * Create the composite.
-	 * @param parent
-	 * @param style
-	 */
+
 	public LNodeSelector(LContainer parent, boolean optional) {
 		super(parent);
 		setGridLayout(1);
 		tree.getCellData().setExpand(true, true);
-		tree.addSelectionListener(new LSelectionListener() {
-			@Override
-			public void onSelect(LSelectionEvent event) {
-				LPath path = tree.getSelectedPath();
-				int id = path == null ? -1 : collection.getNode(path).id;
-				if ((Integer)id == currentValue)
-					return;
-				currentValue = id;
-				newModifyAction(currentValue, id);
-			}
-		});
+		tree.getCellData().setRequiredSize(LPrefs.LISTWIDTH, LPrefs.LISTHEIGHT);
+		tree.addSelectionListener(event -> {
+            LPath path = tree.getSelectedPath();
+            Integer id = path == null ? -1 : collection.getNode(path).id;
+            if (id.equals(currentValue))
+                return;
+            currentValue = id;
+            newModifyAction(currentValue, id);
+        });
 		tree.setDragEnabled(false);
 		if (!optional)
 			return;
 		btnNull = new LButton(this, LVocab.instance.DESELECT);
 		btnNull.getCellData().setExpand(true, false);
-		btnNull.onClick = new LSelectionListener() {
-			@Override
-			public void onSelect(LSelectionEvent event) {
-				selectNone();
-			}
-		};
+		btnNull.onClick = event -> selectNone();
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	protected void createContent(int flags) {
-		tree = new LTree<T, T>(this) {
+		tree = new LTree<>(this) {
 			@Override
 			public T toObject(LPath path) {
 				LDataTree<T> node = collection.getNode(path);
@@ -145,7 +131,7 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
 	}
 	
 	public void forceFirstSelection() {
-		if (collection.children.size() > 0)
+		if (!collection.children.isEmpty())
 			tree.forceSelection(new LPath(0));
 		else 
 			tree.select(null);

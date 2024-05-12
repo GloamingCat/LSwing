@@ -68,6 +68,8 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	}
 
 	protected int indexOf(DefaultMutableTreeNode item) {
+		if (item.getParent() == null)
+			return -1;
 		return item.getParent().getIndex(item);
 	}
 
@@ -86,19 +88,16 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	public LInsertEvent<T> insert(LPath parentPath, int index, LDataTree<T> node) {
 		DefaultMutableTreeNode parent = toTreeItem(parentPath);
 		createTreeItem(parent, index, node);
-		//refreshAll();
-		return new LInsertEvent<T>(parentPath, index, node);
+		return new LInsertEvent<>(parentPath, index, node);
 	}
 	
 	public LDeleteEvent<T> delete(LPath parentPath, int index) {
 		DefaultMutableTreeNode item = toTreeItem(parentPath, index);
 		LDataTree<T> node = disposeTreeItem(item);
-		//refreshAll();
 		return new LDeleteEvent<>(parentPath, index, node);
 	}
 	
 	public LEditEvent<ST> edit(LPath path) {
-		//refreshAll();
 		return null;
 	}
 	

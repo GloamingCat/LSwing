@@ -3,7 +3,6 @@ package lui.widget;
 import lui.base.event.LMoveEvent;
 import lui.container.LContainer;
 import lui.base.data.LDataTree;
-import lui.base.data.LPath;
 
 import javax.swing.DropMode;
 import javax.swing.tree.DefaultMutableTreeNode;

@@ -30,7 +30,8 @@ public interface LContainer {
 	}
 
 	default void refreshLayout() {
-		getTopComposite().validate();
+		getTopComposite().revalidate();
+		getTopComposite().repaint();
 	}
 	
 	default void dispose() {

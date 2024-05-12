@@ -18,7 +18,6 @@ import lui.base.event.listener.LCollectionListener;
 import lui.base.gui.LMenu;
 
 public abstract class LCollection<T, ST> extends LWidget implements lui.base.gui.LCollection<T, ST> {
-	private static final long serialVersionUID = 1L;
 	
 	public LCollection(LContainer parent) {
 		super(parent);
@@ -39,7 +38,7 @@ public abstract class LCollection<T, ST> extends LWidget implements lui.base.gui
 		LEditEvent<ST> event = edit(path);
 		if (event != null) {
 			if (menuInterface != null) {
-				LEditAction<ST> action = new LEditAction<ST>(this, path, event.oldData, event.newData);
+				LEditAction<ST> action = new LEditAction<>(this, path, event.oldData, event.newData);
 				menuInterface.actionStack.newAction(action);
 			}
 			notifyEditListeners(event);
@@ -51,7 +50,7 @@ public abstract class LCollection<T, ST> extends LWidget implements lui.base.gui
 		LInsertEvent<T> event = insert(parentPath, i, node);
 		if (event != null) {
 			if (menuInterface != null) {
-				LInsertAction<T> action = new LInsertAction<T>(this, parentPath, event.index, node);
+				LInsertAction<T> action = new LInsertAction<>(this, parentPath, event.index, node);
 				menuInterface.actionStack.newAction(action);
 			}
 			notifyInsertListeners(event);
@@ -63,7 +62,7 @@ public abstract class LCollection<T, ST> extends LWidget implements lui.base.gui
 		LDeleteEvent<T> event = delete(parentPath, i);
 		if (event != null) {
 			if (menuInterface != null) {
-				LDeleteAction<T> action = new LDeleteAction<T>(this, parentPath, event.index, event.node);
+				LDeleteAction<T> action = new LDeleteAction<>(this, parentPath, event.index, event.node);
 				menuInterface.actionStack.newAction(action);
 			}
 			notifyDeleteListeners(event);

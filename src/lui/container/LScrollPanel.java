@@ -24,7 +24,6 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 		content.setLayout(new GridLayout());
 		setViewportView(content);
 		setAutoscrolls(true);
-
 		if (large) {
 			getCellData().setExpand(true, true);
 		}
@@ -80,7 +79,7 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 	public Dimension getMinimumSize() {
 		Dimension d = super.getMinimumSize();
 		if (gridData != null)
-			gridData.storeMinimumSize(d, super.getPreferredSize());
+			gridData.storeMinimumSize(d);
 		return d;
 	}
 

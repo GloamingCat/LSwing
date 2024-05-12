@@ -3,30 +3,28 @@ package lui.widget;
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
 import javax.swing.JList;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
+import lui.base.LPrefs;
 import lui.container.LContainer;
 
-public class LFlatList extends LControlWidget<Integer> {
-	private static final long serialVersionUID = 1L;
+import java.awt.*;
 
-	protected JList<String> list;
+public class LFlatList extends LControlWidget<Integer> {
+
+	JList<String> list;
 	protected boolean optional;
-	
+
+	@SuppressWarnings({"DataFlowIssue"})
 	public LFlatList(LContainer parent, boolean optional) {
 		super(parent);
 		this.optional = optional;
-		list.addListSelectionListener(new ListSelectionListener() {
-			@Override
-			public void valueChanged(ListSelectionEvent e) {
-				int current = currentValue == null ? -1 : currentValue;
-				if (list.getSelectedIndex() == current)
-					return;
-				newModifyAction(currentValue, list.getSelectedIndex());
-				currentValue = list.getSelectedIndex();
-			}
-		});
+		list.addListSelectionListener(e -> {
+            int current = currentValue == null ? -1 : currentValue;
+            if (list.getSelectedIndex() == current)
+                return;
+            newModifyAction(currentValue, list.getSelectedIndex());
+            currentValue = list.getSelectedIndex();
+        });
 		if (optional)
 			currentValue = -1;
 		else
@@ -35,8 +33,8 @@ public class LFlatList extends LControlWidget<Integer> {
 
 	@Override
 	protected void createContent(int flags) {
-		list = new JList<String>();
-		list.setModel(new DefaultListModel<String>());
+		list = new JList<>();
+		list.setModel(new DefaultListModel<>());
 		add(list);
 	}
 	
@@ -102,5 +100,28 @@ public class LFlatList extends LControlWidget<Integer> {
 	protected JComponent getControl() {
 		return list;
 	}
+
+	//////////////////////////////////////////////////
+	//region Properties
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension size = new Dimension(LPrefs.LISTWIDTH, LPrefs.LISTHEIGHT);
+		if (gridData != null)
+			gridData.storeMinimumSize(size);
+		return size;
+	}
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension size = super.getPreferredSize();
+		size.width = Math.max(size.width, LPrefs.LISTWIDTH);
+		size.height = Math.max(size.height, LPrefs.LISTHEIGHT);
+		if (gridData != null)
+			gridData.storePreferredSize(size);
+		return size;
+	}
+
+	//endregion
 
 }

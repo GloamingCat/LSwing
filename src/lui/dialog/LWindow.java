@@ -1,6 +1,6 @@
 package lui.dialog;
 
-import java.awt.Dimension;
+import java.awt.*;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -18,6 +18,8 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 	protected final JDialog jdialog;
 	protected final JFrame jframe;
 	private final LPanel panel;
+
+	private final Component shell;
 	
 	//////////////////////////////////////////////////
 	//region Constructors
@@ -29,19 +31,9 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 		parent = null;
 		jdialog = null;
 		jframe = new JFrame();
+		jframe.setLayout(new GridLayout(1, 1));
+		shell = jframe;
 		panel = new LShellPanel(this, jframe);
-	}
-	
-	/**
-	 * Root shell with selection size.
-	 * @wbp.parser.constructor
-	 * @wbp.eval.method.parameter width 300
-	 * @wbp.eval.method.parameter height 200
-	 */
-	public LWindow(int width, int height) {
-		this();
-		setRequiredSize(width, height);
-		setSize(width, height);
 	}
 
 	/**
@@ -54,9 +46,34 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 			jdialog = new JDialog(parent.jframe);
 		else
 			jdialog = new JDialog(parent.jdialog);
+		jdialog.setLayout(new GridLayout(1, 1));
+		jdialog.setLocationRelativeTo(parent.shell);
+		shell = jdialog;
 		panel = new LShellPanel(this, jdialog);
 	}
-	
+
+	/**
+	 * Root shell with minimum size.
+	 * @wbp.parser.constructor
+	 * @wbp.eval.method.parameter width 300
+	 * @wbp.eval.method.parameter height 200
+	 */
+	public LWindow(int width, int height) {
+		this();
+		panel.getCellData().setRequiredSize(width, height);
+	}
+
+	/**
+	 * Sub-shell with minimum size.
+	 * @wbp.parser.constructor
+	 * @wbp.eval.method.parameter width 300
+	 * @wbp.eval.method.parameter height 200
+	 */
+	public LWindow(LWindow parent, int width, int height) {
+		this(parent);
+		panel.getCellData().setRequiredSize(width, height);
+	}
+
 	//endregion
 	
 	//////////////////////////////////////////////////
@@ -64,11 +81,17 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 
 	@Override
 	public void refreshLayout() {
-		if (jframe != null) {
-			jframe.validate();
-		} else {
-			jdialog.validate();
-		}
+		shell.revalidate();
+	}
+
+	@Override
+	public void pack() {
+		panel.setPreferredSize(null);
+		panel.refreshLayout();
+		if (jframe != null)
+			jframe.pack();
+		else
+			jdialog.pack();
 	}
 	
 	//endregion
@@ -100,51 +123,28 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 	}
 
 	@Override
-	public void setSize(int width, int height) {
-		if (jframe != null)
-			jframe.setSize(width, height);
-		else
-			jdialog.setSize(width, height);
+	public Dimension getSize(Dimension d) {
+		return shell.getSize(d);
 	}
 
 	@Override
-	public Dimension getSize(Dimension d) {
-		if (jframe != null)
-			return jframe.getSize(d);
-		else
-			return jdialog.getSize(d);
+	public void setSize(int width, int height) {
+		shell.setSize(width, height);
 	}
 
 	@Override
 	public Dimension getPreferredSize() {
-		if (jframe != null)
-			return jframe.getPreferredSize();
-		else
-			return jdialog.getPreferredSize();
-	}
-
-	@Override
-	public void setPreferredSize(Dimension d) {
-		if (jframe != null)
-			jframe.setPreferredSize(d);
-		else
-			jdialog.setPreferredSize(d);
+		return shell.getPreferredSize();
 	}
 
 	@Override
 	public Dimension getMinimumSize() {
-		if (jframe != null)
-			return jframe.getMinimumSize();
-		else
-			return jdialog.getMinimumSize();
+		return shell.getMinimumSize();
 	}
 
 	@Override
-	public void setMinimumSize(Dimension d) {
-		if (jframe != null)
-			jframe.setMinimumSize(d);
-		else
-			jdialog.setMinimumSize(d);
+	public void revalidate() {
+		shell.revalidate();
 	}
 
 	//endregion
@@ -158,17 +158,11 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 	
 	public void open() {
 		refreshLayout();
-		if (jframe != null)
-			jframe.setVisible(true);
-		else
-			jdialog.setVisible(true);
+		shell.setVisible(true);
 	}
 	
 	public void close() {
-		if (jframe != null)
-			jframe.setVisible(false);
-		else
-			jdialog.setVisible(false);
+		shell.setVisible(false);
 	}
 
 	@Override
@@ -222,8 +216,8 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 			setFillLayout(true);
 		}
 		
-		public LShellPanel(LWindow shell, JFrame jdialog) {
-			super(jdialog);
+		public LShellPanel(LWindow shell, JFrame jframe) {
+			super(jframe);
 			this.shell = shell;
 			setFillLayout(true);
 		}

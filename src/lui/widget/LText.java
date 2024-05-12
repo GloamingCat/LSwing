@@ -1,6 +1,5 @@
 package lui.widget;
 
-import lui.base.LPrefs;
 import lui.container.*;
 
 import java.awt.*;
@@ -17,7 +16,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 public class LText extends LControlWidget<String> {
 	
-	protected JTextField text;
+	JTextField text;
 
 	/**
 	 * @wbp.parser.constructor
@@ -98,15 +97,13 @@ public class LText extends LControlWidget<String> {
 	
 	@Override
 	public void setValue(Object value) {
+		currentValue = (String) value;
 		if (text.getText().equals(value))
 			return;
 		if (value != null) {
-			String s = (String) value;
-			currentValue = s;
 			text.setEnabled(true);
-			text.setText(s);
+			text.setText(currentValue);
 		} else {
-			currentValue = null;
 			text.setEnabled(false);
 			text.setText("");
 		}
@@ -130,11 +127,6 @@ public class LText extends LControlWidget<String> {
 	@Override
 	public boolean canDecode(String str) {
 		return true;
-	}
-
-	@Override
-	public Dimension getPreferredSize() {
-		return getMinimumSize();
 	}
 
 }
