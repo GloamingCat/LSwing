@@ -31,33 +31,37 @@ public interface LLayedContainer extends LContainer {
 	/** Fill layout (spacing = 0).
 	 */
 	default void setFillLayout(boolean horizontal) {
-		GridLayout gl = horizontal ?
+		GridLayout layout = horizontal ?
 				new GridLayout(1, 0) : new GridLayout(0, 1);
-		gl.setHgap(getHorizontalSpacing());
-		gl.setVgap(getVerticalSpacing());
-		setLayout(gl);
+		layout.setHgap(getHorizontalSpacing());
+		layout.setVgap(getVerticalSpacing());
 		LPoint margin = getMargins();
+		setLayout(layout);
 		setMargins(margin.x, margin.y);
 	}
 
 	/** Grid layout (spacing = 5).
 	 */
 	default void setGridLayout(int columns) {
-		GridBagLayout gbl = new GridBagLayout();
+		GridBagLayout layout = new GridBagLayout();
 		setData("columns", columns);
 		setData("hSpacing", LPrefs.GRIDSPACING);
 		setData("vSpacing", LPrefs.GRIDSPACING);
-		setLayout(gbl);
+		LPoint margin = getMargins();
+		setLayout(layout);
+		setMargins(margin.x, margin.y);
 	}
 
 	/** Column/row layout (spacing = 5).
 	 */
 	default void setSequentialLayout(boolean horizontal) {
 		if (horizontal) {
-			WrapLayout wl = new WrapLayout();
-			wl.setHgap(LPrefs.GRIDSPACING);
-			wl.setVgap(LPrefs.GRIDSPACING);
-			setLayout(wl);
+			FlowLayout layout = new WrapLayout(WrapLayout.LEFT);
+			layout.setHgap(LPrefs.GRIDSPACING);
+			layout.setVgap(LPrefs.GRIDSPACING);
+			LPoint margin = getMargins();
+			setLayout(layout);
+			setMargins(margin.x, margin.y);
 		} else {
 			setGridLayout(1);
 		}
@@ -66,6 +70,10 @@ public interface LLayedContainer extends LContainer {
 	default void setMargins(int h, int v) {
 		setData("hMargin", h);
 		setData("vMargin", v);
+		if (getLayout() instanceof FlowLayout l) {
+			h -= l.getHgap();
+			v -= l.getVgap();
+		}
 		setBorder(new EmptyBorder(v, h, v, h));
 	}
 
@@ -82,9 +90,11 @@ public interface LLayedContainer extends LContainer {
 		if (l instanceof GridLayout gl) {
             gl.setHgap(h);
 			gl.setVgap(v);
-		} else if (l instanceof WrapLayout fl) {
+		} else if (l instanceof FlowLayout fl) {
             fl.setHgap(h);
 			fl.setVgap(v);
+			LPoint margins = getMargins();
+			setMargins(margins.x, margins.y);
 		}
 	}
 
@@ -134,60 +144,67 @@ public interface LLayedContainer extends LContainer {
 			return false;
 		return (Boolean) v;
 	}
+	@Override
+	default void refreshLayout() {
+		LContainer.super.refreshLayout();
+		refreshLayoutData();
+	}
 
 	default void refreshLayoutData() {
-		LayoutManager l = getLayout();
-		if (l instanceof GridBagLayout gbl) {
-			boolean equalCols = hasEqualCols();
-			boolean equalRows = hasEqualRows();
-			int hSpacing = getHorizontalSpacing();
-			int vSpacing = getVerticalSpacing();
-			int cols = (int) getData("columns");
-			int i = 0;
-			int minWidth = 0, minHeight = 0, prefWidth = 0, prefHeight = 0;
-			HashMap<String, Integer> skip = new HashMap<>();
-			for (Component c : getContentComposite().getComponents()) {
-				if (c instanceof LLayedCell lc) {
-					LCellData cd = lc.getCellData();
-					GridBagConstraints gbc = cd.getGridBagConstraints(i, cols, hSpacing, vSpacing);
-					for (String pos = gbc.gridx+","+gbc.gridy; skip.containsKey(pos); pos = gbc.gridx+","+gbc.gridy) {
-						gbc.gridx += skip.get(pos);
-						if (gbc.gridx + gbc.gridwidth > cols) {
-							gbc.gridy++;
-							gbc.gridx = 0;
-							i = gbc.gridy * cols;
-						}
-					}
-					if (gbc.gridheight > 1) {
-						for (int h = 1; h < gbc.gridheight; h++) {
-							String pos = gbc.gridx+","+(gbc.gridy + h);
-							skip.put(pos, gbc.gridwidth);
-						}
-					}
-					c.setPreferredSize(null);
-					c.setMinimumSize(null);
-					Dimension p = c.getPreferredSize();
-					Dimension m = c.getMinimumSize();
-					if (equalCols) {
-						prefWidth = Math.max(prefWidth, p.width);
-						minWidth = Math.max(minWidth, m.width);
-						gbc.weightx = 1;
-					}
-					if (equalRows) {
-						prefHeight = Math.max(prefHeight, p.height);
-						minHeight = Math.max(minHeight, m.height);
-						gbc.weighty = 1;
-					}
-					gbl.setConstraints(c, gbc);
-					i += gbc.gridwidth;
-				}
-			}
-			if (equalRows || equalCols) {
+		synchronized(getContentComposite().getTreeLock()) {
+			LayoutManager l = getLayout();
+			if (l instanceof GridBagLayout gbl) {
+				boolean equalCols = hasEqualCols();
+				boolean equalRows = hasEqualRows();
+				int hSpacing = getHorizontalSpacing();
+				int vSpacing = getVerticalSpacing();
+				int cols = (int) getData("columns");
+				int i = 0;
+				int minWidth = 0, minHeight = 0, prefWidth = 0, prefHeight = 0;
+				HashMap<String, Integer> skip = new HashMap<>();
 				for (Component c : getContentComposite().getComponents()) {
-					Dimension p = c.getPreferredSize();
-					Dimension m = c.getMinimumSize();
-					c.setPreferredSize(new Dimension(equalCols ? prefWidth : p.width, equalRows ? prefHeight : p.height));
-					c.setMinimumSize(new Dimension(equalCols ? minWidth : m.width, equalRows ? minHeight : m.height));
+					if (c instanceof LLayedCell lc) {
+						LCellData cd = lc.getCellData();
+						GridBagConstraints gbc = cd.getGridBagConstraints(i, cols, hSpacing, vSpacing);
+						for (String pos = gbc.gridx + "," + gbc.gridy; skip.containsKey(pos); pos = gbc.gridx + "," + gbc.gridy) {
+							gbc.gridx += skip.get(pos);
+							if (gbc.gridx + gbc.gridwidth > cols) {
+								gbc.gridy++;
+								gbc.gridx = 0;
+								i = gbc.gridy * cols;
+							}
+						}
+						if (gbc.gridheight > 1) {
+							for (int h = 1; h < gbc.gridheight; h++) {
+								String pos = gbc.gridx + "," + (gbc.gridy + h);
+								skip.put(pos, gbc.gridwidth);
+							}
+						}
+						c.setPreferredSize(null);
+						c.setMinimumSize(null);
+						Dimension p = c.getPreferredSize();
+						Dimension m = c.getMinimumSize();
+						if (equalCols) {
+							prefWidth = Math.max(prefWidth, p.width);
+							minWidth = Math.max(minWidth, m.width);
+							gbc.weightx = 1;
+						}
+						if (equalRows) {
+							prefHeight = Math.max(prefHeight, p.height);
+							minHeight = Math.max(minHeight, m.height);
+							gbc.weighty = 1;
+						}
+						gbl.setConstraints(c, gbc);
+						i += gbc.gridwidth;
+					}
+				}
+				if (equalRows || equalCols) {
+					for (Component c : getContentComposite().getComponents()) {
+						Dimension p = c.getPreferredSize();
+						Dimension m = c.getMinimumSize();
+						c.setPreferredSize(new Dimension(equalCols ? prefWidth : p.width, equalRows ? prefHeight : p.height));
+						c.setMinimumSize(new Dimension(equalCols ? minWidth : m.width, equalRows ? minHeight : m.height));
+					}
 				}
 			}
 		}

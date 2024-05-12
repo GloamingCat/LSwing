@@ -63,7 +63,6 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		root.setUserObject(new ItemData(-1));
 		tree = new JTree(root);
 		tree.setRootVisible(false);
-		tree.setBorder(UIManager.getBorder("ProgressBar.border"));
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		if (flags == 1) { // Check
@@ -91,7 +90,8 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		setDragEnabled(true);
 		tree.setTransferHandler(new TreeTransferHandler());
 		tree.setDropMode(DropMode.ON_OR_INSERT);
-		add(tree);
+		JScrollPane scroll = new JScrollPane(tree);
+		add(scroll);
 		tree.addTreeSelectionListener(e -> {
 			if (tree.getSelectionCount() > 0) {
 				DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();

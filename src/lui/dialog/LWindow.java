@@ -79,6 +79,10 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 	//////////////////////////////////////////////////
 	//region Layout
 
+	public void setContinuousLayout(boolean v) {
+		Toolkit.getDefaultToolkit().setDynamicLayout(v);
+	}
+
 	@Override
 	public void refreshLayout() {
 		shell.revalidate();
@@ -86,7 +90,7 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 
 	@Override
 	public void pack() {
-		panel.refreshLayoutData();
+		panel.doLayout();
 		panel.setPreferredSize(null);
 		panel.revalidate();
 		shell.setPreferredSize(null);
@@ -130,9 +134,9 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 		return shell.getSize(d);
 	}
 
-	@Override
-	public void setSize(int width, int height) {
+    public void setCurrentSize(int width, int height) {
 		shell.setSize(width, height);
+		shell.revalidate();
 	}
 
 	@Override

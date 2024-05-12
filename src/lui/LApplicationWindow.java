@@ -119,7 +119,6 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 		currentView = view;
 		getContentComposite().setIgnoreRepaint(true);
 		stack.setTop(currentView);
-		//refreshLayout();
 		currentView.onVisible();
 		refreshEditButtons();
 		getContentComposite().setIgnoreRepaint(false);
@@ -245,11 +244,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 			if (result == LConfirmDialog.YES) {
 				onSaveProject();
 				return true;
-			} else if (result == LConfirmDialog.NO) {
-				return true;
-			} else {
-				return false;
-			}
+			} else return result == LConfirmDialog.NO;
 		} else {
 			return true;
 		}

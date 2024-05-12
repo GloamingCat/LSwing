@@ -22,7 +22,7 @@ public abstract class LObjectDialog<T> extends LWindow {
 		setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
 		content.getCellData().setExpand(true, true);
 		content.setPreferredSize(null);
-		content.refreshLayoutData();
+		content.doLayout();
 		content.revalidate();
 		buttons.setPreferredSize(null);
 		buttons.refreshLayoutData();

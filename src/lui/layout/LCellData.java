@@ -27,13 +27,13 @@ public class LCellData extends lui.base.gui.LCellData {
 	public void setExpand(boolean h, boolean v) {
 		super.setExpand(h, v);
 		if (h) {
-			if (fill == GridBagConstraints.VERTICAL)
+			if (fill == GridBagConstraints.VERTICAL || v)
 				fill = GridBagConstraints.BOTH;
 			else
 				fill = GridBagConstraints.HORIZONTAL;
 		}
 		if (v) {
-			if (fill == GridBagConstraints.HORIZONTAL)
+			if (fill == GridBagConstraints.HORIZONTAL || h)
 				fill = GridBagConstraints.BOTH;
 			else
 				fill = GridBagConstraints.VERTICAL;
@@ -99,8 +99,14 @@ public class LCellData extends lui.base.gui.LCellData {
 	}
 
 	public void storeMinimumSize(Dimension d) {
-		d.width = Math.max(d.width, minWidth);
-		d.height = Math.max(d.height, minHeight);
+		if (minWidth == -1)
+			d.width = 0;
+		else
+			d.width = Math.max(d.width, minWidth);
+		if (minHeight == -1)
+			d.height = 0;
+		else
+			d.height = Math.max(d.height, minHeight);
 	}
 
 }

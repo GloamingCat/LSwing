@@ -67,7 +67,10 @@ public class LCheckBox extends LControlWidget<Boolean> {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return getMinimumSize();
+		Dimension size = getMinimumSize();
+		if (gridData != null)
+			gridData.storePreferredSize(size);
+		return size;
 	}
 
 }

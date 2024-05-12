@@ -38,14 +38,14 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 		super();
 		parent.add(this);
 	}
-	
+
 	/** Internal, no layout.
 	 */
 	protected LPanel(JFrame parent) {
 		super();
 		parent.add(this);
 	}
-	
+
 	/** Internal, no layout.
 	 */
 	protected LPanel(JDialog parent) {
@@ -60,6 +60,16 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 
 	// For ambiguity.
 	public LPanel(LFrame parent) {
+		this((LContainer) parent);
+	}
+
+	// For ambiguity.
+	public LPanel(LScrollPanel parent) {
+		this((LContainer) parent);
+	}
+
+	// For ambiguity.
+	public LPanel(LFlexPanel parent) {
 		this((LContainer) parent);
 	}
 
@@ -192,7 +202,7 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 		LLayedContainer.super.refreshLayoutData();
 		super.doLayout();
 	}
-	
+
 	//endregion
 
 }

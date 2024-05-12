@@ -5,14 +5,13 @@ import lui.container.*;
 import javax.swing.JComponent;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerNumberModel;
-import java.awt.*;
 
 public class LSpinner extends LControlWidget<Integer> {
 
 	JSpinner spinner;
 	private Integer minimum = 0;
-	private Integer maximum = 100;
-	private final Integer step = 1;
+	private Integer maximum = null;
+	private final int step = 1;
 
 	/**
 	 * @wbp.parser.constructor
@@ -39,9 +38,12 @@ public class LSpinner extends LControlWidget<Integer> {
 	protected void createContent(int flags) {
 		spinner = new JSpinner();
 		add(spinner);
-		spinner.setModel(new SpinnerNumberModel(0, 0, 100, 1));
+		SpinnerNumberModel model = new SpinnerNumberModel(0, 0, 0, 1);
+		model.setMaximum(null);
+		spinner.setModel(model);
+		JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner, "#");
+		spinner.setEditor(editor);
 		spinner.setEnabled(true);
-		spinner.setEditor(new JSpinner.NumberEditor(spinner));
 	}
 	
 	@Override
@@ -59,15 +61,33 @@ public class LSpinner extends LControlWidget<Integer> {
 	}
 	
 	public void setMinimum(int i) {
-		minimum = i;
-		Integer value = Math.max(minimum, Math.min((Integer) spinner.getValue(), maximum));
-		spinner.setModel(new SpinnerNumberModel(value, minimum, maximum, step));
+		if (i == Integer.MIN_VALUE)
+			minimum = null;
+		else
+			minimum = i;
+		SpinnerNumberModel model = (SpinnerNumberModel) spinner.getModel();
+		model.setMinimum(minimum);
+		int value = (int) spinner.getValue();
+		if (maximum != null && value > maximum)
+			value = maximum;
+		if (minimum != null && value < minimum)
+			value = minimum;
+		model.setValue(value);
 	}
 
 	public void setMaximum(int i) {
-		maximum = i;
-		Integer value = Math.max(minimum, Math.min((Integer) spinner.getValue(), maximum));
-		spinner.setModel(new SpinnerNumberModel(value, minimum, maximum, step));
+		if (i == Integer.MAX_VALUE)
+			maximum = null;
+		else
+			maximum = i;
+		SpinnerNumberModel model = (SpinnerNumberModel) spinner.getModel();
+		model.setMaximum(maximum);
+		int value = (int) spinner.getValue();
+		if (maximum != null && value > maximum)
+			value = maximum;
+		if (minimum != null && value < minimum)
+			value = minimum;
+		model.setValue(value);
 	}
 	
 	@Override

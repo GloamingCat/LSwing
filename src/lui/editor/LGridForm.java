@@ -145,6 +145,8 @@ public abstract class LGridForm<T> extends LObjectEditor<LDataList<T>> {
 		}
 		filler = new LLabel(content, columns * 2, 1);
 		filler.getCellData().setExpand(true, true);
+		filler.getCellData().setTargetSize(0, 0);
+		filler.getCellData().setRequiredSize(-1, -1);
 		if (refresh)
 			refreshLayout();
 		super.onVisible();

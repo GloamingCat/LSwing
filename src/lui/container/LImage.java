@@ -12,7 +12,7 @@ import lui.graphics.LTexture;
 public class LImage extends LCanvas {
 
 	private LTexture original = null;
-	private LRect rectangle;
+	private LRect rectangle = null;
 	private int align = LFlags.MIDDLE | LFlags.CENTER;
 	
 	private float r = 1, g = 1, b = 1;
@@ -180,11 +180,18 @@ public class LImage extends LCanvas {
 	//////////////////////////////////////////////////
 	//region Properties
 
+	private Dimension contentSize() {
+		if (rectangle != null)
+			return new Dimension(rectangle.width, rectangle.height);
+		if (buffer != null)
+			return new Dimension(buffer.getWidth(), buffer.getHeight());
+		return null;
+	}
+
 	@Override
 	public Dimension getMinimumSize() {
-		if (buffer == null)
-			return super.getMinimumSize();
-		Dimension size = new Dimension(buffer.getWidth(), buffer.getHeight());
+		Dimension size = rectangle == null && buffer == null ?
+			super.getMinimumSize() : contentSize();
 		if (gridData != null)
 			gridData.storeMinimumSize(size);
 		return size;
@@ -192,9 +199,8 @@ public class LImage extends LCanvas {
 
 	@Override
 	public Dimension getPreferredSize() {
-		if (buffer == null)
-			return super.getPreferredSize();
-		Dimension size = new Dimension(buffer.getWidth(), buffer.getHeight());
+		Dimension size = rectangle == null && buffer == null ?
+			super.getPreferredSize() : contentSize();
 		if (gridData != null)
 			gridData.storePreferredSize(size);
 		return size;

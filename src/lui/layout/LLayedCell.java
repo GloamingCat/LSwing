@@ -12,7 +12,6 @@ public interface LLayedCell extends lui.base.gui.LLayedCell {
     Dimension getPreferredSize();
     Dimension getMinimumSize();
     void revalidate();
-    void setSize(int width, int height);
 
     @Override
     default LPoint getCurrentSize() {
@@ -31,11 +30,6 @@ public interface LLayedCell extends lui.base.gui.LLayedCell {
     default LPoint getRequiredSize() {
         Dimension size = getMinimumSize();
         return new LPoint(size.width, size.height);
-    }
-
-    @Override
-    default void setCurrentSize(int width, int height) {
-        setSize(width, height);
     }
 
 }
