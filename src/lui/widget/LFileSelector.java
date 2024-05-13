@@ -15,7 +15,8 @@ public class LFileSelector extends LNodeSelector<String> {
 	public LFileSelector(LContainer parent, boolean optional) {
 		super(parent, optional);
 	}
-	
+
+	// Folder should include "/".
 	public void setFolder(String folder) {
 		root = new LDataTree<>(folder);
 		setFiles(root, folder);
@@ -25,7 +26,8 @@ public class LFileSelector extends LNodeSelector<String> {
 	public String getRootFolder() {
 		return root.data;
 	}
-	
+
+	// Path should include "/".
 	protected void setFiles(LDataTree<String> tree, String path) {
 		File f = new File(path);
 		if (!f.exists())
@@ -58,8 +60,8 @@ public class LFileSelector extends LNodeSelector<String> {
 		StringBuilder file = new StringBuilder(node.data);
 		node = node.parent;
 		while (node != root) {
-			file.insert(0, node.data);
 			file.insert(0, '/');
+			file.insert(0, node.data);
 			node = node.parent;
 		}
 		return file.toString();

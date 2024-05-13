@@ -11,6 +11,7 @@ import lui.editor.LMenuBar;
 import lui.editor.LSubMenu;
 import lui.graphics.LTexture;
 
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -120,8 +121,10 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 		getContentComposite().setIgnoreRepaint(true);
 		stack.setTop(currentView);
 		currentView.onVisible();
+		currentView.revalidate();
 		refreshEditButtons();
 		getContentComposite().setIgnoreRepaint(false);
+		repaintAll();
 	}
 	
 	@Override

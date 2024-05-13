@@ -18,7 +18,7 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 	protected final JDialog jdialog;
 	protected final JFrame jframe;
 
-	private final LPanel panel;
+	private final LShellPanel panel;
 	private final Component shell;
 	
 	//////////////////////////////////////////////////
@@ -233,7 +233,18 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 		public LWindow getWindow() {
 			return shell;
 		}
-		
+
+		public void validateAll() {
+			synchronized (getTreeLock()) {
+				super.validateTree();
+			}
+
+		}
+
+	}
+
+	public void repaintAll() {
+		panel.validateAll();
 	}
 
 }

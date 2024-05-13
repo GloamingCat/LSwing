@@ -76,8 +76,6 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	}
 	
 	public LControlEvent<T> createEvent() {
-		if (currentValue == null)
-			return null;
 		LControlEvent<T> e = new LControlEvent<>(null, currentValue);
 		e.detail = -1;
 		return e;
