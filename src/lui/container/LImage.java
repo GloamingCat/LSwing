@@ -126,9 +126,8 @@ public class LImage extends LCanvas {
 			return;
 		disposeBuffer();
 		LPoint size = original.getSize();
-		buffer = original.convert().getSubimage(0, 0, size.x, size.y);
-		LTexture.correctTransparency(buffer);
-		LTexture.colorTransform(buffer, r, g, b, h, s, v);
+		buffer = LTexture.deepCopy(original.convert());
+		LTexture.colorTransform(buffer, r, g, b, 1, h, s, v);
 	}
 
 	public boolean hasImage() {

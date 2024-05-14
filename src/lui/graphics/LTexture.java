@@ -7,6 +7,8 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -23,7 +25,7 @@ public class LTexture {
 	
 	public static Class<?> rootClass;
 	
-	private final BufferedImage image;
+	private BufferedImage image;
 	
 	public LTexture(String file) {
 		image = getBufferedImage(file);
@@ -151,18 +153,26 @@ public class LTexture {
 	public void colorTransform(
 			float r, float g, float b,
 			float h, float s, float v) {
-		correctTransparency(image);
-		colorTransform(image, r, g, b, h, s, v);
+		image = deepCopy(image);
+		colorTransform(image, r, g, b, 1, h, s, v);
 	}
-	
+
 	public void colorTransform(
 			float r, float g, float b, float a,
 			float h, float s, float v) {
+		image = deepCopy(image);
 		correctTransparency(image, a);
-		colorTransform(image, r, g, b, h, s, v);
+		colorTransform(image, r, g, b, a, h, s, v);
 	}
 	
 	public void correctTransparency() {}
+
+	public static BufferedImage deepCopy(BufferedImage bi) {
+		ColorModel cm = bi.getColorModel();
+		boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+		WritableRaster raster = bi.copyData(null);
+		return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+	}
 
 	//endregion
 	
@@ -186,38 +196,39 @@ public class LTexture {
 	 * @param _r [0, 1]
 	 * @param _g [0, 1]
 	 * @param _b [0, 1]
+	 * @param _a [0, 1]
 	 * @param _h [0, 360]
 	 * @param _s [0, 1]
 	 * @param _v [0, 1]
 	 */
-	public static void colorTransform(BufferedImage image, 
-			float _r, float _g, float _b,
+	public static void colorTransform(BufferedImage image,
+			float _r, float _g, float _b, float _a,
 			float _h, float _s, float _v) {
-		if (_r == 1 && _g == 1 && _b == 1 && 
+		if (_r == 1 && _g == 1 && _b == 1 && _a == 1 &&
 				_h == 0 && _s == 1 && _v == 1)
 			return;
 		float[] hsb = new float[3];
 		for (int x = 0; x < image.getWidth(); x++) {
 			for (int y = 0; y < image.getHeight(); y++) {
 				int pixel = image.getRGB(x, y);
+				int a = (pixel & 0xff000000) >> 24;
 				int r = (pixel & 0x00ff0000) >> 16;
 				int g = (pixel & 0x0000ff00) >> 8;
 				int b = pixel & 0x000000ff;
-				int a = (pixel & 0xff000000) >> 24; 
 				Color.RGBtoHSB(r, g, b, hsb);
-				hsb[0] = (hsb[0] + _h) % 360;
-				hsb[1] = Math.max(0, Math.min(1, hsb[1] + _s));
-				hsb[2] = Math.max(0, Math.min(1, hsb[2] + _v));
+				hsb[0] = ((hsb[0] * 360 + _h) % 360) / 360.0f;
+				hsb[1] = Math.max(0, Math.min(1, hsb[1] * _s));
+				hsb[2] = Math.max(0, Math.min(1, hsb[2] * _v));
 				pixel = Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]);
 				r = (byte) _r * ((pixel & 0x00ff0000) >> 16);
 				g = (byte) _g * ((pixel & 0x0000ff00) >> 8);
 				b = (byte) _b * (pixel & 0x000000ff);
+				a = (byte) (a * _a);
 				pixel = (a << 24) | (r << 16) | (g << 8) | b;
 				image.setRGB(x, y, pixel);
 			}
 		}
 	}
-	
 	
 	private static final HashMap<String, BufferedImage> loadedImages = new HashMap<>();
 	
