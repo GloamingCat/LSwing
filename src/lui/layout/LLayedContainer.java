@@ -170,7 +170,9 @@ public interface LLayedContainer extends LContainer {
 							gbc.gridx += skip.get(pos);
 							if (gbc.gridx + gbc.gridwidth > cols) {
 								gbc.gridy++;
+								gbc.insets.top = vSpacing;
 								gbc.gridx = 0;
+								gbc.insets.left = 0;
 								i = gbc.gridy * cols;
 							}
 						}

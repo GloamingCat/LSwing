@@ -1,13 +1,11 @@
 package lui.widget;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 
-import lui.base.LPrefs;
 import lui.container.LContainer;
 
 public class LCombo extends LControlWidget<Integer> {
@@ -90,6 +88,7 @@ public class LCombo extends LControlWidget<Integer> {
 	public void setItems(ArrayList<?> array) {
 		if (array == null)
 			array = new ArrayList<>();
+		combo.removeAllItems();
 		if (optional)
 			combo.addItem("");
 		int id = 0;

@@ -47,7 +47,6 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 		else
 			jdialog = new JDialog(parent.jdialog, Dialog.ModalityType.APPLICATION_MODAL);
 		jdialog.setLayout(new GridLayout(1, 1));
-		jdialog.setLocationRelativeTo(parent.shell);
 		shell = jdialog;
 		panel = new LShellPanel(this, jdialog);
 	}
@@ -61,6 +60,7 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 	public LWindow(int width, int height) {
 		this();
 		panel.getCellData().setRequiredSize(width, height);
+		jframe.setLocationRelativeTo(null);
 	}
 
 	/**
@@ -72,6 +72,7 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 	public LWindow(LWindow parent, int width, int height) {
 		this(parent);
 		panel.getCellData().setRequiredSize(width, height);
+		jdialog.setLocationRelativeTo(parent.shell);
 	}
 
 	//endregion
@@ -99,6 +100,7 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 			jframe.pack();
 		else
 			jdialog.pack();
+		recenter();
 	}
 	
 	//endregion
@@ -122,7 +124,7 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 	}
 
 	//////////////////////////////////////////////////
-	//region Size
+	//region Layout
 
 	@Override
 	public LCellData getCellData() {
@@ -137,6 +139,7 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
     public void setCurrentSize(int width, int height) {
 		shell.setSize(width, height);
 		shell.revalidate();
+		recenter();
 	}
 
 	@Override
@@ -152,6 +155,17 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 	@Override
 	public void revalidate() {
 		shell.revalidate();
+	}
+
+	public void recenter() {
+		if (jframe != null)
+			jframe.setLocationRelativeTo(null);
+		else
+			jdialog.setLocationRelativeTo(parent.shell);
+	}
+
+	public void repaintAll() {
+		panel.validateAll();
 	}
 
 	//endregion
@@ -241,10 +255,6 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 
 		}
 
-	}
-
-	public void repaintAll() {
-		panel.validateAll();
 	}
 
 }

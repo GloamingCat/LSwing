@@ -55,9 +55,9 @@ public class LImageDialog extends LObjectDialog<String> {
 	}
 
 	public void open(String initial) {
-		super.open(initial);
 		selFile.setSelectedFile(initial);
 		resetImage();
+		super.open(initial);
 	}
 
 	@Override

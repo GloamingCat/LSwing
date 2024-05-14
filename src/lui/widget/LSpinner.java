@@ -27,9 +27,9 @@ public class LSpinner extends LControlWidget<Integer> {
 		getCellData().setExpand(true, false);
 		getCellData().setSpread(columns, 1);
 		spinner.addChangeListener(e -> {
-            if (currentValue != null && spinner.getValue() == currentValue)
+            if (spinner.getValue() == currentValue)
                 return;
-            newModifyAction(currentValue, (Integer) spinner.getValue());
+			newModifyAction(currentValue, (Integer) spinner.getValue());
             currentValue = (Integer) spinner.getValue();
         });
 	}
@@ -45,7 +45,7 @@ public class LSpinner extends LControlWidget<Integer> {
 		spinner.setEditor(editor);
 		spinner.setEnabled(true);
 	}
-	
+
 	@Override
 	public void setValue(Object obj) {
 		if (obj != null) {

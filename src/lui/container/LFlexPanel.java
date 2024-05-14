@@ -48,7 +48,6 @@ public class LFlexPanel extends JSplitPane implements LContainer, LLayedCell {
 		leftComponent.setPreferredSize(pl);
 		rightComponent.setPreferredSize(pr);
 		setResizeWeight(first / (first + second));
-		setDividerLocation(first / (first + second));
 	}
 
 	@Override

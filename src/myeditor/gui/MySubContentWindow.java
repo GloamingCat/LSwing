@@ -14,8 +14,8 @@ public class MySubContentWindow extends LObjectDialog<MySubContent> {
 
     @Override
     public void open(MySubContent initial) {
-        super.open(initial);
         editor.setObject(initial.clone());
+        super.open(initial);
     }
 
     @Override

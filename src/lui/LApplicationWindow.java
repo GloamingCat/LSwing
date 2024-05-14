@@ -11,7 +11,6 @@ import lui.editor.LMenuBar;
 import lui.editor.LSubMenu;
 import lui.graphics.LTexture;
 
-import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
@@ -232,6 +231,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 			msg.open();
 		} else {
 			LActionManager.getInstance().onSave();
+			menuProject.setButtonEnabled("save", false);
 		}
 	}
 
