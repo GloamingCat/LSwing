@@ -1,5 +1,6 @@
 package lui.container;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
 
@@ -15,12 +16,12 @@ public class LToolBar extends LView {
 	
 	public LToolBar(LContainer parent) {
 		super(parent, false);
+		setLayout(new GridLayout(1, 1));
 		toolBar = new JToolBar(JToolBar.HORIZONTAL);
 		toolBar.setFloatable(false);
 		toolBar.setRollover(false);
 		//toolBar.setBorderPainted(false);
 		toolBar.setAlignmentX(JToolBar.LEFT);
-		setFillLayout(true);
 		add(toolBar);
 	}
 	

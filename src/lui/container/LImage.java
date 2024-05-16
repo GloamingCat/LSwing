@@ -27,7 +27,6 @@ public class LImage extends LCanvas {
 
 	public LImage(LContainer parent) {
 		super(parent);
-		setFillLayout(true);
 		setBackground(new LColor(224, 224, 224));
 	}
 	

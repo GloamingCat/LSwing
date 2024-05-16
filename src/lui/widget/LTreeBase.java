@@ -512,6 +512,11 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		((DefaultTreeModel) tree.getModel()).nodeStructureChanged(this.root);
 	}
 
+	public void refreshAll(LDataTree<T> node) {
+		DefaultMutableTreeNode item = toTreeItem(node.toPath());
+		((DefaultTreeModel) tree.getModel()).nodeStructureChanged(item);
+	}
+
 	public void clear() {
 		root.removeAllChildren();
 	}

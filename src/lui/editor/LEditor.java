@@ -24,7 +24,7 @@ public abstract class LEditor extends LView implements LPastable {
 		super(parent, doubleBuffered);
 	}
 
-	public LEditor(JComponent parent, boolean doubleBuffered) {
+	protected LEditor(JComponent parent, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
 	}
 

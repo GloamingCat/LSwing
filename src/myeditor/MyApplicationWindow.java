@@ -8,7 +8,7 @@ import myeditor.gui.MyContentListEditor;
 import myeditor.gui.MyContentTreeEditor;
 import myeditor.project.MyProject;
 
-public class MyApplicationShell extends LApplicationWindow {
+public class MyApplicationWindow extends LApplicationWindow {
 	
 	/**
 	 * Launch the application.
@@ -16,7 +16,7 @@ public class MyApplicationShell extends LApplicationWindow {
 	 */
 	public static void main(String[] args) {
 		try {
-			MyApplicationShell shell = new MyApplicationShell(args);
+			MyApplicationWindow shell = new MyApplicationWindow(args);
 			shell.run();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -26,7 +26,7 @@ public class MyApplicationShell extends LApplicationWindow {
 	/**
 	 * Create the shell.
 	 */
-	public MyApplicationShell(String... args) {
+	public MyApplicationWindow(String... args) {
 		super(450, 300, null, args);
 	}
 

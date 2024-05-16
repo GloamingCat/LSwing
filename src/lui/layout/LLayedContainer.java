@@ -12,19 +12,19 @@ import java.util.HashMap;
 
 public interface LLayedContainer extends LContainer {
 
-	default LayoutManager getLayout() {
+	private LayoutManager getLayout() {
 		return getContentComposite().getLayout();
 	}
 
-	default void setLayout(LayoutManager layout) {
+	private void setLayout(LayoutManager layout) {
 		getContentComposite().setLayout(layout);
 	}
 
-	default void setBorder(Border border) {
+	private void setBorder(Border border) {
 		getContentComposite().setBorder(border);
 	}
 
-	default Border getBorder() {
+	private Border getBorder() {
 		return getContentComposite().getBorder();
 	}
 
@@ -144,10 +144,11 @@ public interface LLayedContainer extends LContainer {
 			return false;
 		return (Boolean) v;
 	}
+
 	@Override
 	default void refreshLayout() {
-		LContainer.super.refreshLayout();
 		refreshLayoutData();
+		LContainer.super.refreshLayout();
 	}
 
 	default void refreshLayoutData() {
@@ -158,7 +159,13 @@ public interface LLayedContainer extends LContainer {
 				boolean equalRows = hasEqualRows();
 				int hSpacing = getHorizontalSpacing();
 				int vSpacing = getVerticalSpacing();
-				int cols = (int) getData("columns");
+				int cols = 0;
+				try {
+					cols = (int) getData("columns");
+				} catch (Exception e) {
+					System.out.println(this);
+					throw  e;
+				}
 				int i = 0;
 				int minWidth = 0, minHeight = 0, prefWidth = 0, prefHeight = 0;
 				HashMap<String, Integer> skip = new HashMap<>();

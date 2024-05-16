@@ -3,8 +3,8 @@ package lui.gson;
 import java.lang.reflect.Type;
 
 import gson.GGlobals;
+import lui.base.data.LInitializable;
 import lui.container.LContainer;
-import lui.datainterface.LInitializable;
 import lui.editor.LDefaultListEditor;
 
 public abstract class GDefaultListEditor<T> extends LDefaultListEditor<T> {

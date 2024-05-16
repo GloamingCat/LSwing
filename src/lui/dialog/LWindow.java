@@ -168,6 +168,11 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 		panel.validateAll();
 	}
 
+	@Override
+	public void repaint() {
+		shell.repaint();
+	}
+
 	//endregion
 	
 	//////////////////////////////////////////////////
@@ -252,7 +257,6 @@ public class LWindow implements LLayedContainer, LLayedCell, lui.base.gui.LWindo
 			synchronized (getTreeLock()) {
 				super.validateTree();
 			}
-
 		}
 
 	}

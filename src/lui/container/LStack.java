@@ -24,15 +24,5 @@ public class LStack extends LPanel {
 		}
 		refreshLayout();
 	}
-	
-	public void setTop(LWidget widget) {
-		stack.first(this);
-		for (Component c : getComponents()) {
-			if (c == widget)
-				break;
-			stack.next(this);
-		}
-		refreshLayout();
-	}
 
 }

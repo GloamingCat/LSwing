@@ -14,28 +14,25 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 
 	protected JComponent content;
 
-	/**
-	 * Internal, no layout.
+	//////////////////////////////////////////////////
+	//region Constructors
+
+	/** Internal, no layout.
 	 */
-	protected LScrollPanel(JComponent parent, boolean large) {
+	protected LScrollPanel(JComponent parent) {
 		super();
 		parent.add(this);
 		content = new JPanel();
 		content.setLayout(new GridLayout());
 		setViewportView(content);
 		setAutoscrolls(true);
-		if (large) {
-			getCellData().setExpand(true, true);
-		}
-	}
-
-	public LScrollPanel(LContainer parent, boolean large) {
-		this(parent.getContentComposite(), large);
 	}
 
 	public LScrollPanel(LContainer parent) {
-		this(parent.getContentComposite(), false);
+		this(parent.getContentComposite());
 	}
+
+	//endregion
 
 	//////////////////////////////////////////////////
 	//region Scroll

@@ -41,7 +41,7 @@ public class MyContentTreeEditor extends LView {
 		treeEditor.setShellFactory(new LWindowFactory<>() {
 			@Override
 			public LObjectDialog<MySubContent> createWindow(LWindow parent) {
-				return new MySubContentWindow(parent);
+				return new MySubContentDialog(parent);
 			}
 		});
 		addChild(treeEditor);

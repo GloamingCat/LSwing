@@ -4,10 +4,10 @@ import lui.dialog.LObjectDialog;
 import lui.dialog.LWindow;
 import myeditor.data.MySubContent;
 
-public class MySubContentWindow extends LObjectDialog<MySubContent> {
+public class MySubContentDialog extends LObjectDialog<MySubContent> {
 
     private final MySubContentEditor editor;
-    public MySubContentWindow(LWindow parent) {
+    public MySubContentDialog(LWindow parent) {
         super(parent, "Sub-content");
         editor = new MySubContentEditor(content);
     }

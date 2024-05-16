@@ -9,6 +9,7 @@ import lui.dialog.LWindow;
 public interface LContainer {
 
 	JComponent getContentComposite();
+	void repaint();
 	
 	default JComponent getTopComposite() {
 		return getContentComposite();
@@ -57,11 +58,11 @@ public interface LContainer {
 	}
 
 	default Object getData(String key) {
-		return getTopComposite().getClientProperty(key);
+		return getContentComposite().getClientProperty(key);
 	}
 
 	default void setData(String key, Object data) {
-		getTopComposite().putClientProperty(key, data);
+		getContentComposite().putClientProperty(key, data);
 	}
 
 }

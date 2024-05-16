@@ -28,7 +28,6 @@ public class LCombo extends LControlWidget<Integer> {
 	
 	public LCombo(LContainer parent, int columns, boolean readOnly) {
 		super(parent, (readOnly ? 1 : 0));
-		setFillLayout(true);
 		getCellData().setSpread(columns, 1);
 		getCellData().setExpand(true, false);
 		combo.addActionListener(arg0 -> {

@@ -65,6 +65,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 		loadDefault(folder);
 		setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
 		refreshLayout();
+		pack();
 	}
 
 	protected void createMenu() {
@@ -103,10 +104,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 	}
 	
 	public void run() {
-		javax.swing.SwingUtilities.invokeLater(() -> {
-            open();
-            refreshLayout();
-        });
+		javax.swing.SwingUtilities.invokeLater(this::open);
 	}
 
 	protected void addView(final LView view, String name, String shortcut) {

@@ -5,6 +5,8 @@ import javax.swing.JTabbedPane;
 
 import lui.LMenuInterface;
 
+import java.awt.*;
+
 public class LViewFolder extends LView {
 	
 	protected JTabbedPane tabFolder;
@@ -16,6 +18,7 @@ public class LViewFolder extends LView {
 	 */
 	public LViewFolder(LContainer parent, boolean doubleBuffered) {
 		super(parent, doubleBuffered);
+		setLayout(new GridLayout(1, 1));
 		tabFolder = new JTabbedPane();
 		add(tabFolder);
 		tabFolder.addChangeListener(e -> {
@@ -25,7 +28,6 @@ public class LViewFolder extends LView {
                 children.get(i).onVisible();
             }
         });
-		setFillLayout(true);
 	}
 	
 	public void addTab(String name, LView child) {
@@ -37,14 +39,17 @@ public class LViewFolder extends LView {
 		tabFolder.addTab(name, child.getContentComposite());
 	}
 
+	@Override
 	public LMenuInterface getMenuInterface() {
 		return children.get(currentTab).getMenuInterface();
 	}
-	
+
+	@Override
 	public JComponent getContentComposite() {
 		return tabFolder;
 	}
-	
+
+	@Override
 	public JComponent getTopComposite() {
 		return this;
 	}

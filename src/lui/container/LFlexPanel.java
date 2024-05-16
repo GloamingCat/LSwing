@@ -11,7 +11,10 @@ import lui.layout.LLayedCell;
 public class LFlexPanel extends JSplitPane implements LContainer, LLayedCell {
 
 	private LCellData gridData;
-	
+
+	//////////////////////////////////////////////////
+	//region Constructors
+
 	 LFlexPanel(JComponent parent, int dir) {
 		super(dir);
 		if (parent != null)
@@ -29,6 +32,8 @@ public class LFlexPanel extends JSplitPane implements LContainer, LLayedCell {
 	public LFlexPanel(LContainer parent) {
 		this(parent, true);
 	}
+
+	//endregion
 
 	//////////////////////////////////////////////////
 	//region Interfaces

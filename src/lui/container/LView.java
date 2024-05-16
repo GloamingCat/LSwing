@@ -61,7 +61,8 @@ public class LView extends LPanel implements lui.base.gui.LView {
 		removeChild((LView) editor);
 		subEditors.remove(editor);
 	}
-	
+
+	@Override
 	public void refreshLayout() {
 		if (doubleBuffered)
 			setIgnoreRepaint(true);

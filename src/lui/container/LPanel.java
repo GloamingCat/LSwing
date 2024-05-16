@@ -199,7 +199,7 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 
 	@Override
 	public void doLayout() {
-		LLayedContainer.super.refreshLayoutData();
+		refreshLayoutData();
 		super.doLayout();
 	}
 

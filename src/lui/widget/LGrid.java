@@ -177,43 +177,43 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 	}
 	
 	private LImage addLabel(int i, T data, boolean placeholder) {
-		LImage label = new LImage(this);
-		label.getCellData().setTargetSize(cellWidth, cellHeight);
-		label.getCellData().setRequiredSize(cellWidth, cellHeight);
-		label.getCellData().setAlignment(LFlags.FILL);
-		LPopupMenu menu = new LPopupMenu(label);
-		menu.putClientProperty("label", label);
+		LImage img = new LImage(this);
+		img.getCellData().setTargetSize(cellWidth, cellHeight);
+		img.getCellData().setRequiredSize(cellWidth, cellHeight);
+		img.getCellData().setAlignment(LFlags.FILL);
+		LPopupMenu menu = new LPopupMenu(img);
+		menu.putClientProperty("label", img);
 		if (placeholder) {
 			if (insertEnabled)
 				setInsertNewEnabled(menu, true);
 		} else {
-			label.setData(data);
-			label.addPainter(new LPainter() {
+			img.setData(data);
+			img.addPainter(new LPainter() {
 				@Override
 				public void paint() {
-					if (indexOf(label) == selectedIndex) {
+					if (indexOf(img) == selectedIndex) {
 						setLineWidth(borderWidth);
 						setPaintColor(borderColor);
 						drawRect(0, 0, cellWidth - borderWidth, cellHeight - borderWidth);
 					}
 				}
 			});
-			label.addMouseListener(e0 -> {
+			img.addMouseListener(e0 -> {
                 if (e0.button == LFlags.LEFT && e0.type == LFlags.PRESS) {
-                    int i1 = indexOf(label);
+                    int i1 = indexOf(img);
                     select(data, i1);
                     LSelectionEvent e = new LSelectionEvent(new LPath(i1), data, i1, true);
                     notifySelectionListeners(e);
                 }
             });
 			if (!isEditable())
-				return label;
+				return img;
 			setEditEnabled(menu, editEnabled);
 			setInsertNewEnabled(menu, insertEnabled);
 			setDuplicateEnabled(menu, duplicateEnabled);
 			setDeleteEnabled(menu, deleteEnabled);
 		}
-		return label;
+		return img;
 	}
 	
 	private boolean isEditable() {

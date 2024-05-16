@@ -17,13 +17,12 @@ public class LLabel extends LWidget {
 
 	public LLabel(LContainer parent, int hFill, int vFill) {
 		this(parent, LFlags.FILL);
-		setEnabled(false);
 		getCellData().setSpread(hFill, vFill);
+		setEnabled(false);
 	}
 
 	public LLabel(LContainer parent, int style) {
 		super(parent);
-		setFillLayout(true);
 		setMargins(0, LPrefs.LABELPADDING);
 		setAlignment(style);
 		getCellData().setExpand((style & LFlags.EXPAND) > 0, false);

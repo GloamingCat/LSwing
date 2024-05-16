@@ -4,7 +4,6 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import lui.base.LPrefs;
-import lui.base.data.LPoint;
 import lui.container.LContainer;
 import lui.container.LPanel;
 import lui.container.LScrollPanel;
@@ -32,7 +31,7 @@ public abstract class LGridForm<T> extends LObjectEditor<LDataList<T>> {
 
 	private class FormScrollPanel extends LScrollPanel {
 		public FormScrollPanel() {
-			super(LGridForm.this.getTopComposite(), false);
+			super(LGridForm.this.getTopComposite());
 		}
 	}
 
@@ -43,12 +42,12 @@ public abstract class LGridForm<T> extends LObjectEditor<LDataList<T>> {
 	@Override
 	protected void createContent(int columns) {
 		this.columns = columns;
+		setLayout(new GridLayout(1, 1));
 		controls = new ArrayList<>();
 		scroll = new FormScrollPanel();
 		content = new LPanel(scroll);
 		content.setGridLayout(columns * 2);
 		scroll.setBorder(null);
-		setFillLayout(true);
 	}
 
 	//endregion
@@ -168,26 +167,6 @@ public abstract class LGridForm<T> extends LObjectEditor<LDataList<T>> {
 	@Override
 	public JComponent getContentComposite() {
 		return content;
-	}
-
-	@Override
-	public LPoint getSpacing() {
-		return content.getSpacing();
-	}
-
-	@Override
-	public void setSpacing(int h, int v) {
-		content.setMargins(h, v);
-	}
-
-	@Override
-	public LPoint getMargins() {
-		return content.getMargins();
-	}
-
-	@Override
-	public void setMargins(int h, int v) {
-		content.setMargins(h, v);
 	}
 
 	//endregion

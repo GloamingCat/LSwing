@@ -107,7 +107,7 @@ public abstract class LWidget extends LPanel implements LPastable {
 	//endregion
 
 	//////////////////////////////////////////////////
-	//region Properties
+	//region Action
 
 	public void setMenuInterface(LMenuInterface mi) {
 		menuInterface = mi;
@@ -118,6 +118,11 @@ public abstract class LWidget extends LPanel implements LPastable {
 			menuInterface.actionStack.newAction(action);
 		}
 	}
+
+	//endregion
+
+	//////////////////////////////////////////////////
+	//region Properties
 
 	public void setHoverText(String text) {
 		setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");

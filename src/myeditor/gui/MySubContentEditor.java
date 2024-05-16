@@ -19,7 +19,7 @@ public class MySubContentEditor extends LObjectEditor<MySubContent> {
 	 * @wbp.eval.method.parameter parent new lwt.dialog.LShell()
 	 */
 	public MySubContentEditor(LContainer parent) {
-		super(parent, true);
+		super(parent, false);
 	}
 
 	@Override

@@ -14,6 +14,7 @@ import lui.base.event.listener.LCollectionListener;
 import lui.base.gui.LMenu;
 import lui.widget.LCollection;
 
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 
@@ -29,7 +30,7 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 
 	public LCollectionEditor(LContainer parent, int style) {
 		super(parent, style, false);
-		setFillLayout(true);
+		setLayout(new GridLayout(1, 1));
 		addMenu();
 	}
 	
