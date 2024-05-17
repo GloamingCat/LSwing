@@ -1,9 +1,7 @@
 package lui.container;
 
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.event.*;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -30,6 +28,13 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 	 */
 	public LPanel(LContainer parent) {
 		this(parent.getContentComposite());
+		addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent e) {
+				if (getLayout() instanceof GridBagLayout gbl)
+					revalidate();
+			}
+		});
 	}
 
 	/** Internal, no layout.

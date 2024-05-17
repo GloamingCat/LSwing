@@ -159,13 +159,7 @@ public interface LLayedContainer extends LContainer {
 				boolean equalRows = hasEqualRows();
 				int hSpacing = getHorizontalSpacing();
 				int vSpacing = getVerticalSpacing();
-				int cols = 0;
-				try {
-					cols = (int) getData("columns");
-				} catch (Exception e) {
-					System.out.println(this);
-					throw  e;
-				}
+				int cols = (int) getData("columns");
 				int i = 0;
 				int minWidth = 0, minHeight = 0, prefWidth = 0, prefHeight = 0;
 				HashMap<String, Integer> skip = new HashMap<>();

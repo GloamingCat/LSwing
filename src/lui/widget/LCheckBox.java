@@ -56,6 +56,11 @@ public class LCheckBox extends LControlWidget<Boolean> {
 	}
 
 	@Override
+	public String toString() {
+		return getClass().getSimpleName() + ": " + button.getText();
+	}
+
+	@Override
 	public String encodeData(Boolean value) {
 		return value + "";
 	}
