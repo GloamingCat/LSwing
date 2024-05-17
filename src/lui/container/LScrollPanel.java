@@ -23,7 +23,7 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 		super();
 		parent.add(this);
 		content = new JPanel();
-		content.setLayout(new GridLayout());
+		content.setLayout(new GridLayout(1, 1));
 		setViewportView(content);
 		setAutoscrolls(true);
 	}
@@ -42,7 +42,11 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 	}
 
 	public void setContentSize(int width, int height) {
-		content.setPreferredSize(new Dimension(width, height));
+		if (width == -1 && height == -1)
+			content.setPreferredSize(null);
+		else
+			content.setPreferredSize(new Dimension(width, height));
+		refreshLayout();
 	}
 
 	//endregion

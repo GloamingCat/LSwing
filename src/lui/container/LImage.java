@@ -115,12 +115,11 @@ public class LImage extends LCanvas {
 		rectangle = rect;
 		original = img;
 		disposeBuffer();
-		refreshImage();
-		rectangle = rect;
-		redraw();
+		refreshBuffer();
+		repaint();
 	}
 	
-	public void refreshImage() {
+	public void refreshBuffer() {
 		if (original == null || original.convert() == null)
 			return;
 		disposeBuffer();
@@ -143,16 +142,12 @@ public class LImage extends LCanvas {
 	
 	public void setRect(LRect rect) {
 		rectangle = rect;
-		redraw();
-	}
-	
-	public LPoint getImageSize() {
-		return new LPoint(buffer.getWidth(), buffer.getHeight());
+		repaint();
 	}
 	
 	public void setAlignment(int a) {
 		align = a;
-		redraw();
+		repaint();
 	}
 	
 	public void setOffset(float _ox, float _oy) {

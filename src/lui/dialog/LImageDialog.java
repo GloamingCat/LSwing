@@ -82,8 +82,8 @@ public class LImageDialog extends LObjectDialog<String> {
 	protected void resetImage() {
 		String path = selFile.getRootFolder() + selFile.getSelectedFile();
 		imgQuad.setImage(path);
-		//scroll.setContentSize(imgQuad.getCurrentSize());
-		imgQuad.redraw();
+		scroll.setContentSize(imgQuad.getCurrentSize());
+		imgQuad.repaint();
 	}
 
 }

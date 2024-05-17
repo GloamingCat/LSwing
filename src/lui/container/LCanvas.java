@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import lui.graphics.LPainter;
 import lui.graphics.LTexture;
+import lui.base.data.LPoint;
 
 public class LCanvas extends LView {
 	
@@ -70,8 +71,10 @@ public class LCanvas extends LView {
 	public void drawBuffer(int x, int y, float sx, float sy) {
 		int w = buffer.getWidth();
 		int h = buffer.getHeight();
-		currentEvent.drawImage(buffer, 0, 0, w, h,
-				x, y, x + Math.round(w * sx), y + Math.round(h * sy), null);
+		currentEvent.drawImage(buffer,
+				x, y, x + Math.round(w * sx), y + Math.round(h * sy),
+				0, 0, w, h,
+				null);
 	}
 	
 	public void drawBuffer(int x, int y) {
@@ -93,7 +96,11 @@ public class LCanvas extends LView {
 			bufferGC.dispose();
 		bufferGC = null;
 	}
-	
+
+	public LPoint getImageSize() {
+		return new LPoint(buffer.getWidth(), buffer.getHeight());
+	}
+
 	public LPainter getBufferPainter() {
 		return new LPainter(bufferGC) {
 			@Override
@@ -113,9 +120,28 @@ public class LCanvas extends LView {
 	}
 	
 	//endregion
-	
-	public void redraw() {
-		super.repaint();
+
+	//////////////////////////////////////////////////
+	//region Properties
+
+	@Override
+	public Dimension getMinimumSize() {
+		Dimension size = buffer == null ? super.getMinimumSize()
+				: new Dimension(buffer.getWidth(), buffer.getHeight());
+		if (gridData != null)
+			gridData.storeMinimumSize(size);
+		return size;
 	}
-	
+
+	@Override
+	public Dimension getPreferredSize() {
+		Dimension size = buffer == null ? super.getPreferredSize()
+				: new Dimension(buffer.getWidth(), buffer.getHeight());
+		if (gridData != null)
+			gridData.storePreferredSize(size);
+		return size;
+	}
+
+	//endregion
+
 }
