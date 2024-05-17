@@ -107,8 +107,8 @@ public abstract class LPainter {
 	}
 	
 	public void setTransparency(int alpha) {
-		Color color = gc.getColor();
-		gc.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha));
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha / 255f);
+		gc.setComposite(ac);
 	}
 	
 	public void setPaintColor(LColor color) {
