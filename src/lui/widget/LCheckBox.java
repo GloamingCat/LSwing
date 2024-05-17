@@ -20,7 +20,7 @@ public class LCheckBox extends LControlWidget<Boolean> {
 		button = new JCheckBox();
 		add(button);
 		button.addActionListener(e -> {
-            if (button.isSelected() == currentValue)
+            if (currentValue != null && button.isSelected() == currentValue)
                 return;
             newModifyAction(currentValue, button.isSelected());
             currentValue = button.isSelected();
