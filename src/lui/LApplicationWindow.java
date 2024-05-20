@@ -156,15 +156,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 				LVocab.instance.OPENPROJECT,
 				getProjectExtension(),
 				false);
-		return dialog.open();
-	}
-	
-	@Override 
-	public void openLoadErrorDialog(String path) {
-		LErrorDialog msg = new LErrorDialog(this,
-				LVocab.instance.LOADERROR,
-				LVocab.instance.LOADERRORMSG + ":" + path);
-		msg.open();
+		return dialog.open(defaultProjectPath());
 	}
 
 	@Override
@@ -181,9 +173,10 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 		LVocab vocab = LVocab.instance;
 		LErrorDialog msg = new LErrorDialog(this,
 				vocab.LOADERROR,
-				vocab.LOADERRORMSG + "\n" + path);
+				vocab.LOADERRORMSG + ": " + path);
 		msg.open();
 	}
+
 	//endregion
 	
 	//region New Project
@@ -203,7 +196,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 				LVocab.instance.NEWPROJECT,
 				getProjectExtension(),
 				true);
-		return dialog.open();
+		return dialog.open(defaultProjectPath());
 	}
 	
 	@Override

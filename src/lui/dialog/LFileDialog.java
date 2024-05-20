@@ -40,7 +40,11 @@ public class LFileDialog {
 		this.create = create;
 	}
 	
-	public String open() {
+	public String open(String initialPath) {
+		if (initialPath != null) {
+			File file = new File(initialPath);
+			dialog.setSelectedFile(file);
+		}
 		if (create)
 			dialog.showSaveDialog(parent);
 		else
