@@ -147,9 +147,9 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 		int button = 0;
 		if (e.getButton() == MouseEvent.BUTTON1)
 			button = LFlags.LEFT;
-		else if (e.getButton() == MouseEvent.BUTTON2)
-			button = LFlags.RIGHT;
 		else if (e.getButton() == MouseEvent.BUTTON3)
+			button = LFlags.RIGHT;
+		else if (e.getButton() == MouseEvent.BUTTON2)
 			button = LFlags.MIDDLE;
 		int type;
 		if (release) {
