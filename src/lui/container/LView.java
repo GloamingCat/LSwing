@@ -92,7 +92,12 @@ public class LView extends LPanel implements lui.base.gui.LView {
 	
 	public LState getState() {
 		final ArrayList<LState> states = getChildrenStates();
-		return () -> resetStates(states);
+		return new LState() {
+			@Override
+			public void reset() {
+				resetStates(states);
+			}
+		};
 	}
 	
 	protected ArrayList<LState> getChildrenStates() {
@@ -101,12 +106,6 @@ public class LView extends LPanel implements lui.base.gui.LView {
 			list.add(child.getState());
 		}
 		return list;
-	}
-	
-	protected void resetStates(ArrayList<LState> list) {
-		for(LState state : list) {
-			state.reset();
-		}
 	}
 	
 	public void createMenuInterface() {

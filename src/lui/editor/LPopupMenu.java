@@ -1,5 +1,6 @@
 package lui.editor;
 
+import java.awt.*;
 import java.util.function.Consumer;
 
 import javax.swing.JComponent;
@@ -7,14 +8,18 @@ import javax.swing.JPopupMenu;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import lui.base.event.LSelectionEvent;
-import lui.base.event.listener.LSelectionListener;
+import lui.base.LFlags;
+import lui.base.event.LMouseEvent;
+import lui.base.event.listener.LMouseListener;
 import lui.base.gui.LMenu;
 
 public class LPopupMenu extends JPopupMenu implements LMenu {
-	
+
+	protected final JComponent component;
+
 	public LPopupMenu(JComponent c) {
 		c.setComponentPopupMenu(this);
+		this.component = c;
 	}
 
 	public void setMenuButton(boolean value, String buttonName, String buttonKey, 
@@ -26,11 +31,12 @@ public class LPopupMenu extends JPopupMenu implements LMenu {
 		super.addSeparator();
 	}
 	
-	public void addSelectionListener(LSelectionListener listener) {
+	public void addListener(LMouseListener listener) {
 		addPopupMenuListener(new PopupMenuListener() {
 			@Override
 			public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-				listener.onSelect(new LSelectionEvent(null, null, -1, false));
+				Point p = component.getMousePosition();
+				listener.onMouseChange(new LMouseEvent(LFlags.RIGHT, p.x, p.y, LFlags.PRESS));
 			}
 			@Override
 			public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {}

@@ -19,6 +19,7 @@ import java.io.IOException;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	
@@ -49,6 +50,11 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 		});
 		tree.setShowsRootHandles(true);
 		this.menu = new LPopupMenu(tree);
+		this.menu.addListener(e -> {
+				TreePath path = tree.getPathForLocation(e.x, e.y);
+				tree.setSelectionPath(path);
+			}
+		);
 	}
 	
 	public void setIncludeID(boolean value) {
@@ -87,6 +93,7 @@ public abstract class LTree<T, ST> extends LTreeBase<T, ST> {
 	
 	public LInsertEvent<T> insert(LPath parentPath, int index, LDataTree<T> node) {
 		DefaultMutableTreeNode parent = toTreeItem(parentPath);
+		getDataCollection().initIDs(node);
 		createTreeItem(parent, index, node);
 		return new LInsertEvent<>(parentPath, index, node);
 	}

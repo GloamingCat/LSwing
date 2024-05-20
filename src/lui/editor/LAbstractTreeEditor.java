@@ -67,7 +67,7 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	
 	public void addChild(LObjectEditor<?> editor) {
 		getCollectionWidget().addSelectionListener(event -> {
-			if (event.data == null) {
+			if (event == null || event.data == null) {
 				editor.setObject(null);
 				editor.setSelection(null, false, -1);
 			} else {
@@ -149,10 +149,13 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	public LState getState() {
 		final LPath currentPath = getCollectionWidget().getSelectedPath();
 		final ArrayList<LState> states = getChildrenStates();
-		return () -> {
-            LSelectionEvent e = getCollectionWidget().select(currentPath);
-            getCollectionWidget().notifySelectionListeners(e);
-            resetStates(states);
+		return new LState() {
+			@Override
+			public void reset() {
+				LSelectionEvent e = getCollectionWidget().select(currentPath);
+				getCollectionWidget().notifySelectionListeners(e);
+				resetStates(states);
+			}
         };
 	}
 	
