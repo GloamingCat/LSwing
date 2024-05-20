@@ -2,9 +2,8 @@ package lui.widget;
 
 import lui.container.*;
 
-import javax.swing.JComponent;
-import javax.swing.JSpinner;
-import javax.swing.SpinnerNumberModel;
+import javax.swing.*;
+import javax.swing.text.DefaultFormatter;
 
 public class LSpinner extends LControlWidget<Integer> {
 
@@ -32,6 +31,9 @@ public class LSpinner extends LControlWidget<Integer> {
 			newModifyAction(currentValue, (Integer) spinner.getValue());
             currentValue = (Integer) spinner.getValue();
         });
+		JFormattedTextField field = ((JSpinner.DefaultEditor)spinner.getEditor()).getTextField();
+		DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
+		formatter.setCommitsOnValidEdit(true);
 	}
 	
 	@Override

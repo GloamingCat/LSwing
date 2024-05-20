@@ -153,8 +153,10 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 			@Override
 			public void reset() {
 				LSelectionEvent e = getCollectionWidget().select(currentPath);
-				getCollectionWidget().notifySelectionListeners(e);
-				resetStates(states);
+				if (e != null) {
+					getCollectionWidget().notifySelectionListeners(e);
+					resetStates(states);
+				}
 			}
         };
 	}

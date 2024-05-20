@@ -315,7 +315,6 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 		}
 		DefaultMutableTreeNode item = toTreeItem(path);
 		if (item == null) {
-			new Exception("Couldn't find tree item: " + path).printStackTrace();
 			return null;
 		}
 		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();

@@ -2,14 +2,6 @@ package lui.widget;
 
 import lui.container.*;
 
-import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-
 import javax.swing.JComponent;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
@@ -41,39 +33,14 @@ public class LText extends LControlWidget<String> {
 		text.getDocument().addDocumentListener(new DocumentListener() {
 			@Override
 			public void removeUpdate(DocumentEvent e) {
-				//updateCurrentText();
+				updateCurrentText();
 			}
 			@Override
 			public void insertUpdate(DocumentEvent e) {
-				//updateCurrentText();
+				updateCurrentText();
 			}
 			@Override
 			public void changedUpdate(DocumentEvent e) {
-				updateCurrentText();
-			}
-		});
-		text.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				updateCurrentText();
-			}
-		});
-		text.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER ||
-						e.getKeyCode() == KeyEvent.VK_TAB) {
-					updateCurrentText();
-				}
-			}
-		});
-		text.addMouseMotionListener(new MouseMotionListener() {
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				updateCurrentText();
-			}
-			@Override
-			public void mouseMoved(MouseEvent e) {
 				updateCurrentText();
 			}
 		});
@@ -82,17 +49,19 @@ public class LText extends LControlWidget<String> {
 	@Override
 	protected void createContent(int flags) {
 		setFillLayout(true);
-		text = new JTextField();
+		text = new JTextField("");
 		text.setEditable(flags == 0);
 		add(text);
 	}
 	
 	private void updateCurrentText() {
-		String newText = text.getText();
-		if (currentValue != null && !newText.equals(currentValue)) {
-			newModifyAction(currentValue, newText);
-			currentValue = newText;
-		}
+		java.awt.EventQueue.invokeLater(() -> {
+			String newText = text.getText();
+			if (currentValue != null && !newText.equals(currentValue)) {
+				newModifyAction(currentValue, newText);
+				currentValue = newText;
+			}
+		});
 	}
 	
 	@Override
@@ -127,6 +96,11 @@ public class LText extends LControlWidget<String> {
 	@Override
 	public boolean canDecode(String str) {
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "LText: " + text.getText();
 	}
 
 }

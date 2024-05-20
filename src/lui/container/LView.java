@@ -102,7 +102,7 @@ public class LView extends LPanel implements lui.base.gui.LView {
 	
 	protected ArrayList<LState> getChildrenStates() {
 		ArrayList<LState> list = new ArrayList<>();
-		for(LView child : children) {
+		for (LView child : children) {
 			list.add(child.getState());
 		}
 		return list;
