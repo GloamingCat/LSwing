@@ -18,6 +18,7 @@ public class LSpinner extends LControlWidget<Integer> {
 	 */
 	public LSpinner(LContainer parent) {
 		this(parent, 1);
+		currentValue = 0;
 	}
 	
 	public LSpinner(LContainer parent, int columns) {
@@ -26,7 +27,7 @@ public class LSpinner extends LControlWidget<Integer> {
 		getCellData().setExpand(true, false);
 		getCellData().setSpread(columns, 1);
 		spinner.addChangeListener(e -> {
-            if (spinner.getValue() == currentValue)
+            if (currentValue == null || spinner.getValue() == currentValue)
                 return;
 			newModifyAction(currentValue, (Integer) spinner.getValue());
             currentValue = (Integer) spinner.getValue();

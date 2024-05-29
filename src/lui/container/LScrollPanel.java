@@ -12,7 +12,7 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 
 	protected LCellData gridData;
 
-	protected JComponent content;
+	protected JPanel content;
 
 	//////////////////////////////////////////////////
 	//region Constructors
@@ -69,11 +69,6 @@ public class LScrollPanel extends JScrollPane implements LContainer, LLayedCell 
 		if (gridData == null)
 			gridData = new LCellData();
 		return gridData;
-	}
-
-	@Override
-	public Dimension getPreferredSize() {
-		return content.getPreferredSize();
 	}
 
 	@Override
