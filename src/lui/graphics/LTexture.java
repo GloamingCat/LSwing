@@ -11,9 +11,11 @@ import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 import javax.imageio.ImageIO;
 
@@ -234,13 +236,22 @@ public class LTexture {
 	
 	public static BufferedImage getBufferedImage(String fileName) {
 		BufferedImage image = loadedImages.get(fileName);
+		if (image != null)
+			return image;
 		File file = new File(fileName);
-		if (image == null) {
+		if (file.isAbsolute()) {
 			try {
 				image = ImageIO.read(file);
 				loadedImages.put(fileName, image);
-			} catch (IOException e) {
+			} catch (IOException | NullPointerException e) {
 				System.out.println("Couldn't find image: " + file.getAbsolutePath());
+			}
+		} else {
+			try (InputStream s = rootClass.getResourceAsStream("/" + fileName)) {
+				image = ImageIO.read(Objects.requireNonNull(s));
+				loadedImages.put(fileName, image);
+			} catch (IOException | NullPointerException e) {
+				System.out.println("Couldn't find resource: " + fileName);
 			}
 		}
 		return image;
