@@ -33,7 +33,6 @@ public class LToolBar extends LView {
 		radioGroup.add(item);
 		item.setSelected(selected);
 		item.setBorderPainted(selected);
-		toolBar.add(item);
 		item.addChangeListener(e -> item.setBorderPainted(item.isSelected()));
 		if (onSelect != null) {
 			item.addActionListener(e -> onSelect.accept(data));
@@ -44,11 +43,11 @@ public class LToolBar extends LView {
 		else {
 			item.setIcon(new ImageIcon(img));
 		}
+		toolBar.add(item);
 	}
 	
 	public void addCheckItem(Consumer<Boolean> onSelect, String txt, boolean selected) {
 		JCheckBox item = new JCheckBox();
-		toolBar.add(item);
 		item.setSelected(selected);
 		if (onSelect != null) {
 			item.addActionListener(e -> onSelect.accept(item.isSelected()));
@@ -58,11 +57,11 @@ public class LToolBar extends LView {
 			item.setText(txt);
 		else
 			item.setIcon(new ImageIcon(img));
+		toolBar.add(item);
 	}
 	
 	public <T> void addButtonItem(Consumer<T> onSelect, T data, String txt) {
 		JButton item = new JButton();
-		toolBar.add(item);
 		if (onSelect != null) {
 			item.addActionListener(e -> onSelect.accept(data));
 		}
@@ -71,6 +70,32 @@ public class LToolBar extends LView {
 			item.setText(txt);
 		else
 			item.setIcon(new ImageIcon(img));
+		toolBar.add(item);
+	}
+
+	public <T> void addListItem(Consumer<T> onSelect, T[] data, String txt, String[] txtList) {
+		JButton button = new JButton();
+		BufferedImage img = LTexture.getBufferedImage(txt);
+		if (img == null)
+			button.setText(txt);
+		else
+			button.setIcon(new ImageIcon(img));
+		toolBar.add(button);
+		JPopupMenu menu = new JPopupMenu();
+		button.addActionListener(e -> menu.show(button, 0, button.getHeight()));
+		for (int i = 0; i < txtList.length; i++) {
+			final T value = data[i];
+			JMenuItem item = new JMenuItem();
+			if (onSelect != null) {
+				item.addActionListener(e -> onSelect.accept(value));
+			}
+			img = LTexture.getBufferedImage(txtList[i]);
+			if (img == null)
+				item.setText(txtList[i]);
+			else
+				item.setIcon(new ImageIcon(img));
+			menu.add(item);
+		}
 	}
 	
 	public void addSeparator() {
