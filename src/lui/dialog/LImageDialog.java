@@ -45,7 +45,7 @@ public class LImageDialog extends LObjectDialog<String> {
 		imgQuad = new LImage(scroll);
 		imgQuad.setAlignment(LFlags.TOP | LFlags.LEFT);
 
-		selFile.addSelectionListener(event -> resetImage());
+		selFile.addModifyListener(event -> resetImage(selFile.getFile(event.newValue)));
 
 		sash.setWeights(1, 1);
 	}
@@ -56,7 +56,7 @@ public class LImageDialog extends LObjectDialog<String> {
 
 	public void open(String initial) {
 		selFile.setSelectedFile(initial);
-		resetImage();
+		resetImage(initial);
 		super.open(initial);
 	}
 
@@ -79,8 +79,8 @@ public class LImageDialog extends LObjectDialog<String> {
 		}
 	}
 
-	protected void resetImage() {
-		String path = selFile.getRootFolder() + selFile.getSelectedFile();
+	protected void resetImage(String file) {
+		String path = selFile.getRootFolder() + file;
 		imgQuad.setImage(path);
 		scroll.setContentSize(imgQuad.getCurrentSize());
 		imgQuad.repaint();

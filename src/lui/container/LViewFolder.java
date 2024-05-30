@@ -29,6 +29,10 @@ public class LViewFolder extends LView {
             }
         });
 	}
+
+	public void openTab(int i) {
+		tabFolder.setSelectedIndex(i);
+	}
 	
 	public void addTab(String name, LView child) {
 		addChild(child);

@@ -19,7 +19,7 @@ public class LFileSelector extends LNodeSelector<String> {
 	// Folder should include "/".
 	public void setFolder(String folder) {
 		root = new LDataTree<>(folder);
-		setFiles(root, folder);
+		setFiles(root, 0, folder);
 		setCollection(root);
 	}
 	
@@ -28,48 +28,56 @@ public class LFileSelector extends LNodeSelector<String> {
 	}
 
 	// Path should include "/".
-	protected void setFiles(LDataTree<String> tree, String path) {
+	protected int setFiles(LDataTree<String> tree, int id, String path) {
 		File f = new File(path);
 		if (!f.exists())
-			return;
+			return id;
 		File[] entries = f.listFiles();
 		if (entries == null)
-			return;
+			return id;
 		for (File entry : entries) {
 			if (entry.isDirectory()) {
 				LDataTree<String> subFolder = new LDataTree<>(entry.getName(), tree);
-				setFiles(subFolder, path + entry.getName() + "/");
+				id = setFiles(subFolder, id, path + entry.getName() + "/");
 			} else if (isValidFile(entry)) {
 				LDataTree<String> file = new LDataTree<>(entry.getName(), tree);
-				file.id = 0;
+				file.initID(id++);
 			}
 		}
-	}
-	
-	public String getFile(int id) {
-		LDataTree<String> node = root.findNode(id);
-		if (node == null || node.id == -1)
-			return null;
-		return node.data;
+		return id;
 	}
 
 	public String getSelectedFile() {
-		LDataTree<String> node = getSelectedNode();
+		return getFile(getSelectedNode());
+	}
+
+	public String getFile(Integer id) {
+		if (id == null)
+			return "";
+		LDataTree<String> node = tree.getDataCollection().findNode((int) id);
+		return getFile(node);
+	}
+
+	protected String getFile(LDataTree<String> node) {
 		if (node == null || node.id == -1)
 			return "";
 		StringBuilder file = new StringBuilder(node.data);
 		node = node.parent;
-		while (node != root) {
+		while (node != null && node.parent != null) {
 			file.insert(0, '/');
 			file.insert(0, node.data);
 			node = node.parent;
 		}
 		return file.toString();
 	}
-	
+
 	public void setSelectedFile(String file) {
-		LDataTree<String> node = findNode(file);
-		setValue(node == null ? null : node.toPath());
+		if (file == null)
+			setValue(null);
+		else {
+			LDataTree<String> node = findNode(file);
+			setValue(node == null ? null : node.toPath());
+		}
 	}
 	
 	public LDataTree<String> findNode(String file) {

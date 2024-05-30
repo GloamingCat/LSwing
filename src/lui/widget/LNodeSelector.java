@@ -5,7 +5,6 @@ import lui.container.LContainer;
 import lui.base.LVocab;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
-import lui.base.event.listener.LSelectionListener;
 
 import javax.swing.JComponent;
 
@@ -25,8 +24,8 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
             Integer id = path == null ? -1 : collection.getNode(path).id;
             if (id.equals(currentValue))
                 return;
-            currentValue = id;
             newModifyAction(currentValue, id);
+            currentValue = id;
         });
 		tree.setDragEnabled(false);
 		if (!optional)
@@ -76,11 +75,7 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
 	public void selectNone() {
 		tree.notifySelectionListeners(tree.select(null));
 	}
-	
-	public void addSelectionListener(LSelectionListener l) {
-		tree.addSelectionListener(l);
-	}
-	
+
 	public void setValue(LPath path) {
 		tree.select(null);
 		if (path != null) {
