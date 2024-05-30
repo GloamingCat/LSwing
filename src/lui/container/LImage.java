@@ -15,13 +15,12 @@ public class LImage extends LCanvas {
 	private LRect rectangle = null;
 	private int align = LFlags.MIDDLE | LFlags.CENTER;
 	
-	private float r = 1, g = 1, b = 1;
-	private float h = 0, s = 1, v = 1;
-	private int a = 255;
-	
-	private float ox = 0, oy = 0;
-	private float sx = 1, sy = 1;
-	private float rz = 0;
+	public float r = 1, g = 1, b = 1, a = 1;
+	public float h = 0, s = 1, v = 1;
+
+	public float ox = 0, oy = 0;
+	public float sx = 1, sy = 1;
+	public float rz = 0;
 	
 	private float dx = 0, dy = 0;
 
@@ -52,18 +51,19 @@ public class LImage extends LCanvas {
 				y = (bounds.height - h) / 2;
 			}
 			try {
-				g.setColor(new Color(255, 255, 255, a));
+				g.setColor(new Color(1f, 1f, 1f, a));
+				AffineTransform at = null;
 				if (rz != 0) {
-					AffineTransform t = g.getTransform();
-					t.translate(ox * sx, oy * sy);
-					t.rotate(rz);
-					t.translate(-ox * sx, -oy * sy);
-					g.setTransform(t);
+					at = g.getTransform();
+					AffineTransform t = AffineTransform.getTranslateInstance(ox * sx - x, oy * sy - y);
+					t.rotate(Math.toRadians(rz));
+					t.translate(-ox * sx + x, -oy * sy + y);
+					g.transform(t);
 				}
 				g.drawImage(buffer, x, y, x + w, y + h,
 						rect.x, rect.y, rect.x + rect.width, rect.y + rect.height,null);
-				if (rz != 0)
-					g.setTransform(null);
+				if (at != null)
+					g.setTransform(at);
 			} catch (IllegalArgumentException ex) { 
 				System.err.println("Problem printing quad.");
 			}
@@ -155,7 +155,7 @@ public class LImage extends LCanvas {
 	}
 	
 	public void setRGBA(float _r, float _g, float _b, float _a) {
-		r = _r; g = _g; b = _b; a = Math.round(_a * 255);
+		r = _r; g = _g; b = _b; a = _a;
 	}
 	
 	public void setHSV(float _h, float _s, float _v) {
@@ -168,6 +168,11 @@ public class LImage extends LCanvas {
 	
 	public void setRotation(float _r) {
 		rz = _r;
+	}
+
+	public void resetTransform() {
+		r = g = b = a = s = v = sx = sy = 1;
+		rz = h = ox = oy = 0;
 	}
 
 	//////////////////////////////////////////////////
