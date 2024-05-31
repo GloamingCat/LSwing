@@ -2,8 +2,7 @@ package lui.widget;
 
 import lui.container.*;
 
-import javax.swing.JComponent;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 public class LText extends LControlWidget<String> {
@@ -44,6 +43,9 @@ public class LText extends LControlWidget<String> {
 				updateCurrentText();
 			}
 		});
+		if (readOnly) {
+			text.setForeground(UIManager.getColor("Label.disabledForeground"));
+		}
 	}
 	
 	@Override

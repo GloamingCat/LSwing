@@ -16,10 +16,10 @@ import java.util.Arrays;
 public class LovelyTheme extends OceanTheme {
 
     public static LColor BLACK = new LColor(new Color(29, 15, 42));
-    public static LColor DARK = new LColor(new Color(64, 42, 79));
+    public static LColor DARK = new LColor(new Color(65, 42, 79));
     public static LColor MEDIUM_DARK = new LColor(new Color(159, 83, 162));
-    public static LColor MEDIUM = new LColor(new Color(190, 136, 177));
-    public static LColor MEDIUM_LIGHT = new LColor(new Color(248, 209, 229));
+    public static LColor MEDIUM = new LColor(new Color(190, 136, 181));
+    public static LColor MEDIUM_LIGHT = new LColor(new Color(243, 200, 230));
     public static LColor LIGHT = new LColor(new Color(252, 220, 240));
     public static LColor WHITE = new LColor(new Color(255, 245, 250));
 
@@ -196,6 +196,11 @@ public class LovelyTheme extends OceanTheme {
             "CheckBoxMenuItem.foreground", getBlack(),
 
             "ComboBox.foreground", getBlack(),
+            "ComboBox.background", LIGHT.convert(),
+            "ComboBox.selectionForeground", getBlack(),
+            "ComboBox.selectionBackground", MEDIUM_LIGHT.convert(),
+            "ComboBox.disabledForeground", DARK.convert(),
+            "ComboBox.disabledBackground", LIGHT.convert(),
 
             // home2
             "FileChooser.homeFolderIcon", getIconResource(HOME_ICON),
@@ -305,7 +310,8 @@ public class LovelyTheme extends OceanTheme {
 
             "Table.dropLineColor", getPrimary1(),
             "Table.dropLineShortColor", DROP_COLOR2,
-            "ToolTip.background", getPrimary2(),
+
+            "ToolTip.background", SECONDARY3,
 
             "Table.dropCellBackground", DROP_COLOR,
             "Tree.dropCellBackground", DROP_COLOR,

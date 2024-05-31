@@ -18,7 +18,7 @@ public class LFrame extends LPanel {
 	 */
 	LFrame(JComponent parent) {
 		super(parent);
-		Color color = UIManager.getColor("Table.gridColor");
+		Color color = UIManager.getColor("textText");
 		lineBorder = new LineBorder(color, 1);
 		titledBorder = new TitledBorder("");
 		titledBorder.setTitleColor(color);
