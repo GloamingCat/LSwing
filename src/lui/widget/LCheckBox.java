@@ -2,8 +2,7 @@ package lui.widget;
 
 import java.awt.*;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
+import javax.swing.*;
 
 import lui.container.LContainer;
 
@@ -47,7 +46,7 @@ public class LCheckBox extends LControlWidget<Boolean> {
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
 		button.setForeground(enabled ?
-				new Color(0, 0, 0) : new Color(100, 100, 100));
+				UIManager.getColor("text") : UIManager.getColor("textInactiveText"));
 	}
 	
 	@Override

@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Objects;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 
 public class LTexture {
 
@@ -83,7 +84,7 @@ public class LTexture {
 		Rectangle2D size = fm.getStringBounds(s, gc);
 		int x = (w - (int)size.getWidth()) / 2;
 		int y = (h - (int)size.getHeight()) / 2;
-		gc.setColor(new Color(0, 0, 0));
+		gc.setColor(UIManager.getColor("controlText"));
 		gc.drawString(s, x, y);
 		if (borders) {
 			gc.drawRect(2, 2, w - 5, h - 5);

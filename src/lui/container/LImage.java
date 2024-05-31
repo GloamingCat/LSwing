@@ -9,6 +9,8 @@ import lui.base.data.LPoint;
 import lui.graphics.LRect;
 import lui.graphics.LTexture;
 
+import javax.swing.*;
+
 public class LImage extends LCanvas {
 
 	private LTexture original = null;
@@ -26,7 +28,7 @@ public class LImage extends LCanvas {
 
 	public LImage(LContainer parent) {
 		super(parent);
-		setBackground(new LColor(224, 224, 224));
+		setBackground(new LColor(UIManager.getColor("Image.background")));
 	}
 	
 	@Override

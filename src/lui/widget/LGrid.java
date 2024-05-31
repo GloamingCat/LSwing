@@ -30,6 +30,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 	
 	protected int cellWidth = 24;
 	protected int cellHeight = 24;
+	protected Color cellColor = UIManager.getColor("desktop");
 	
 	private LayoutManager layout;
 	private LayoutManager emptyLayout;
@@ -117,6 +118,10 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 		setPreferredSize(null);
 	}
 
+	public void setCellColor(LColor color) {
+		cellColor = color.convert();
+	}
+
 	public void setColumns(int columns) {
 		this.columns = columns;
 		if (columns <= 0) {
@@ -178,6 +183,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 	
 	private LImage addLabel(int i, T data, boolean placeholder) {
 		LImage img = new LImage(this);
+		img.setBackground(cellColor);
 		img.getCellData().setTargetSize(cellWidth, cellHeight);
 		img.getCellData().setRequiredSize(cellWidth, cellHeight);
 		img.getCellData().setAlignment(LFlags.FILL);

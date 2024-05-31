@@ -15,7 +15,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
-import javax.swing.JFrame;
+import javax.swing.*;
+import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import lui.base.LVocab;
 import lui.base.action.LActionManager;
@@ -36,6 +37,15 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 	public LSubMenu menuView;
 	public LSubMenu menuHelp;
 
+	public static void setLovelyTheme() {
+		MetalLookAndFeel.setCurrentTheme(new LovelyTheme());
+        try {
+            UIManager.setLookAndFeel(new MetalLookAndFeel());
+        } catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+    }
+
 	/**
 	 * Create the shell.
 	 * @wbp.eval.method.parameter initialWidth 800
@@ -44,6 +54,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 	public LApplicationWindow(int minWidth, int minHeight, String icon, String... args) {
 		super(minWidth, minHeight);
 		LTexture.rootClass = getClass();
+		setLovelyTheme();
 		if (icon != null) {
 			jframe.setIconImage(LTexture.getBufferedImage(icon));
 		}

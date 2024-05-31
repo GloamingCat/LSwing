@@ -1,13 +1,10 @@
 package lui.graphics;
 
+import javax.swing.plaf.ColorUIResource;
 import java.awt.Color;
-import java.util.HashMap;
 
-public class LColor {
-	
-	public static final LColor BLACK = new LColor(0, 0, 0, 255);
-	public static final LColor WHITE = new LColor(255, 255, 255, 255);
-	
+public class LColor implements Cloneable {
+
 	public int red;
 	public int green;
 	public int blue;
@@ -38,23 +35,21 @@ public class LColor {
 		alpha = c.getAlpha();
 	}
 	
-	public Color convert() {
-		return new Color(red, green, blue);
+	public ColorUIResource convert() {
+		return new ColorUIResource(red, green, blue);
 	}
-	
-	//////////////////////////////////////////////////
-	//region Map
-	
-	private static final HashMap<String, LColor> colorMap = new HashMap<>();
-	
-	public static void setColor(String name, int r, int g, int b, int a) {
-		colorMap.put(name, new LColor(r, g, b, a));
-	}
-	
-	public static LColor getColor(String name) {
-		return colorMap.get(name);
-	}
-	
-	//endregion
-	
+
+    @Override
+    public LColor clone() {
+        try {
+            LColor clone = (LColor) super.clone();
+			clone.red = red;
+			clone.green = green;
+			clone.blue = blue;
+			clone.alpha = alpha;
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
+    }
 }
