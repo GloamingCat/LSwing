@@ -26,7 +26,7 @@ public class LImageButton extends LObjectButton<String> {
 		});
 	}
 
-	public void setImage(LImage image) {
+	public void setImageWidget(LImage image) {
 		this.image = image;
 	}
 	

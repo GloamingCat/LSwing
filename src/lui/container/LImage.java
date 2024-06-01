@@ -40,32 +40,32 @@ public class LImage extends LCanvas {
 			Rectangle bounds = getBounds();
 			LRect rect = rectangle != null ? rectangle :
 				new LRect(0, 0, buffer.getWidth(), buffer.getHeight());
-			int w = Math.round(rect.width * sx);
-			int h = Math.round(rect.height * sy);
+			LPoint[] limits = new LRect((int)ox, (int)oy, rect.width, rect.height).getLimits(sx, sy, rz);
 			if ((align & LFlags.RIGHT) > 0) {
-				x = bounds.width - w;
+				x = bounds.width - limits[1].x;
 			} else if ((align & LFlags.MIDDLE) > 0) {
-				x = (bounds.width - w) / 2;
+				x = (bounds.width - limits[1].x - limits[0].x) / 2;
+			} else {
+				x = -limits[0].x;
 			}
 			if ((align & LFlags.BOTTOM) > 0) {
-				y = bounds.height - h;
+				y = bounds.height - limits[1].y;
 			} else if ((align & LFlags.CENTER) > 0) {
-				y = (bounds.height - h) / 2;
+				y = (bounds.height - limits[1].y - limits[0].y) / 2;
+			} else {
+				y = -limits[0].y;
 			}
 			try {
 				g.setColor(new Color(1f, 1f, 1f, a));
-				AffineTransform at = null;
-				if (rz != 0) {
-					at = g.getTransform();
-					AffineTransform t = AffineTransform.getTranslateInstance(ox * sx - x, oy * sy - y);
-					t.rotate(Math.toRadians(rz));
-					t.translate(-ox * sx + x, -oy * sy + y);
-					g.transform(t);
-				}
-				g.drawImage(buffer, x, y, x + w, y + h,
-						rect.x, rect.y, rect.x + rect.width, rect.y + rect.height,null);
-				if (at != null)
-					g.setTransform(at);
+				AffineTransform at = g.getTransform();
+				AffineTransform at2 = AffineTransform.getTranslateInstance(x, y);
+				at2.rotate(Math.toRadians(rz));
+				at2.scale(sx, sy);
+				at2.translate(-ox, -oy);
+				g.setTransform(at2);
+				g.drawImage(buffer, 0, 0, rect.width, rect.height,
+						rect.x, rect.y, rect.x + rect.width, rect.y + rect.height, null);
+				g.setTransform(at);
 			} catch (IllegalArgumentException ex) { 
 				System.err.println("Problem printing quad.");
 			}

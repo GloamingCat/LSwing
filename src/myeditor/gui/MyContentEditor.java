@@ -58,7 +58,7 @@ public class MyContentEditor extends LObjectEditor<MyContent> {
 		btnImage.getCellData().setAlignment(LFlags.LEFT | LFlags.TOP);
 		btnImage.addMenu(lblImage);
 		addControl(btnImage, "img");
-		btnImage.setImage(image);
+		btnImage.setImageWidget(image);
 
 		LFrame frame = new LFrame(this, MyVocab.instance.SUBCONTENT);
 		frame.setFillLayout(true);
