@@ -45,12 +45,14 @@ public class LFileDialog {
 			File file = new File(initialPath);
 			dialog.setSelectedFile(file);
 		}
-		if (create)
-			dialog.showSaveDialog(parent);
-		else
+		int result = create ?
+			dialog.showSaveDialog(parent) :
 			dialog.showOpenDialog(parent);
-		File file = dialog.getSelectedFile();
-		return file == null ? null : file.getAbsolutePath();
+		if (result == JFileChooser.APPROVE_OPTION) {
+			File file = dialog.getSelectedFile();
+			return file == null ? null : file.getAbsolutePath();
+		}
+		return null;
 	}
 	
 }
