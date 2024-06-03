@@ -124,10 +124,6 @@ public abstract class LWidget extends LPanel implements LPastable {
 	//////////////////////////////////////////////////
 	//region Properties
 
-	public void setHoverText(String text) {
-		setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
-	}
-
 	@Override
 	public Dimension getMinimumSize() {
 		// Default height for label/spinner/combo/text field/check box

@@ -15,42 +15,27 @@ import java.util.Arrays;
 
 public class LovelyTheme extends OceanTheme {
 
-    public static LColor BLACK = new LColor(new Color(29, 15, 42));
+    public static LColor BLACK = new LColor(new Color(33, 17, 47));
     public static LColor DARK = new LColor(new Color(65, 42, 79));
     public static LColor MEDIUM_DARK = new LColor(new Color(159, 83, 162));
     public static LColor MEDIUM = new LColor(new Color(190, 136, 181));
     public static LColor MEDIUM_LIGHT = new LColor(new Color(243, 200, 230));
-    public static LColor LIGHT = new LColor(new Color(252, 220, 240));
+    public static LColor LIGHT = new LColor(new Color(252, 225, 240));
     public static LColor WHITE = new LColor(new Color(255, 245, 250));
 
-    public static ColorUIResource PRIMARY1 = MEDIUM_DARK.convert(); // Tree Selection border
-    public static ColorUIResource PRIMARY2 = MEDIUM_LIGHT.convert(); // Scrollbar BG, button/label selection border
-    public static ColorUIResource PRIMARY3 = MEDIUM.convert(); // Tree Selection BG, tree branch lines
-    public static ColorUIResource SECONDARY1 = MEDIUM_DARK.convert(); // Frame border, inner border, checkbox border, editable textfield border
-    public static ColorUIResource SECONDARY2 = MEDIUM_LIGHT.convert(); // gradient button bottom, scrollbar outer border, menu border, static textfield border
-    public static ColorUIResource SECONDARY3 = WHITE.convert(); // default BG, spinner arrow BG, static textfield BG
+    protected static final ColorUIResource PRIMARY1 = MEDIUM_DARK.convert(); // Tree Selection border
+    protected static final ColorUIResource PRIMARY2 = MEDIUM_LIGHT.convert(); // Scrollbar BG, button/label selection border
+    protected static final ColorUIResource PRIMARY3 = MEDIUM.convert(); // Tree Selection BG, tree branch lines, slider/divider
+    protected static final ColorUIResource PRIMARY4 = LIGHT.convert(); // Tree selection border, tab selection border
+    protected static final ColorUIResource SECONDARY1 = MEDIUM_DARK.convert(); // Frame border, inner border, checkbox border, editable textfield border
+    protected static final ColorUIResource SECONDARY2 = MEDIUM_LIGHT.convert(); // gradient button bottom, scrollbar outer border, menu border, static textfield border
+    protected static final ColorUIResource SECONDARY3 = WHITE.convert(); // default BG, spinner arrow BG, static textfield BG
+    protected static final ColorUIResource SECONDARY4 = DARK.convert(); // Combo BG, drop line color
 
-    public static ColorUIResource CONTROL_TEXT_COLOR = BLACK.convert();
-    public static ColorUIResource INACTIVE_CONTROL_TEXT_COLOR = MEDIUM.convert();
-    public static ColorUIResource MENU_DISABLED_FOREGROUND = LIGHT.convert();
-    public static ColorUIResource DESKTOP_COLOR = WHITE.convert();
-
-    public static ColorUIResource DROP_COLOR = LIGHT.convert();
-    public static ColorUIResource DROP_COLOR2 = CONTROL_TEXT_COLOR;
-
-    public static Color BORDER_COLOR = MEDIUM.convert();
-    public static Color TAB_LABEL_COLOR = MEDIUM.convert();
-    public static Color TAB_BG_COLOR = WHITE.convert();
-    public static Color TAB_SELECTED_COLOR = LIGHT.convert();
-    public static Color TREE_SELECTION_COLOR = LIGHT.convert();
-    public static Color TABLE_CELL_COLOR = LIGHT.convert();
-    public static Color SPLIT_DIVIDER_COLOR = MEDIUM.convert();
-    public static Color SLIDER_COLOR = MEDIUM.convert();
-    public static Color IMAGE_BG_COLOR = LIGHT.convert();
-
-    public static Color GRADIENT1 = MEDIUM_LIGHT.convert();
-    public static Color GRADIENT2 = LIGHT.convert();
-    public static Color GRADIENT3 = LIGHT.convert();
+    protected static final ColorUIResource CONTROL_TEXT_COLOR = BLACK.convert();
+    protected static final ColorUIResource INACTIVE_CONTROL_TEXT_COLOR = MEDIUM.convert();
+    protected static final ColorUIResource MENU_DISABLED_FOREGROUND = LIGHT.convert();
+    protected static final ColorUIResource DESKTOP_COLOR = WHITE.convert();
 
     public String DIRECTORY_ICON = "icons/directory.gif";
     public String FILE_ICON = "icons/file.gif";
@@ -87,6 +72,7 @@ public class LovelyTheme extends OceanTheme {
             this.rtl = rtl;
         }
 
+        @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             if (c.getComponentOrientation().isLeftToRight()) {
                 super.paintIcon(c, g, x, y);
@@ -104,6 +90,7 @@ public class LovelyTheme extends OceanTheme {
             this.pressed = pressed;
         }
 
+        @Override
         public void paintIcon(Component c, Graphics g, int x, int y) {
             ButtonModel model = ((AbstractButton)c).getModel();
             if (model.isPressed() && model.isArmed()) {
@@ -114,32 +101,10 @@ public class LovelyTheme extends OceanTheme {
         }
     }
 
-    private static class ImageIconUIResource extends ImageIcon implements UIResource, UIDefaults.LazyValue {
-        /**
-         * Calls the superclass constructor with the same parameter.
-         *
-         * @param imageData an array of pixels
-         * @see javax.swing.ImageIcon#ImageIcon(byte[])
-         */
-        public ImageIconUIResource(byte[] imageData) {
-            super(imageData);
-        }
-
-        /**
-         * Calls the superclass constructor with the same parameter.
-         *
-         * @param image an image
-         * @see javax.swing.ImageIcon#ImageIcon(Image)
-         */
+    private static class ImageIconUIResource extends ImageIcon implements UIResource {
         public ImageIconUIResource(Image image) {
             super(image);
         }
-
-        @Override
-        public Object createValue(UIDefaults table) {
-            return null;
-        }
-
     }
 
     public String getName(){ return "Lovely"; }
@@ -149,12 +114,14 @@ public class LovelyTheme extends OceanTheme {
     protected ColorUIResource getPrimary2() { return PRIMARY2; }
     @Override
     protected ColorUIResource getPrimary3() { return PRIMARY3; }
+    protected ColorUIResource getPrimary4() { return PRIMARY4; }
     @Override
     protected ColorUIResource getSecondary1() { return SECONDARY1; }
     @Override
     protected ColorUIResource getSecondary2() { return SECONDARY2; }
     @Override
     protected ColorUIResource getSecondary3() { return SECONDARY3; }
+    protected ColorUIResource getSecondary4() { return SECONDARY4; }
 
     @Override
     public ColorUIResource getDesktopColor() { return DESKTOP_COLOR; }
@@ -173,18 +140,20 @@ public class LovelyTheme extends OceanTheme {
     public void addCustomEntriesToTable(UIDefaults table) {
         UIDefaults.LazyValue focusBorder = t -> new BorderUIResource.LineBorderUIResource(getPrimary1());
         java.util.List<?> buttonGradient = Arrays.asList(.3f, 0f,
-            GRADIENT1, getWhite(), getSecondary2());
+                getPrimary2(), getWhite(), getSecondary2());
+        java.util.List<?> menuGradient = Arrays.asList(1f, 0f,
+                getWhite(), getPrimary4(), getSecondary2());
+        java.util.List<?> sliderGradient = Arrays.asList(.3f, .2f,
+                getPrimary4(), getWhite(), getSecondary2());
 
         Object directoryIcon = getIconResource(DIRECTORY_ICON);
         Object fileIcon = getIconResource(FILE_ICON);
-        java.util.List<?> sliderGradient = Arrays.asList(.3f, .2f,
-                GRADIENT3, getWhite(), getSecondary2());
 
         Object[] defaults = new Object[] {
             "Button.gradient", buttonGradient,
             "Button.rollover", Boolean.TRUE,
             "Button.toolBarBorderBackground", getInactiveControlTextColor(),
-            "Button.disabledToolBarBorderBackground", BORDER_COLOR,
+            "Button.disabledToolBarBorderBackground", getPrimary3(),
             "Button.rolloverIconType", "ocean",
             "Button.foreground", getBlack(),
 
@@ -196,11 +165,13 @@ public class LovelyTheme extends OceanTheme {
             "CheckBoxMenuItem.foreground", getBlack(),
 
             "ComboBox.foreground", getBlack(),
-            "ComboBox.background", LIGHT.convert(),
+            "ComboBox.background", getPrimary4(),
             "ComboBox.selectionForeground", getBlack(),
-            "ComboBox.selectionBackground", MEDIUM_LIGHT.convert(),
-            "ComboBox.disabledForeground", DARK.convert(),
-            "ComboBox.disabledBackground", LIGHT.convert(),
+            "ComboBox.selectionBackground", getPrimary2(),
+            "ComboBox.disabledForeground", getSecondary4(),
+            "ComboBox.disabledBackground", getPrimary2(),
+
+            "Spinner.buttonGradient", buttonGradient,
 
             // home2
             "FileChooser.homeFolderIcon", getIconResource(HOME_ICON),
@@ -218,16 +189,16 @@ public class LovelyTheme extends OceanTheme {
             // floppy2
             "FileView.floppyDriveIcon", getIconResource(FLOPPY_ICON),
 
-            "Image.background", IMAGE_BG_COLOR,
+            "Image.background", getPrimary4(),
 
             "Label.disabledForeground", getInactiveControlTextColor(),
+            "Label.disabledBackground", getPrimary4(),
 
             "Menu.opaque", Boolean.FALSE,
 
-            "MenuBar.gradient", Arrays.asList(1f, 0f,
-                getWhite(), GRADIENT2, new ColorUIResource(GRADIENT2)),
+            "MenuBar.gradient", menuGradient,
 
-            "MenuBar.borderColor", BORDER_COLOR,
+            "MenuBar.borderColor", getPrimary3(),
 
             "InternalFrame.activeTitleGradient", buttonGradient,
             // close2
@@ -269,29 +240,29 @@ public class LovelyTheme extends OceanTheme {
 
             "ScrollBar.gradient", buttonGradient,
 
-            "Slider.altTrackColor", SLIDER_COLOR,
+            "Slider.altTrackColor", getPrimary3(),
             "Slider.gradient", sliderGradient,
             "Slider.focusGradient", sliderGradient,
 
             "SplitPane.oneTouchButtonsOpaque", Boolean.FALSE,
-            "SplitPane.dividerFocusColor", SPLIT_DIVIDER_COLOR,
+            "SplitPane.dividerFocusColor", getPrimary3(),
 
             "TabbedPane.foreground", getBlack(),
             "TabbedPane.borderHightlightColor", getPrimary1(),
-            "TabbedPane.contentAreaColor", TAB_BG_COLOR,
+            "TabbedPane.contentAreaColor", getSecondary3(),
             "TabbedPane.contentBorderInsets", new Insets(4, 2, 3, 3),
-            "TabbedPane.selected", TAB_SELECTED_COLOR,
-            "TabbedPane.tabAreaBackground", TAB_LABEL_COLOR,
+            "TabbedPane.selected", getPrimary4(),
+            "TabbedPane.tabAreaBackground", getPrimary3(),
             "TabbedPane.tabAreaInsets", new Insets(2, 2, 0, 6),
-            "TabbedPane.unselectedBackground", SECONDARY3,
+            "TabbedPane.unselectedBackground", getSecondary3(),
 
             "Table.focusCellHighlightBorder", focusBorder,
-            "Table.gridColor", SECONDARY1,
-            "TableHeader.focusCellBackground", TABLE_CELL_COLOR,
+            "Table.gridColor", getSecondary1(),
+            "TableHeader.focusCellBackground", getPrimary4(),
 
             "ToggleButton.gradient", buttonGradient,
 
-            "ToolBar.borderColor", BORDER_COLOR,
+            "ToolBar.borderColor", getPrimary3(),
             "ToolBar.isRollover", Boolean.TRUE,
 
             "Tree.closedIcon", directoryIcon,
@@ -305,17 +276,17 @@ public class LovelyTheme extends OceanTheme {
             "Tree.openIcon", directoryIcon,
             "Tree.selectionForeground", getBlack(),
             "Tree.selectionBorderColor", getPrimary1(),
-            "Tree.selectionBackground", TREE_SELECTION_COLOR,
+            "Tree.selectionBackground", getPrimary4(),
             "Tree.dropLineColor", getPrimary1(),
 
             "Table.dropLineColor", getPrimary1(),
-            "Table.dropLineShortColor", DROP_COLOR2,
+            "Table.dropLineShortColor", getSecondary4(),
 
-            "ToolTip.background", SECONDARY3,
+            "ToolTip.background", getSecondary3(),
 
-            "Table.dropCellBackground", DROP_COLOR,
-            "Tree.dropCellBackground", DROP_COLOR,
-            "List.dropCellBackground", DROP_COLOR,
+            "Table.dropCellBackground", getSecondary4(),
+            "Tree.dropCellBackground", getSecondary4(),
+            "List.dropCellBackground", getSecondary4(),
             "List.dropLineColor", getPrimary1()
         };
         table.putDefaults(defaults);

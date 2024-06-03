@@ -21,7 +21,6 @@ import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LMoveEvent;
 import lui.base.event.LSelectionEvent;
-import lui.graphics.LTexture;
 
 public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 
@@ -80,10 +79,10 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 			});
 		} else {
 			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-			renderer.setIcon(renderer.getDefaultLeafIcon());
-			renderer.setLeafIcon(null);
-			renderer.setClosedIcon(null);
+			renderer.setIcon(null);
 			renderer.setOpenIcon(null);
+			renderer.setClosedIcon(null);
+			renderer.setLeafIcon(null);
 			renderer.setDisabledIcon(null);
 			tree.setCellRenderer(renderer);
 		}
@@ -102,19 +101,6 @@ public abstract class LTreeBase<T, ST> extends LSelectableCollection<T, ST> {
 				notifySelectionListeners(event);
 			}
 		});
-	}
-
-	public void setIcon(LTexture image) {
-		if (tree.isEditable())
-			return;
-		DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) tree.getCellRenderer();
-		final Icon icon = new ImageIcon(image.convert());
-		renderer.setIcon(icon);
-		renderer.setLeafIcon(icon);
-		renderer.setOpenIcon(icon);
-		renderer.setClosedIcon(icon);
-		renderer.setDisabledIcon(icon);
-		tree.setCellRenderer(renderer);
 	}
 	
 	@Override

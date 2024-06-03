@@ -28,7 +28,10 @@ public class LImage extends LCanvas {
 
 	public LImage(LContainer parent) {
 		super(parent);
-		setBackground(new LColor(UIManager.getColor("Image.background")));
+		Color c = UIManager.getColor("Image.background");
+		if (c == null)
+			c = UIManager.getColor("Tooltip.background");
+		setBackground(c);
 	}
 	
 	@Override

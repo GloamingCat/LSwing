@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.plaf.metal.MetalTheme;
 
 import lui.base.LVocab;
 import lui.base.action.LActionManager;
@@ -37,8 +38,8 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 	public LSubMenu menuView;
 	public LSubMenu menuHelp;
 
-	public static void setLovelyTheme() {
-		MetalLookAndFeel.setCurrentTheme(new LovelyTheme());
+	public static void setTheme(MetalTheme theme) {
+		MetalLookAndFeel.setCurrentTheme(theme);
         try {
             UIManager.setLookAndFeel(new MetalLookAndFeel());
         } catch (UnsupportedLookAndFeelException e) {
@@ -54,7 +55,6 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 	public LApplicationWindow(int minWidth, int minHeight, String icon, String... args) {
 		super(minWidth, minHeight);
 		LTexture.rootClass = getClass();
-		setLovelyTheme();
 		if (icon != null) {
 			jframe.setIconImage(LTexture.getBufferedImage(icon));
 		}

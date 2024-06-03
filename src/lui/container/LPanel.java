@@ -171,7 +171,11 @@ public class LPanel extends JPanel implements LLayedCell, LLayedContainer {
 	//////////////////////////////////////////////////
 	//region Interfaces
 
-		@Override
+	public void setHoverText(String text) {
+		setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
+	}
+
+	@Override
 	public LCellData getCellData() {
 		if (gridData == null)
 			gridData = new LCellData();

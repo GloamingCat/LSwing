@@ -40,10 +40,6 @@ public class LFrame extends LPanel {
 	public void setTitle(String text) {
 		titledBorder.setTitle(text);
 	}
-
-	public void setHoverText(String text) {
-		setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
-	}
 	
 	@Override
 	public void setMargins(int h, int v) {
