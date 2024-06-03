@@ -8,7 +8,7 @@ import lui.container.LContainer;
 
 public class LCheckBox extends LControlWidget<Boolean> {
 
-	JCheckBox button;
+	private JCheckBox button;
 
 	public LCheckBox(LContainer parent) {
 		super(parent);
@@ -19,15 +19,19 @@ public class LCheckBox extends LControlWidget<Boolean> {
 		button = new JCheckBox();
 		add(button);
 		button.addActionListener(e -> {
-            if (currentValue != null && button.isSelected() == currentValue)
-                return;
-            newModifyAction(currentValue, button.isSelected());
+			Boolean oldValue = currentValue;
             currentValue = button.isSelected();
+            if (oldValue == null || oldValue.equals(currentValue))
+                return;
+            newModifyAction(oldValue, currentValue);
         });
+		button.setSelected(false);
 	}
 
 	public void setValue(Object obj) {
-		if (obj != null) {
+		if (obj == currentValue)
+			return;
+		if (obj != null) {;
 			Boolean i = (Boolean) obj;
 			currentValue = i;
 			button.setEnabled(true);

@@ -15,10 +15,13 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
 	protected LButton btnNull;
 
 	public LNodeSelector(LContainer parent, boolean optional) {
-		super(parent);
+		super(parent, optional ? 1 : 0);
 		setGridLayout(1);
-		tree.getCellData().setExpand(true, true);
-		tree.getCellData().setRequiredSize(LPrefs.LISTWIDTH, LPrefs.LISTHEIGHT);
+	}
+
+	@Override
+	protected void createContent(int flags) {
+		tree = createTree(flags);
 		tree.addSelectionListener(event -> {
             LPath path = tree.getSelectedPath();
             Integer id = path == null ? -1 : collection.getNode(path).id;
@@ -28,16 +31,17 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
             currentValue = id;
         });
 		tree.setDragEnabled(false);
-		if (!optional)
+		tree.getCellData().setExpand(true, true);
+		tree.getCellData().setRequiredSize(LPrefs.LISTWIDTH, LPrefs.LISTHEIGHT);
+		if (flags == 0)
 			return;
 		btnNull = new LButton(this, LVocab.instance.DESELECT);
-		btnNull.getCellData().setExpand(true, false);
 		btnNull.onClick = event -> selectNone();
+		btnNull.getCellData().setExpand(true, false);
 	}
 
-	@Override
-	protected void createContent(int flags) {
-		tree = new LTree<>(this) {
+	protected LTree<T, T> createTree(int flags) {
+		return new LTree<>(this) {
 			@Override
 			public T toObject(LPath path) {
 				LDataTree<T> node = collection.getNode(path);
@@ -106,6 +110,10 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
 	public void setCollection(LDataTree<T> collection) {
 		this.collection = collection;
 		tree.setDataCollection(collection);
+	}
+
+	public LDataTree<T> getCollection() {
+		return collection;
 	}
 	
 	public T getSelectedObject() {

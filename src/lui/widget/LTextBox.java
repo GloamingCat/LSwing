@@ -1,12 +1,6 @@
 package lui.widget;
 
 import java.awt.*;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 
 import javax.swing.*;
 
@@ -20,38 +14,16 @@ public class LTextBox extends LControlWidget<String> {
 	//////////////////////////////////////////////////
 	//region Constructors
 
+	/**
+	 * @wbp.parser.constructor
+	 * @wbp.eval.method.parameter parent new LPanel(new lwt.dialog.LShell(400, 200))
+	 */
 	public LTextBox(LContainer parent) {
 		this(parent, false);
 	}
 
 	public LTextBox(LContainer parent, boolean readOnly) {
 		super(parent, readOnly ? 1 : 0);
-		getCellData().setExpand(true, false);
-		text.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusLost(FocusEvent e) {
-				updateCurrentText();
-			}
-		});
-		text.addKeyListener(new KeyAdapter() {
-			@Override
-			public void keyPressed(KeyEvent e) {
-				if (e.getKeyCode() == KeyEvent.VK_ENTER ||
-						e.getKeyCode() == KeyEvent.VK_TAB) {
-					updateCurrentText();
-				}
-			}
-		});
-		text.addMouseMotionListener(new MouseMotionListener() {
-			@Override
-			public void mouseDragged(MouseEvent e) {
-				updateCurrentText();
-			}
-			@Override
-			public void mouseMoved(MouseEvent e) {
-				updateCurrentText();
-			}
-		});
 	}
 
 
@@ -64,6 +36,19 @@ public class LTextBox extends LControlWidget<String> {
 		text.setWrapStyleWord(true);
 		JScrollPane pane = new JScrollPane(text);
 		add(pane);
+		UndoManager undoManager = new UndoManager();
+		text.getDocument().addUndoableEditListener(undoManager);
+		undoManager.addChangeListener(e -> updateCurrentText());
+		if (flags == 1) {
+			Color fg = UIManager.getColor("Label.disabledForeground");
+			if (fg == null)
+				fg = UIManager.getColor("MenuItem.disabledForeground");
+			text.setForeground(fg);
+			Color bg = UIManager.getColor("Label.disabledBackground");
+			if (bg == null)
+				bg = UIManager.getColor("MenuItem.disabledBackground");
+			text.setBackground(bg);
+		}
 	}
 
 	//endregion
@@ -72,10 +57,13 @@ public class LTextBox extends LControlWidget<String> {
 	//region Value
 
 	public void updateCurrentText() {
-		if (!text.getText().equals(currentValue)) {
-			newModifyAction(currentValue, text.getText());
-			currentValue = text.getText();
-		}
+		java.awt.EventQueue.invokeLater(() -> {
+			String oldValue = currentValue;
+            currentValue = text.getText();
+			if (oldValue == null || oldValue.equals(currentValue))
+				return;
+			newModifyAction(oldValue, currentValue);
+		});
 	}
 
 	@Override

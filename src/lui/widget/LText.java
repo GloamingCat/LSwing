@@ -3,49 +3,22 @@ package lui.widget;
 import lui.container.*;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+import java.awt.*;
+
 public class LText extends LControlWidget<String> {
 	
 	JTextField text;
 
 	/**
 	 * @wbp.parser.constructor
-	 * @wbp.eval.method.parameter parent new LPanel(new lwt.dialog.LShell(400, 200), 2, true)
+	 * @wbp.eval.method.parameter parent new LPanel(new lwt.dialog.LShell(400, 200))
 	 */
 	public LText(LContainer parent) {
-		this(parent, 1);
-	}
-
-	public LText(LContainer parent, int columns) {
-		this(parent, columns, false);
+		this(parent, false);
 	}
 	
 	public LText(LContainer parent, boolean readOnly) {
-		this(parent, 1, readOnly);
-	}
-	
-	public LText(LContainer parent, int columns, boolean readOnly) {
 		super(parent, readOnly ? 1 : 0);
-		getCellData().setSpread(columns, 1);
-		getCellData().setExpand(true, false);
-		text.getDocument().addDocumentListener(new DocumentListener() {
-			@Override
-			public void removeUpdate(DocumentEvent e) {
-				updateCurrentText();
-			}
-			@Override
-			public void insertUpdate(DocumentEvent e) {
-				updateCurrentText();
-			}
-			@Override
-			public void changedUpdate(DocumentEvent e) {
-				updateCurrentText();
-			}
-		});
-		if (readOnly) {
-			text.setForeground(UIManager.getColor("Label.disabledForeground"));
-		}
 	}
 	
 	@Override
@@ -54,15 +27,28 @@ public class LText extends LControlWidget<String> {
 		text = new JTextField("");
 		text.setEditable(flags == 0);
 		add(text);
+		UndoManager undoManager = new UndoManager();
+		text.getDocument().addUndoableEditListener(undoManager);
+		undoManager.addChangeListener(e -> updateCurrentText());
+		if (flags == 1) {
+			Color fg = UIManager.getColor("Label.disabledForeground");
+			if (fg == null)
+				fg = UIManager.getColor("MenuItem.disabledForeground");
+			text.setForeground(fg);
+			Color bg = UIManager.getColor("Label.disabledBackground");
+			if (bg == null)
+				bg = UIManager.getColor("MenuItem.disabledBackground");
+			text.setBackground(bg);
+		}
 	}
 	
 	private void updateCurrentText() {
 		java.awt.EventQueue.invokeLater(() -> {
-			String newText = text.getText();
-			if (currentValue != null && !newText.equals(currentValue)) {
-				newModifyAction(currentValue, newText);
-				currentValue = newText;
-			}
+			String oldValue = currentValue;
+            currentValue = text.getText();
+			if (oldValue == null || oldValue.equals(currentValue))
+				return;
+			newModifyAction(oldValue, currentValue);
 		});
 	}
 	

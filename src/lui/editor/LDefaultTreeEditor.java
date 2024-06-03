@@ -10,6 +10,10 @@ public abstract class LDefaultTreeEditor<T> extends LTreeEditor<T, T> {
 		super(parent);
 	}
 
+	public LDefaultTreeEditor(LContainer parent, boolean check) {
+		super(parent, check);
+	}
+
 	public T getEditableData(LPath path) {
 		LDataTree<T> node = getDataCollection().getNode(path);
 		return node.data;

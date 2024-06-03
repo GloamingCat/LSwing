@@ -69,13 +69,6 @@ public class MyContentListEditor extends LView {
 		public boolean canDecode(String str) {
 			return MyContent.canDecode(str);
 		}
-
-		@Override
-		public boolean isChecked(MyContent data) { return true; }
-
-		@Override
-		protected void setChecked(MyContent data, boolean checked) {}
-
 	}
 	
 }

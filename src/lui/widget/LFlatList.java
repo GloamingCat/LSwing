@@ -14,21 +14,9 @@ public class LFlatList extends LControlWidget<Integer> {
 	JList<String> list;
 	protected boolean optional;
 
-	@SuppressWarnings({"DataFlowIssue"})
 	public LFlatList(LContainer parent, boolean optional) {
 		super(parent);
 		this.optional = optional;
-		list.addListSelectionListener(e -> {
-            int current = currentValue == null ? -1 : currentValue;
-            if (list.getSelectedIndex() == current)
-                return;
-            newModifyAction(currentValue, list.getSelectedIndex());
-            currentValue = list.getSelectedIndex();
-        });
-		if (optional)
-			currentValue = -1;
-		else
-			currentValue = 0;
 	}
 
 	@Override
@@ -36,6 +24,13 @@ public class LFlatList extends LControlWidget<Integer> {
 		list = new JList<>();
 		list.setModel(new DefaultListModel<>());
 		add(list);
+		list.addListSelectionListener(e -> {
+			Integer oldValue = currentValue;
+            currentValue = list.getSelectedIndex();
+			if (oldValue == null || oldValue.equals(currentValue))
+				return;
+            newModifyAction(oldValue, currentValue);
+        });
 	}
 	
 	public String getSelectedText() {

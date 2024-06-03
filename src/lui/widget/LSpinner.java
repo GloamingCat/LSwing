@@ -7,7 +7,7 @@ import javax.swing.text.DefaultFormatter;
 
 public class LSpinner extends LControlWidget<Integer> {
 
-	JSpinner spinner;
+	private JSpinner spinner;
 	private Integer minimum = 0;
 	private Integer maximum = null;
 	private final int step = 1;
@@ -17,28 +17,16 @@ public class LSpinner extends LControlWidget<Integer> {
 	 * @wbp.eval.method.parameter parent new LPanel(new lwt.dialog.LShell(400, 200), 2, true)
 	 */
 	public LSpinner(LContainer parent) {
-		this(parent, 1);
-		currentValue = 0;
-	}
-	
-	public LSpinner(LContainer parent, int columns) {
 		super(parent);
 		setFillLayout(true);
-		getCellData().setExpand(true, false);
-		getCellData().setSpread(columns, 1);
-		spinner.addChangeListener(e -> {
-            if (currentValue == null || spinner.getValue() == currentValue)
-                return;
-			newModifyAction(currentValue, (Integer) spinner.getValue());
-            currentValue = (Integer) spinner.getValue();
-        });
-		JFormattedTextField field = ((JSpinner.DefaultEditor)spinner.getEditor()).getTextField();
-		DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
-		formatter.setCommitsOnValidEdit(true);
 	}
-	
+
+	private static LSpinner test;
+
 	@Override
 	protected void createContent(int flags) {
+		if (test == null)
+			test = this;
 		spinner = new JSpinner();
 		add(spinner);
 		SpinnerNumberModel model = new SpinnerNumberModel(0, 0, 0, 1);
@@ -46,11 +34,27 @@ public class LSpinner extends LControlWidget<Integer> {
 		spinner.setModel(model);
 		JSpinner.NumberEditor editor = new JSpinner.NumberEditor(spinner, "#");
 		spinner.setEditor(editor);
+		JFormattedTextField field = editor.getTextField();
+		UndoManager undoManager = new UndoManager();
+		field.getDocument().addUndoableEditListener(undoManager);
+		undoManager.addChangeListener(e -> {
+			Integer oldValue = currentValue;
+            currentValue = (Integer) spinner.getValue();
+			if (oldValue == null || oldValue.equals(currentValue))
+				return;
+			newModifyAction(oldValue, currentValue);
+        });
+		DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
+		formatter.setCommitsOnValidEdit(true);
 		spinner.setEnabled(true);
+		currentValue = 0;
+		spinner.setValue(0);
 	}
 
 	@Override
 	public void setValue(Object obj) {
+		if (currentValue == obj)
+			return;
 		if (obj != null) {
 			Integer i = (Integer) obj;
 			currentValue = i;
@@ -59,7 +63,7 @@ public class LSpinner extends LControlWidget<Integer> {
 		} else {
 			currentValue = null;
 			spinner.setEnabled(false);
-			spinner.setValue(0);
+			spinner.setValue(minimum);
 		}
 	}
 	
@@ -69,12 +73,13 @@ public class LSpinner extends LControlWidget<Integer> {
 		else
 			minimum = i;
 		SpinnerNumberModel model = (SpinnerNumberModel) spinner.getModel();
-		model.setMinimum(minimum);
 		int value = (int) spinner.getValue();
 		if (maximum != null && value > maximum)
 			value = maximum;
 		if (minimum != null && value < minimum)
 			value = minimum;
+		currentValue = value;
+		model.setMinimum(minimum);
 		model.setValue(value);
 	}
 
@@ -84,12 +89,13 @@ public class LSpinner extends LControlWidget<Integer> {
 		else
 			maximum = i;
 		SpinnerNumberModel model = (SpinnerNumberModel) spinner.getModel();
-		model.setMaximum(maximum);
 		int value = (int) spinner.getValue();
 		if (maximum != null && value > maximum)
 			value = maximum;
 		if (minimum != null && value < minimum)
 			value = minimum;
+		currentValue = value;
+		model.setMaximum(maximum);
 		model.setValue(value);
 	}
 	

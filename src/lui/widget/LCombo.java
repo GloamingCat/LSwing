@@ -10,33 +10,16 @@ import lui.container.LContainer;
 
 public class LCombo extends LControlWidget<Integer> {
 
-	JComboBox<String> combo;
+	private JComboBox<String> combo;
 	private boolean includeID = true;
 	private boolean optional = true;
-	
+
 	public LCombo(LContainer parent) {
-		this(parent, 1, false);
+		this(parent, false);
 	}
-	
+
 	public LCombo(LContainer parent, boolean readOnly) {
-		this(parent, 1, readOnly);
-	}
-	
-	public LCombo(LContainer parent, int columns) {
-		this(parent, columns, false);
-	}
-	
-	public LCombo(LContainer parent, int columns, boolean readOnly) {
 		super(parent, (readOnly ? 1 : 0));
-		getCellData().setSpread(columns, 1);
-		getCellData().setExpand(true, false);
-		combo.addActionListener(arg0 -> {
-            int current = currentValue == null ? (optional ? -1 : 0) : currentValue;
-            if (getSelectionIndex() == current)
-                return;
-            newModifyAction(currentValue, getSelectionIndex());
-            currentValue = getSelectionIndex();
-        });
 	}
 	
 	@Override
@@ -44,9 +27,16 @@ public class LCombo extends LControlWidget<Integer> {
 		combo = new JComboBox<>();
 		combo.setEditable(flags == 0);
 		add(combo);
+		combo.addItemListener(e -> {
+			Integer oldValue = currentValue;
+            currentValue = getSelectionIndex();
+			if (oldValue == null || oldValue.equals(currentValue))
+				return;
+            newModifyAction(oldValue, currentValue);
+		});
 	}
 
-	public int getSelectionIndex() {
+	protected int getSelectionIndex() {
 		int i = combo.getSelectedItem() == null ? 0 : combo.getSelectedIndex();
 		if (optional) {
 			return i - 1;
@@ -55,20 +45,21 @@ public class LCombo extends LControlWidget<Integer> {
 		}
 	}
 	
-	public void setSelectionIndex(int i) {
+	protected void setSelectionIndex(int i) {
 		if (optional) 
 			i++;
-		if (i >= combo.getItemCount())
+		if (i >= combo.getItemCount()) {
 			combo.setSelectedIndex(0);
-		else
+		} else {
 			combo.setSelectedIndex(i);
+		}
 	}
 
 	public void setValue(Object obj) {
 		if (obj != null) {
 			Integer i = (Integer) obj;
-			currentValue = i;
 			combo.setEnabled(true);
+			currentValue = i;
 			setSelectionIndex(i);
 		} else {
 			currentValue = null;
@@ -87,6 +78,7 @@ public class LCombo extends LControlWidget<Integer> {
 	public void setItems(ArrayList<?> array) {
 		if (array == null)
 			array = new ArrayList<>();
+		currentValue = null;
 		combo.removeAllItems();
 		if (optional)
 			combo.addItem("");

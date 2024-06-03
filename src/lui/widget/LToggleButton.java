@@ -33,9 +33,9 @@ public class LToggleButton extends LControlWidget<Boolean> {
 		icon.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent arg0) {
-				newModifyAction(currentValue, !currentValue);
 				if (enabled)
 					setValue(!currentValue);
+				newModifyAction(!currentValue, currentValue);
 			}
 		});
 	}

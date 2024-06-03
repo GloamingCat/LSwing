@@ -85,7 +85,8 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	protected abstract T duplicateElement(T original);
 	protected abstract String encodeElement(T data);
 	protected abstract T decodeElement(String str);
-	protected abstract void setChecked(T data, boolean checked);
+
+	protected void setChecked(T data, boolean checked) {}
 
 	@Override
 	public LDataTree<T> duplicateData(LDataCollection<T> collection) {

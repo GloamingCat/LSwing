@@ -8,6 +8,10 @@ import lui.editor.LDefaultTreeEditor;
 
 public abstract class GDefaultTreeEditor<T> extends LDefaultTreeEditor<T> {
 
+	public GDefaultTreeEditor(LContainer parent, boolean check) {
+		super(parent, check);
+	}
+
 	public GDefaultTreeEditor(LContainer parent) {
 		super(parent);
 	}
