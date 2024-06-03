@@ -61,7 +61,8 @@ public class LImage extends LCanvas {
 			try {
 				g.setColor(new Color(1f, 1f, 1f, a));
 				AffineTransform at = g.getTransform();
-				AffineTransform at2 = AffineTransform.getTranslateInstance(x, y);
+				AffineTransform at2 = (AffineTransform) at.clone();
+				at2.translate(x, y);
 				at2.rotate(Math.toRadians(rz));
 				at2.scale(sx, sy);
 				at2.translate(-ox, -oy);
