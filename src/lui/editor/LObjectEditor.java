@@ -192,10 +192,6 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 			LControlWidget<?> control = entry.getKey();
 			control.notifyEmpty();
 		}
-		for(Map.Entry<LEditor, String> entry : editorMap.entrySet()) {
-			LEditor editor = entry.getKey();
-			editor.saveObjectValues();
-		}
 	}
 	
 	public void addSelectionListener(LSelectionListener listener) {
@@ -207,6 +203,10 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		setObject(value);
 		currentObject = oldValue;
 		saveObjectValues();
+		for(Map.Entry<LEditor, String> entry : editorMap.entrySet()) {
+			LEditor editor = entry.getKey();
+			editor.saveObjectValues();
+		}
 		currentObject = null;
 		setObject(oldValue);
 	}

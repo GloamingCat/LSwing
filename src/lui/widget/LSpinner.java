@@ -55,13 +55,13 @@ public class LSpinner extends LControlWidget<Integer> {
 	public void setValue(Object obj) {
 		if (currentValue == obj)
 			return;
+		currentValue = null;
 		if (obj != null) {
 			Integer i = (Integer) obj;
 			currentValue = i;
 			spinner.setEnabled(true);
 			spinner.setValue(i);
 		} else {
-			currentValue = null;
 			spinner.setEnabled(false);
 			spinner.setValue(minimum);
 		}
@@ -73,14 +73,7 @@ public class LSpinner extends LControlWidget<Integer> {
 		else
 			minimum = i;
 		SpinnerNumberModel model = (SpinnerNumberModel) spinner.getModel();
-		int value = (int) spinner.getValue();
-		if (maximum != null && value > maximum)
-			value = maximum;
-		if (minimum != null && value < minimum)
-			value = minimum;
-		currentValue = value;
 		model.setMinimum(minimum);
-		model.setValue(value);
 	}
 
 	public void setMaximum(int i) {
@@ -89,14 +82,7 @@ public class LSpinner extends LControlWidget<Integer> {
 		else
 			maximum = i;
 		SpinnerNumberModel model = (SpinnerNumberModel) spinner.getModel();
-		int value = (int) spinner.getValue();
-		if (maximum != null && value > maximum)
-			value = maximum;
-		if (minimum != null && value < minimum)
-			value = minimum;
-		currentValue = value;
 		model.setMaximum(maximum);
-		model.setValue(value);
 	}
 	
 	@Override
