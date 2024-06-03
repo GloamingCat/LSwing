@@ -81,7 +81,6 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 
 	public <CT> void addControl(LControlWidget<CT> control, String key) {
 		controlMap.put(control, key);
-		LObjectEditor<T> self = this;
 		control.setMenuInterface(getMenuInterface());
 		control.addModifyListener(new LControlListener<>() {
 			@SuppressWarnings("unchecked")
@@ -94,8 +93,13 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 				if (key.isEmpty()) {
 					currentObject = (T) event.newValue;
 				} else if (currentObject != null) {
-					setFieldValue(currentObject, key, event.newValue);
-					self.notifyListeners(new LControlEvent<>(currentObject, currentObject));
+					if (modifyListeners.isEmpty())
+						setFieldValue(currentObject, key, event.newValue);
+					else {
+						T oldValue = duplicateData(currentObject);
+						setFieldValue(currentObject, key, event.newValue);
+						LObjectEditor.this.notifyListeners(new LControlEvent<>(oldValue, currentObject));
+					}
 					if (collectionEditor != null && currentPath != null && event.detail >= 0)
 						collectionEditor.refreshObject(currentPath);
 				}
