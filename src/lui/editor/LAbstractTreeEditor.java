@@ -14,7 +14,7 @@ import lui.base.event.LInsertEvent;
 import lui.base.event.LMoveEvent;
 import lui.base.event.LSelectionEvent;
 import lui.base.event.listener.LCollectionListener;
-import lui.widget.LTree;
+import lui.widget.LEditableTree;
 
 /**
  * Holds common functionalities for LTreeEditor and LListEditor.
@@ -80,7 +80,7 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 		addChild((LView) editor);
 	}
 	
-	public abstract LTree<T, ST> getCollectionWidget();
+	public abstract LEditableTree<T, ST> getCollectionWidget();
 	protected abstract T createNewElement();
 	protected abstract T duplicateElement(T original);
 	protected abstract String encodeElement(T data);

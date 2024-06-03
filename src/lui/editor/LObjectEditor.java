@@ -255,7 +255,7 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		modifyListeners.add(listener);
 	}
 
-	public void modify(T newValue) {
+	public void forceModification(T newValue) {
 		T oldValue = duplicateData(currentObject);
 		setValue(newValue);
 		newModifyAction(oldValue, newValue);
@@ -281,7 +281,7 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 				return;
 			T newValue = decodeData(str);
 			if (newValue != null && !newValue.equals(currentObject))
-				modify(newValue);	
+				forceModification(newValue);
 		} catch (Exception e) {
 			System.err.println(e.getMessage());
 		}

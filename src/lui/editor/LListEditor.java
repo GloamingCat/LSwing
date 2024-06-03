@@ -5,11 +5,11 @@ import lui.base.data.LDataList;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LEditEvent;
-import lui.widget.LList;
+import lui.widget.LEditableList;
 
 public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 	
-	protected LList<T, ST> list;
+	protected LEditableList<T, ST> list;
 	
 	public LListEditor(LContainer parent) {
 		this(parent, false);
@@ -23,7 +23,7 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 
 	@Override
 	protected void createContent(int style) {
-		list = new LList<>(this, style == 1) {
+		list = new LEditableList<>(this, style == 1) {
 			@Override
 			public LEditEvent<ST> edit(LPath path) {
 				return onEditItem(path);
@@ -66,7 +66,7 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 		};
 	}
 	
-	public LList<T, ST> getCollectionWidget() {
+	public LEditableList<T, ST> getCollectionWidget() {
 		return list;
 	}
 

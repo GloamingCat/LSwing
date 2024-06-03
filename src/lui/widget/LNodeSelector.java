@@ -30,7 +30,6 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
             newModifyAction(currentValue, id);
             currentValue = id;
         });
-		tree.setDragEnabled(false);
 		tree.getCellData().setExpand(true, true);
 		tree.getCellData().setRequiredSize(LPrefs.LISTWIDTH, LPrefs.LISTHEIGHT);
 		if (flags == 0)
@@ -50,28 +49,8 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
 				return node.data;
 			}
 			@Override
-			public LDataTree<T> emptyNode() {
-				return null;
-			}
-			@Override
-			public LDataTree<T> duplicateNode(LDataTree<T> node) {
-				return null;
-			}
-			@Override
 			public LDataTree<T> toNode(LPath path) {
 				return collection.getNode(path);
-			}
-			@Override
-			protected String encodeNode(LDataTree<T> node) {
-				return null;
-			}
-			@Override
-			protected LDataTree<T> decodeNode(String node) {
-				return null;
-			}
-			@Override
-			public boolean canDecode(String str) {
-				return false;
 			}
 		};
 	}

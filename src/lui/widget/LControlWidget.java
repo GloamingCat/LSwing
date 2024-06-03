@@ -3,6 +3,8 @@ package lui.widget;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -16,6 +18,7 @@ import lui.base.event.LControlEvent;
 import lui.base.event.listener.LControlListener;
 import lui.base.gui.LControl;
 import lui.base.gui.LMenu;
+import lui.editor.LPopupMenu;
 
 public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	
@@ -30,7 +33,7 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 		super(parent, flags);
 	}
 	
-	public void modify(T newValue) {
+	public void forceModification(T newValue) {
 		T oldValue = currentValue;
 		setValue(newValue);
 		newModifyAction(oldValue, newValue);
@@ -123,7 +126,7 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 				return;
 			T newValue = decodeData(str);
 			if (newValue != null && !newValue.equals(currentValue))
-				modify(newValue);
+				forceModification(newValue);
 		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
 			System.err.println(e.getMessage());
 		}
@@ -142,5 +145,59 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	}
 
 	//endregion
-	
+
+	//////////////////////////////////////////////////
+	//region Menus
+
+	private LPopupMenu addMenu(JComponent parent) {
+		LPopupMenu menu = new LPopupMenu(parent);
+		setCopyEnabled(menu, true);
+		setPasteEnabled(menu, true);
+		addFocusOnClick(parent);
+		return menu;
+	}
+
+	private void addFocusOnClick(JComponent c) {
+		LControlWidget<T> widget = this;
+		c.setEnabled(true);
+		c.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (e.getButton() == MouseEvent.BUTTON1) { // Left button
+					menuInterface.setFocusWidget(widget);
+				}
+			}
+		});
+	}
+
+	public void addMenu() {
+		addMenu(this);
+	}
+
+	public void addMenu(LContainer frame) {
+		JComponent c = frame.getContentComposite();
+		JPopupMenu menu = getComponentPopupMenu();
+		if (menu == null) {
+			menu = addMenu(c);
+			setComponentPopupMenu(menu);
+			addFocusOnClick(this);
+		} else if (c.getComponentPopupMenu() == null) {
+			c.setComponentPopupMenu(menu);
+			addFocusOnClick(c);
+		}
+	}
+
+	public void addMenu(LWidget widget) {
+		JPopupMenu menu = getComponentPopupMenu();
+		if (menu == null) {
+			menu = addMenu((JComponent) widget);
+			setComponentPopupMenu(menu);
+			addFocusOnClick(this);
+		} else if (widget.getComponentPopupMenu() == null) {
+			widget.setComponentPopupMenu(menu);
+			addFocusOnClick(widget);
+		}
+	}
+
+	//endregion
 }

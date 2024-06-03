@@ -1,24 +1,14 @@
 package lui.widget;
 
+import lui.base.LMenuInterface;
 import lui.base.LPrefs;
-import lui.base.gui.LMenu;
 import lui.container.LContainer;
 import lui.container.LPanel;
-import lui.editor.LPopupMenu;
-import lui.LMenuInterface;
 
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
-import javax.swing.JComponent;
-import javax.swing.JPopupMenu;
-
-import lui.base.LVocab;
 import lui.base.action.LAction;
-import lui.base.gui.LPastable;
 
-public abstract class LWidget extends LPanel implements LPastable {
+public abstract class LWidget extends LPanel {
 
 	protected LMenuInterface menuInterface;
 
@@ -42,72 +32,13 @@ public abstract class LWidget extends LPanel implements LPastable {
 	protected abstract void createContent(int flags);
 
 	//endregion
-	
-	//////////////////////////////////////////////////
-	//region Menus
-	
-	private LPopupMenu addMenu(JComponent parent) {
-		LPopupMenu menu = new LPopupMenu(parent);
-		setCopyEnabled(menu, true);
-		setPasteEnabled(menu, true);
-		addFocusOnClick(parent);
-		return menu;
-	}
-	
-	private void addFocusOnClick(JComponent c) {
-		LWidget widget = this;
-		c.setEnabled(true);
-		c.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mousePressed(MouseEvent e) {
-				if (e.getButton() == MouseEvent.BUTTON1) { // Left button
-					menuInterface.setFocusWidget(widget);
-				}
-			}
-		});
-	}
-	
-	public void addMenu() {
-		addMenu(this);
-	}
-	
-	public void addMenu(LContainer frame) {
-		JComponent c = frame.getContentComposite();
-		JPopupMenu menu = getComponentPopupMenu();
-		if (menu == null) {
-			menu = addMenu(c);
-			setComponentPopupMenu(menu);
-			addFocusOnClick(this);
-		} else if (c.getComponentPopupMenu() == null) {
-			c.setComponentPopupMenu(menu);
-			addFocusOnClick(c);
-		}
-	}
-	
-	public void addMenu(LWidget widget) {
-		JPopupMenu menu = getComponentPopupMenu();
-		if (menu == null) {
-			menu = addMenu((JComponent) widget);
-			setComponentPopupMenu(menu);
-			addFocusOnClick(this);
-		} else if (widget.getComponentPopupMenu() == null) {
-			widget.setComponentPopupMenu(menu);
-			addFocusOnClick(widget);
-		}
-	}
-
-	public void setCopyEnabled(LMenu menu, boolean value) {
-		menu.setMenuButton(value, LVocab.instance.COPY, "copy", (d) -> onCopyButton(menu), "Ctrl+&C");
-	}
-
-	public void setPasteEnabled(LMenu menu, boolean value) {
-		menu.setMenuButton(value, LVocab.instance.PASTE, "paste", (d) -> onPasteButton(menu), "Ctrl+&V");
-	}
-	
-	//endregion
 
 	//////////////////////////////////////////////////
 	//region Action
+
+	public LMenuInterface getMenuInterface() {
+		return menuInterface;
+	}
 
 	public void setMenuInterface(LMenuInterface mi) {
 		menuInterface = mi;

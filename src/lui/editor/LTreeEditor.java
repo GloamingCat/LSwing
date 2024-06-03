@@ -4,11 +4,11 @@ import lui.container.LContainer;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LEditEvent;
-import lui.widget.LTree;
+import lui.widget.LEditableTree;
 
 public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 	
-	protected LTree<T, ST> tree;
+	protected LEditableTree<T, ST> tree;
 	
 	public LTreeEditor(LContainer parent) {
 		this(parent, false);
@@ -22,7 +22,7 @@ public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 
 	@Override
 	protected void createContent(int style) {
-		tree = new LTree<>(this, style == 1) {
+		tree = new LEditableTree<>(this, style == 1) {
 			@Override
 			public LEditEvent<ST> edit(LPath path) {
 				return onEditItem(path);
@@ -65,7 +65,7 @@ public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 		};
 	}
 
-	public LTree<T, ST> getCollectionWidget() {
+	public LEditableTree<T, ST> getCollectionWidget() {
 		return tree;
 	}
 

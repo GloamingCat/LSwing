@@ -12,7 +12,7 @@ import lui.base.event.LInsertEvent;
 import lui.base.event.LMoveEvent;
 import lui.base.event.listener.LCollectionListener;
 import lui.base.gui.LMenu;
-import lui.widget.LCollection;
+import lui.base.gui.LEditableCollection;
 
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
@@ -130,7 +130,7 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 	}
 	
 	// Widget
-	public abstract LCollection<T, ST> getCollectionWidget();
+	public abstract LEditableCollection<T, ST> getCollectionWidget();
 
 	// Editable Data
 	protected abstract ST getEditableData(LPath path);

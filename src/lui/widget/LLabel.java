@@ -5,7 +5,6 @@ import javax.swing.JPopupMenu;
 
 import lui.base.LFlags;
 import lui.base.LPrefs;
-import lui.base.gui.LMenu;
 import lui.container.LContainer;
 
 public class LLabel extends LWidget {
@@ -107,17 +106,6 @@ public class LLabel extends LWidget {
 	public void setComponentPopupMenu(JPopupMenu menu) {
 		super.setComponentPopupMenu(menu);
 		label.setComponentPopupMenu(menu);
-	}
-
-	@Override
-	public void onCopyButton(LMenu menu) {}
-
-	@Override
-	public void onPasteButton(LMenu menu) {}
-
-	@Override
-	public boolean canDecode(String str) {
-		return false;
 	}
 
 	//endregion

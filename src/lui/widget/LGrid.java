@@ -6,13 +6,7 @@ import lui.base.LFlags;
 import lui.base.data.*;
 import lui.container.LContainer;
 import lui.container.LImage;
-import lui.editor.LPopupMenu;
-import lui.base.event.LDeleteEvent;
-import lui.base.event.LEditEvent;
-import lui.base.event.LInsertEvent;
-import lui.base.event.LMoveEvent;
 import lui.base.event.LSelectionEvent;
-import lui.base.gui.LMenu;
 import lui.graphics.LColor;
 import lui.graphics.LPainter;
 
@@ -23,11 +17,6 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 	protected int selectedIndex = -1;
 	protected T selectedObj = null;
 
-	private boolean editEnabled = false;
-	private boolean insertEnabled = false;
-	private boolean duplicateEnabled = false;
-	private boolean deleteEnabled = false;
-	
 	protected int cellWidth = 24;
 	protected int cellHeight = 24;
 	protected Color cellColor = UIManager.getColor("desktop");
@@ -73,39 +62,6 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 		return list;
 	}
 
-	@Override
-	public LMoveEvent<T> move(LPath sourceParent, int sourceIndex,
-			LPath destParent, int destIndex) {
-		// Not supported.
-		return null;
-	}
-
-	@Override
-	public LInsertEvent<T> insert(LPath parentPath, int index, LDataTree<T> node) {
-		if (getLayout() == emptyLayout) {
-			clear();
-			setLayout(layout);
-		}
-		addLabel(index, node.data, false);
-		return new LInsertEvent<>(parentPath, index, node);
-	}
-
-	@Override
-	public LDeleteEvent<T> delete(LPath parentPath, int index) {
-		LImage c = (LImage) getChild(index);
-		@SuppressWarnings("unchecked")
-		T data = (T) c.getData();
-		c.dispose();
-		if (getChildCount() == 0) {
-			setEmptyLayout();
-		}
-		return new LDeleteEvent<>(parentPath, index, new LDataTree<>(data));
-	}
-
-	protected abstract LDataTree<T> emptyNode();
-
-	protected abstract LDataTree<T> duplicateNode(LPath nodePath);
-
 	//endregion
 
 	//////////////////////////////////////////////////
@@ -133,11 +89,23 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 		layout = getLayout();
 	}
 
-	private void setEmptyLayout() {
-		setFillLayout(true);
-		emptyLayout = getLayout();
+	protected void setGridLayout() {
+		setLayout(layout);
+	}
+
+	protected void setEmptyLayout() {
+		if (emptyLayout == null) {
+			setFillLayout(true);
+			emptyLayout = getLayout();
+		} else {
+			setLayout(emptyLayout);
+		}
 		addLabel(0, null, true);
 		refreshLayout();
+	}
+
+	protected boolean isEmpty() {
+		return getLayout() == emptyLayout;
 	}
 
 	//endregion
@@ -152,7 +120,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 		}
 	}
 
-	private int indexOf(LImage label) {
+	protected int indexOf(LImage label) {
 		int i = 0;
 		for (Component c : getComponents()) {
 			if (c == label)
@@ -163,7 +131,7 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 		return -1;
 	}
 	
-	public void setList(LDataList<T> list) {
+	protected void setList(LDataList<T> list) {
 		clear();
 		if (list != null) {
 			if (!list.isEmpty()) {
@@ -181,18 +149,13 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 		refreshLayout();
 	}
 	
-	private LImage addLabel(int i, T data, boolean placeholder) {
+	protected LImage addLabel(int i, T data, boolean placeholder) {
 		LImage img = new LImage(this);
 		img.setBackground(cellColor);
 		img.getCellData().setTargetSize(cellWidth, cellHeight);
 		img.getCellData().setRequiredSize(cellWidth, cellHeight);
 		img.getCellData().setAlignment(LFlags.FILL);
-		LPopupMenu menu = new LPopupMenu(img);
-		menu.putClientProperty("label", img);
-		if (placeholder) {
-			if (insertEnabled)
-				setInsertNewEnabled(menu, true);
-		} else {
+		if (!placeholder) {
 			img.setData(data);
 			img.addPainter(new LPainter() {
 				@Override
@@ -212,18 +175,8 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
                     notifySelectionListeners(e);
                 }
             });
-			if (!isEditable())
-				return img;
-			setEditEnabled(menu, editEnabled);
-			setInsertNewEnabled(menu, insertEnabled);
-			setDuplicateEnabled(menu, duplicateEnabled);
-			setDeleteEnabled(menu, deleteEnabled);
 		}
 		return img;
-	}
-	
-	private boolean isEditable() {
-		return editEnabled || insertEnabled || duplicateEnabled || deleteEnabled;
 	}
 
 	protected abstract void setImage(LImage label, int i);
@@ -254,95 +207,6 @@ public abstract class LGrid<T, ST> extends LSelectableCollection<T, ST> {
 
 	public LImage getImage(int i) {
 		return (LImage) getComponent(i);
-	}
-
-	//endregion
-	
-	//////////////////////////////////////////////////
-	//region Menu Buttons
-
-	@Override
-	protected void onEditButton(LMenu menu) {
-		LImage label = (LImage) ((LPopupMenu) menu).getClientProperty("label");
-		int i = indexOf(label);
-		LPath path = new LPath(i);
-		newEditAction(path);
-	}
-
-	@Override
-	protected void onInsertNewButton(LMenu menu) {
-		LImage label = (LImage) ((LPopupMenu) menu).getClientProperty("label");
-		int i = indexOf(label) + 1;
-		LDataTree<T> newNode = emptyNode();
-		newInsertAction(null, i, newNode);
-	}
-
-	@Override
-	protected void onDuplicateButton(LMenu menu) {
-		LImage label = (LImage) ((LPopupMenu) menu).getClientProperty("label");
-		int i = indexOf(label);
-		LDataTree<T> newNode = duplicateNode(new LPath(i));
-		newInsertAction(null, i, newNode);
-	}
-	@Override
-	protected void onDeleteButton(LMenu menu) {
-		LImage label = (LImage) ((LPopupMenu) menu).getClientProperty("label");
-		int i = indexOf(label);
-		newDeleteAction(null, i);
-	}
-
-	@Override
-	public void onCopyButton(LMenu menu) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void onPasteButton(LMenu menu) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void setEditEnabled(boolean value) {
-		editEnabled = value;
-	}
-	
-	public void setInsertNewEnabled(boolean value) {
-		insertEnabled = value;
-	}
-	
-	public void setDuplicateEnabled(boolean value) {
-		duplicateEnabled = value;
-	}
-	
-	public void setDeleteEnabled(boolean value) {
-		deleteEnabled = value;
-	}
-
-	//endregion
-
-	///////////////////////////////////////////////////
-	//region Listeners
-	
-	@Override
-	public void notifyEditListeners(LEditEvent<ST> event) {
-		super.notifyEditListeners(event);
-		refreshObject(event.path);
-		refreshLayout();
-	}
-	
-	@Override
-	public void notifyInsertListeners(LInsertEvent<T> event) {
-		super.notifyInsertListeners(event);
-		refreshAll();
-		refreshLayout();
-	}
-	
-	@Override
-	public void notifyDeleteListeners(LDeleteEvent<T> event) {
-		super.notifyDeleteListeners(event);
-		refreshAll();
-		refreshLayout();
 	}
 
 	//endregion

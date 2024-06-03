@@ -7,11 +7,11 @@ import lui.base.data.LDataList;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LEditEvent;
-import lui.widget.LGrid;
+import lui.widget.LEditableGrid;
 
 public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 
-	protected LGrid<T, ST> grid;
+	protected LEditableGrid<T, ST> grid;
 	
 	public LGridEditor(LContainer parent) {
 		super(parent, 0);
@@ -20,7 +20,7 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 	}
 
 	protected void createContent(int style) {
-		grid = new LGrid<>(this) {
+		grid = new LEditableGrid<>(this) {
 			@Override
 			public LEditEvent<ST> edit(LPath path) {
 				return onEditItem(path);
@@ -58,7 +58,7 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 	}
 		
 	@Override
-	public LGrid<T, ST> getCollectionWidget() {
+	public LEditableGrid<T, ST> getCollectionWidget() {
 		return grid;
 	}
 	

@@ -2,17 +2,18 @@ package lui.widget;
 
 import java.util.ArrayList;
 
+import lui.base.gui.LCollection;
 import lui.container.LContainer;
 import lui.base.data.LPath;
 import lui.base.event.LSelectionEvent;
 import lui.base.event.listener.LSelectionListener;
 
-public abstract class LSelectableCollection<T, ST> extends LCollection<T, ST> {
-	
+public abstract class LSelectableCollection<T, ST> extends LWidget implements LCollection<T, ST> {
+
 	public LSelectableCollection(LContainer parent) {
 		super(parent);
 	}
-	
+
 	public LSelectableCollection(LContainer parent, int flags) {
 		super(parent, flags);
 	}

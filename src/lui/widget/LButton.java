@@ -7,7 +7,6 @@ import javax.swing.JButton;
 import lui.base.LPrefs;
 import lui.container.LContainer;
 import lui.base.event.listener.LSelectionListener;
-import lui.base.gui.LMenu;
 
 public class LButton extends LWidget {
 	
@@ -37,17 +36,6 @@ public class LButton extends LWidget {
 	
 	public void setHoverText(String text) {
 		button.setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
-	}
-	
-	@Override
-	public void onCopyButton(LMenu menu) {}
-	
-	@Override
-	public void onPasteButton(LMenu menu) {}
-
-	@Override
-	public boolean canDecode(String str) {
-		return false;
 	}
 
 	//////////////////////////////////////////////////

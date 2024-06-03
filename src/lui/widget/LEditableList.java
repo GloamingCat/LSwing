@@ -7,13 +7,13 @@ import lui.base.data.LDataTree;
 import javax.swing.DropMode;
 import javax.swing.tree.DefaultMutableTreeNode;
 
-public abstract class LList<T, ST> extends LTree<T, ST> {
+public abstract class LEditableList<T, ST> extends LEditableTree<T, ST> {
 	
-	public LList(LContainer parent) {
+	public LEditableList(LContainer parent) {
 		this(parent, false);
 	}
 
-	public LList(LContainer parent, boolean check) {
+	public LEditableList(LContainer parent, boolean check) {
 		super(parent, check);
 		tree.setShowsRootHandles(false);
 	}
