@@ -3,8 +3,7 @@ package lui.widget;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
+import javax.swing.*;
 
 import lui.container.LContainer;
 
@@ -12,22 +11,27 @@ public class LCombo extends LControlWidget<Integer> {
 
 	private JComboBox<String> combo;
 	private boolean includeID = true;
-	private boolean optional = true;
+	protected boolean optional;
+
+	public static final int READONLY = 1;
+	public static final int OPTIONAL = 2;
+
 
 	public LCombo(LContainer parent) {
-		this(parent, false);
+		this(parent, READONLY);
 	}
 
-	public LCombo(LContainer parent, boolean readOnly) {
-		super(parent, (readOnly ? 1 : 0));
+	public LCombo(LContainer parent, int flags) {
+		super(parent, flags);
 	}
 	
 	@Override
 	protected void createContent(int flags) {
+		optional = (flags & OPTIONAL) > 0;
 		combo = new JComboBox<>();
-		combo.setEditable(flags == 0);
+		combo.setEditable((flags & READONLY) == 0);
 		add(combo);
-		combo.addItemListener(e -> {
+		combo.addActionListener(e -> {
 			Integer oldValue = currentValue;
             currentValue = getSelectionIndex();
 			if (oldValue == null || oldValue.equals(currentValue))
@@ -56,13 +60,13 @@ public class LCombo extends LControlWidget<Integer> {
 	}
 
 	public void setValue(Object obj) {
+		currentValue = null;
 		if (obj != null) {
 			Integer i = (Integer) obj;
 			combo.setEnabled(true);
 			currentValue = i;
 			setSelectionIndex(i);
 		} else {
-			currentValue = null;
 			combo.setEnabled(false);
 			combo.setSelectedItem(null);
 		}
@@ -78,6 +82,7 @@ public class LCombo extends LControlWidget<Integer> {
 	public void setItems(ArrayList<?> array) {
 		if (array == null)
 			array = new ArrayList<>();
+		Integer oldValue = currentValue;
 		currentValue = null;
 		combo.removeAllItems();
 		if (optional)
@@ -88,14 +93,11 @@ public class LCombo extends LControlWidget<Integer> {
 			combo.addItem(item + obj.toString());
 			id++;
 		}
+		currentValue = oldValue;
 	}
 	
 	public void setIncludeID(boolean value) {
 		includeID = value;
-	}
-	
-	public void setOptional(boolean value) {
-		optional = value;
 	}
 	
 	@Override

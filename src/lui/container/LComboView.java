@@ -9,17 +9,13 @@ public class LComboView extends LControlView<Integer> {
 
 	protected LCombo combo;
 	
-	public LComboView(LContainer parent) {
+	public LComboView(LContainer parent, int flags) {
 		super(parent);
-		combo = new LCombo(this);
+		combo = new LCombo(this, flags);
 	}
 	
 	public void setIncludeID(boolean value) {
 		combo.setIncludeID(value);
-	}
-	
-	public void setOptional(boolean value) {
-		combo.setOptional(value);
 	}
 	
 	public void onVisible() {

@@ -28,8 +28,7 @@ public class MySubContentEditor extends LObjectEditor<MySubContent> {
 
 		new LLabel(this, MyVocab.instance.TYPE);
 
-		cmbType = new LCombo(this, true);
-		cmbType.setOptional(false);
+		cmbType = new LCombo(this, LCombo.OPTIONAL | LCombo.READONLY);
 		cmbType.getCellData().setExpand(true, false);
 		addControl(cmbType, "value");
 
