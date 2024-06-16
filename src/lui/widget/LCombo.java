@@ -15,7 +15,7 @@ public class LCombo extends LControlWidget<Integer> {
 
 	public static final int READONLY = 1;
 	public static final int OPTIONAL = 2;
-	public static final int INCLUDEID = 3;
+	public static final int INCLUDEID = 4;
 
 	public LCombo(LContainer parent) {
 		this(parent, READONLY);

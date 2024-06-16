@@ -40,7 +40,7 @@ public class LViewFolder extends LView {
 	}
 	
 	public void addTab(String name, LContainer child) {
-		tabFolder.addTab(name, child.getContentComposite());
+		tabFolder.addTab(name, child.getTopComposite());
 	}
 
 	@Override
