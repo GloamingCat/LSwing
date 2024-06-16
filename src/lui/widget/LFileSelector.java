@@ -13,7 +13,7 @@ public class LFileSelector extends LNodeSelector<String> {
 	protected ArrayList<Function<File, Boolean>> fileRestrictions = new ArrayList<>();
 	
 	public LFileSelector(LContainer parent, boolean optional) {
-		super(parent, optional);
+		super(parent, optional ? LNodeSelector.OPTIONAL : 0);
 	}
 
 	// Folder should include "/".

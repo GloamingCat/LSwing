@@ -211,6 +211,31 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		setObject(oldValue);
 	}
 
+	public Map<String, Object> getFieldValues() {
+		return getFieldValues(currentObject);
+	}
+
+	public Object getFieldValue(String name) {
+		return getFieldValue(currentObject, name);
+	}
+
+	public void setFieldValue(String name, Object value) {
+		setFieldValue(currentObject, name, value);
+	}
+
+	protected Map<String, Object> getFieldValues(Object object) {
+		Map<String, Object> map = new HashMap<>();
+		if (object == null)
+			return map;
+		for (Field field : object.getClass().getFields()) {
+            try {
+                map.put(field.getName(), field.get(object));
+            } catch (IllegalAccessException ignored) {
+            }
+        }
+		return map;
+	}
+
 	protected Object getFieldValue(Object object, String name) {
 		try {
 			Field field = object.getClass().getField(name);

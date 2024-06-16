@@ -14,14 +14,18 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
 	protected LTree<T, T> tree;
 	protected LButton btnNull;
 
-	public LNodeSelector(LContainer parent, boolean optional) {
-		super(parent, optional ? 1 : 0);
+	public static final int OPTIONAL = 1;
+	public static final int INCLUDEID = 2;
+
+	public LNodeSelector(LContainer parent, int flags) {
+		super(parent, flags);
 		setGridLayout(1);
 	}
 
 	@Override
 	protected void createContent(int flags) {
 		tree = createTree(flags);
+		tree.setIncludeID((flags & INCLUDEID) > 0);
 		tree.addSelectionListener(event -> {
             LPath path = tree.getSelectedPath();
             Integer id = path == null ? -1 : collection.getNode(path).id;
@@ -32,7 +36,7 @@ public class LNodeSelector<T> extends LControlWidget<Integer> {
         });
 		tree.getCellData().setExpand(true, true);
 		tree.getCellData().setRequiredSize(LPrefs.LISTWIDTH, LPrefs.LISTHEIGHT);
-		if (flags == 0)
+		if ((flags & OPTIONAL) == 0)
 			return;
 		btnNull = new LButton(this, LVocab.instance.DESELECT);
 		btnNull.onClick = event -> selectNone();
