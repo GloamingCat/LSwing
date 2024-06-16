@@ -12,7 +12,7 @@ import gson.GGlobals;
 public abstract class LObjectButton<T> extends LControlWidget<T> {
 	
 	protected LWindowFactory<T> shellFactory;
-	LButton button;
+	protected LButton button;
 
 	public LObjectButton(LContainer parent) {
 		super(parent);
@@ -82,12 +82,18 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 
 	@Override
 	public Dimension getMinimumSize() {
-		return button.getMinimumSize();
+		Dimension size = button.getMinimumSize();;
+		if (gridData != null)
+			gridData.storeMinimumSize(size);
+		return size;
 	}
 
 	@Override
 	public Dimension getPreferredSize() {
-		return button.getPreferredSize();
+		Dimension size = button.getPreferredSize();;
+		if (gridData != null)
+			gridData.storePreferredSize(size);
+		return size;
 	}
 
 }

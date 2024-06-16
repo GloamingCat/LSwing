@@ -10,12 +10,12 @@ import lui.container.LContainer;
 public class LCombo extends LControlWidget<Integer> {
 
 	private JComboBox<String> combo;
-	private boolean includeID = true;
+	private boolean includeId;
 	protected boolean optional;
 
 	public static final int READONLY = 1;
 	public static final int OPTIONAL = 2;
-
+	public static final int INCLUDEID = 3;
 
 	public LCombo(LContainer parent) {
 		this(parent, READONLY);
@@ -28,6 +28,7 @@ public class LCombo extends LControlWidget<Integer> {
 	@Override
 	protected void createContent(int flags) {
 		optional = (flags & OPTIONAL) > 0;
+		includeId = (flags & INCLUDEID) > 0;
 		combo = new JComboBox<>();
 		combo.setEditable((flags & READONLY) == 0);
 		add(combo);
@@ -89,15 +90,11 @@ public class LCombo extends LControlWidget<Integer> {
 			combo.addItem("");
 		int id = 0;
 		for(Object obj : array) {
-			String item = includeID ? String.format("[%03d] ", id) : "";
+			String item = includeId ? String.format("[%03d] ", id) : "";
 			combo.addItem(item + obj.toString());
 			id++;
 		}
 		currentValue = oldValue;
-	}
-	
-	public void setIncludeID(boolean value) {
-		includeID = value;
 	}
 	
 	@Override

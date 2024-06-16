@@ -14,10 +14,6 @@ public class LComboView extends LControlView<Integer> {
 		combo = new LCombo(this, flags);
 	}
 	
-	public void setIncludeID(boolean value) {
-		combo.setIncludeID(value);
-	}
-	
 	public void onVisible() {
 		combo.setItems(getArray());
 		super.onVisible();
