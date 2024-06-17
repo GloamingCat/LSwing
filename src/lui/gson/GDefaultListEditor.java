@@ -2,11 +2,10 @@ package lui.gson;
 
 import java.lang.reflect.Type;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
 import gson.GGlobals;
 import lui.base.data.LDataCollection;
+import lui.base.data.LDataList;
 import lui.base.data.LDataTree;
 import lui.base.data.LInitializable;
 import lui.container.LContainer;
@@ -62,20 +61,15 @@ public abstract class GDefaultListEditor<T> extends LDefaultListEditor<T> {
 
 	@Override
 	public String encodeData(LDataCollection<T> data) {
-		return GGlobals.gson.toJson(data, getType());
+		LDataList<T> list = data.toList();
+		return GGlobals.encodeJsonList(list, e -> GGlobals.gson.toJson(e, getType()));
 	}
 
 	@Override
 	public LDataTree<T> decodeData(String str) {
 		try {
-			LDataTree<T> tree = new LDataTree<>();
-			JsonArray array = (JsonArray) GGlobals.json.parse(str);
-			for (JsonElement element : array) {
-				T data = GGlobals.gson.fromJson(element, getType());
-				LDataTree<T> child = new LDataTree<>(data);
-				child.setParent(tree);
-			}
-			return tree;
+			LDataList<T> list = GGlobals.decodeJsonList(str, e -> GGlobals.gson.fromJson(e, getType()));
+			return list.toTree();
 		} catch(JsonParseException e) {
 			return null;
 		}

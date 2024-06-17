@@ -104,7 +104,7 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 	
 	@Override
 	public void onCopyButton(LMenu menu) {
-		String str = encodeData(getObject());
+		String str = encodeObject();
 		LGlobals.clipboard.setContents(new StringSelection(str), null);
 	}
 	

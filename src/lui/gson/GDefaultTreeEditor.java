@@ -2,9 +2,6 @@ package lui.gson;
 
 import java.lang.reflect.Type;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import gson.GGlobals;
 import lui.base.data.LDataCollection;
@@ -69,15 +66,7 @@ public abstract class GDefaultTreeEditor<T> extends LDefaultTreeEditor<T> {
 	@Override
 	public LDataTree<T> decodeData(String str) {
 		try {
-			LDataTree<T> root = new LDataTree<>();
-			JsonObject tree = (JsonObject) GGlobals.json.parse(str);
-			root.data = GGlobals.gson.fromJson(tree.get("data"), getType());
-			JsonArray children = tree.get("children").getAsJsonArray();
-			for (JsonElement element : children) {
-				LDataTree<T> child = decodeData(element.toString());
-				child.setParent(root);
-			}
-			return root;
+            return GGlobals.decodeJsonTree(str, e -> GGlobals.gson.fromJson(e, getType()));
 		} catch(JsonParseException e) {
 			return null;
 		}

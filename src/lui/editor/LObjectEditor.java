@@ -296,7 +296,7 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	//region Clipboard
 	
 	public void onCopyButton(LMenu menu) {
-		String str = encodeData(currentObject);
+		String str = encodeObject();
 		LGlobals.clipboard.setContents(new StringSelection(str), null);
 	}
 	
@@ -317,9 +317,14 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	}
 	
 	public abstract T duplicateData(T obj);
-	public abstract String encodeData(T obj);
 	public abstract T decodeData(String str);
-	
+	public abstract String encodeData(T obj);
+	public String encodeObject() {
+		if (currentObject == null)
+			return null;
+		return encodeData(currentObject);
+	}
+
 	//endregion
 
 }
