@@ -2,7 +2,13 @@ package lui.gson;
 
 import java.lang.reflect.Type;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import gson.GGlobals;
+import lui.base.data.LDataCollection;
+import lui.base.data.LDataTree;
 import lui.container.LContainer;
 import lui.editor.LDefaultTreeEditor;
 
@@ -46,11 +52,40 @@ public abstract class GDefaultTreeEditor<T> extends LDefaultTreeEditor<T> {
 		return GGlobals.gson.fromJson(str, getType());
 	}
 
+	public abstract Type getType();
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public LDataTree<T> duplicateData(LDataCollection<T> original) {
+		String json = GGlobals.gson.toJson(original, original.getClass());
+		return (LDataTree<T>) GGlobals.gson.fromJson(json, original.getClass());
+	}
+
+	@Override
+	public String encodeData(LDataCollection<T> data) {
+		return GGlobals.gson.toJson(data, getType());
+	}
+
+	@Override
+	public LDataTree<T> decodeData(String str) {
+		try {
+			LDataTree<T> root = new LDataTree<>();
+			JsonObject tree = (JsonObject) GGlobals.json.parse(str);
+			root.data = GGlobals.gson.fromJson(tree.get("data"), getType());
+			JsonArray children = tree.get("children").getAsJsonArray();
+			for (JsonElement element : children) {
+				LDataTree<T> child = decodeData(element.toString());
+				child.setParent(root);
+			}
+			return root;
+		} catch(JsonParseException e) {
+			return null;
+		}
+	}
+
 	@Override
 	public boolean canDecode(String str) {
 		return true;
 	}
-	
-	public abstract Type getType();
-	
+
 }
