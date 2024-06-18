@@ -46,22 +46,19 @@ public class LSpinner extends LControlWidget<Integer> {
         });
 		DefaultFormatter formatter = (DefaultFormatter) field.getFormatter();
 		formatter.setCommitsOnValidEdit(true);
-		spinner.setEnabled(true);
-		currentValue = 0;
-		spinner.setValue(0);
 	}
 
 	@Override
 	public void setValue(Object obj) {
 		if (currentValue == obj)
 			return;
-		currentValue = null;
 		if (obj != null) {
 			Integer i = (Integer) obj;
 			currentValue = i;
 			spinner.setEnabled(true);
 			spinner.setValue(i);
 		} else {
+			currentValue = null;
 			spinner.setEnabled(false);
 			spinner.setValue(minimum);
 		}
