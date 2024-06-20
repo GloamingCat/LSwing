@@ -134,8 +134,8 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 		}
 	}
 	
-	protected abstract String encodeData(T value);
-	protected abstract T decodeData(String str);
+	public abstract String encodeData(T value);
+	public abstract T decodeData(String str);
 	
 	public boolean canDecode(String str) {
 		try {

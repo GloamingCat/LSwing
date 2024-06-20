@@ -28,8 +28,9 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 	protected void onClick() {
 		T newValue = shellFactory.openWindow(getWindow(), currentValue);
 		if (newValue != null) {
-			newModifyAction(currentValue, newValue);
+			T oldValue = currentValue;
 			setValue(newValue);
+			newModifyAction(oldValue, newValue);
 		}
 	}
 
