@@ -30,17 +30,15 @@ class UndoManager extends AbstractUndoableEdit implements UndoableEditListener {
 
     public void undoableEditHappened(UndoableEditEvent e) {
         UndoableEdit edit = e.getEdit();
-        if (edit instanceof AbstractDocument.DefaultDocumentEvent) {
+        if (edit instanceof AbstractDocument.DefaultDocumentEvent event) {
             try {
-                AbstractDocument.DefaultDocumentEvent event = (AbstractDocument.DefaultDocumentEvent) edit;
                 int start = event.getOffset();
                 int len = event.getLength();
-                if (start + len > event.getDocument().getLength()) {
+                if (!event.isSignificant() || event.isInProgress()) {
                     createCompoundEdit();
                     current.addEdit(edit);
                     lastEditName = edit.getPresentationName();
                 } else {
-
                     String text = event.getDocument().getText(start, len);
                     boolean isNeedStart = false;
                     if (current == null) {
@@ -50,7 +48,6 @@ class UndoManager extends AbstractUndoableEdit implements UndoableEditListener {
                     } else if (lastEditName == null || !lastEditName.equals(edit.getPresentationName())) {
                         isNeedStart = true;
                     }
-
                     while (pointer < edits.size() - 1) {
                         edits.removeLast();
                         isNeedStart = true;
@@ -58,7 +55,6 @@ class UndoManager extends AbstractUndoableEdit implements UndoableEditListener {
                     if (isNeedStart) {
                         createCompoundEdit();
                     }
-
                     current.addEdit(edit);
                     lastEditName = edit.getPresentationName();
                 }

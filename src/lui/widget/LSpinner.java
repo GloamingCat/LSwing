@@ -9,7 +9,7 @@ public class LSpinner extends LControlWidget<Integer> {
 
 	private JSpinner spinner;
 	private Integer minimum = 0;
-	private Integer maximum = null;
+	private Integer maximum;
 	private final int step = 1;
 
 	/**
@@ -28,6 +28,7 @@ public class LSpinner extends LControlWidget<Integer> {
 		if (test == null)
 			test = this;
 		spinner = new JSpinner();
+		spinner.setEnabled(true);
 		add(spinner);
 		SpinnerNumberModel model = new SpinnerNumberModel(0, 0, 0, 1);
 		model.setMaximum(null);
@@ -50,17 +51,18 @@ public class LSpinner extends LControlWidget<Integer> {
 
 	@Override
 	public void setValue(Object obj) {
-		if (currentValue == obj)
-			return;
 		if (obj != null) {
 			Integer i = (Integer) obj;
 			currentValue = i;
-			spinner.setEnabled(true);
+			setEnabled(true);
 			spinner.setValue(i);
 		} else {
 			currentValue = null;
-			spinner.setEnabled(false);
-			spinner.setValue(minimum);
+			setEnabled(false);
+			if (minimum != null)
+				spinner.setValue(minimum);
+			else if (maximum != null)
+				spinner.setValue(maximum);
 		}
 	}
 	
