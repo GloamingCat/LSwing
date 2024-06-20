@@ -22,13 +22,19 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 	protected void createContent(int flags) {
 		setFillLayout(true);
 		button = new LButton(this, LVocab.instance.SELECT);
-		button.onClick = arg0 -> {
-            T newValue = shellFactory.openWindow(getWindow(), currentValue);
-            if (newValue != null) {
-                newModifyAction(currentValue, newValue);
-                setValue(newValue);
-            }
-        };
+		button.onClick = arg0 -> LObjectButton.this.onClick();
+	}
+
+	protected void onClick() {
+		T newValue = shellFactory.openWindow(getWindow(), currentValue);
+		if (newValue != null) {
+			newModifyAction(currentValue, newValue);
+			setValue(newValue);
+		}
+	}
+
+	public LWindowFactory<T> getShellFactory() {
+		return shellFactory;
 	}
 
 	public void setShellFactory(LWindowFactory<T> factory) {
@@ -82,7 +88,7 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 
 	@Override
 	public Dimension getMinimumSize() {
-		Dimension size = button.getMinimumSize();;
+		Dimension size = button.getMinimumSize();
 		if (gridData != null)
 			gridData.storeMinimumSize(size);
 		return size;
@@ -90,7 +96,7 @@ public abstract class LObjectButton<T> extends LControlWidget<T> {
 
 	@Override
 	public Dimension getPreferredSize() {
-		Dimension size = button.getPreferredSize();;
+		Dimension size = button.getPreferredSize();
 		if (gridData != null)
 			gridData.storePreferredSize(size);
 		return size;

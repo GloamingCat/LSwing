@@ -51,8 +51,10 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	public boolean isEnabled() {
 		return currentValue != null;
 	}
-	
-	public void setEnabled(boolean value) {}
+
+	public void setEnabled(boolean value) {
+		getControl().setEnabled(value);
+	}
 	
 	protected JComponent getControl() {
 		return this;
@@ -93,7 +95,7 @@ public abstract class LControlWidget<T> extends LWidget implements LControl<T> {
 	}
 	
 	public void notifyListeners(LControlEvent<T> event) {
-		for(LControlListener<T> listener : modifyListeners) {
+		for (LControlListener<T> listener : modifyListeners) {
 			listener.onModify(event);
 		}
 	}

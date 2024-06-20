@@ -24,18 +24,25 @@ public class LButton extends LWidget {
 		add(button);
 		button.addActionListener(e -> execute());
 	}
-	
+
+	@Override
+	public void setHoverText(String text) {
+		button.setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
+	}
+
+	@Override
+	public void setEnabled(boolean v) {
+		super.setEnabled(true);
+		button.setEnabled(v);
+	}
+
 	protected void execute() {
 		if (onClick != null)
 			onClick.onSelect(null);
 	}
-	
+
 	public void setText(String text) {
 		button.setText(text);
-	}
-	
-	public void setHoverText(String text) {
-		button.setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
 	}
 
 	//////////////////////////////////////////////////
