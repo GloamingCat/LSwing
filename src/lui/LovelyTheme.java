@@ -16,10 +16,10 @@ import java.util.Arrays;
 public class LovelyTheme extends OceanTheme {
 
     public static LColor BLACK = new LColor(new Color(33, 17, 47));
-    public static LColor DARK = new LColor(new Color(65, 42, 79));
+    public static LColor DARK = new LColor(new Color(84, 52, 96));
     public static LColor MEDIUM_DARK = new LColor(new Color(159, 83, 162));
     public static LColor MEDIUM = new LColor(new Color(190, 136, 181));
-    public static LColor MEDIUM_LIGHT = new LColor(new Color(243, 200, 230));
+    public static LColor MEDIUM_LIGHT = new LColor(new Color(225, 184, 220));
     public static LColor LIGHT = new LColor(new Color(252, 225, 240));
     public static LColor WHITE = new LColor(new Color(255, 245, 250));
 
@@ -30,11 +30,11 @@ public class LovelyTheme extends OceanTheme {
     protected static final ColorUIResource SECONDARY1 = MEDIUM_DARK.convert(); // Frame border, inner border, checkbox border, editable textfield border
     protected static final ColorUIResource SECONDARY2 = MEDIUM_LIGHT.convert(); // gradient button bottom, scrollbar outer border, menu border, static textfield border
     protected static final ColorUIResource SECONDARY3 = WHITE.convert(); // default BG, spinner arrow BG, static textfield BG
-    protected static final ColorUIResource SECONDARY4 = DARK.convert(); // Combo BG, drop line color
+    protected static final ColorUIResource SECONDARY4 = DARK.convert(); // Combo BG
 
     protected static final ColorUIResource CONTROL_TEXT_COLOR = BLACK.convert();
     protected static final ColorUIResource INACTIVE_CONTROL_TEXT_COLOR = MEDIUM.convert();
-    protected static final ColorUIResource MENU_DISABLED_FOREGROUND = LIGHT.convert();
+    protected static final ColorUIResource MENU_DISABLED_FOREGROUND = MEDIUM_LIGHT.convert();
     protected static final ColorUIResource DESKTOP_COLOR = WHITE.convert();
 
     public String DIRECTORY_ICON = "icons/directory.gif";
@@ -140,7 +140,7 @@ public class LovelyTheme extends OceanTheme {
     public void addCustomEntriesToTable(UIDefaults table) {
         UIDefaults.LazyValue focusBorder = t -> new BorderUIResource.LineBorderUIResource(getPrimary1());
         java.util.List<?> buttonGradient = Arrays.asList(.3f, 0f,
-                getPrimary2(), getWhite(), getSecondary2());
+                getPrimary4(), getWhite(), getPrimary2());
         java.util.List<?> menuGradient = Arrays.asList(1f, 0f,
                 getWhite(), getPrimary4(), getSecondary2());
         java.util.List<?> sliderGradient = Arrays.asList(.3f, .2f,
@@ -194,6 +194,10 @@ public class LovelyTheme extends OceanTheme {
             "Label.disabledForeground", getInactiveControlTextColor(),
             "Label.disabledBackground", getPrimary4(),
 
+            "List.focusCellHighlightBorder", focusBorder,
+            "List.dropLineColor", getPrimary1(),
+            "List.dropCellBackground", getPrimary2(),
+
             "Menu.opaque", Boolean.FALSE,
 
             "MenuBar.gradient", menuGradient,
@@ -223,8 +227,6 @@ public class LovelyTheme extends OceanTheme {
             "InternalFrame.paletteCloseIcon",
                 (UIDefaults.LazyValue) table15 -> new IFIcon(getHastenedIcon(PALETTE_ICON, table15),
                                   getHastenedIcon(PALETTE_PRESSED_ICON, table15)),
-
-            "List.focusCellHighlightBorder", focusBorder,
 
             "OptionPane.errorIcon", getIconResource(ERROR_ICON),
             "OptionPane.informationIcon", getIconResource(INFO_ICON),
@@ -258,6 +260,9 @@ public class LovelyTheme extends OceanTheme {
 
             "Table.focusCellHighlightBorder", focusBorder,
             "Table.gridColor", getSecondary1(),
+            "Table.dropLineColor", getPrimary1(),
+            "Table.dropLineShortColor", getSecondary4(),
+            "Table.dropCellBackground", getSecondary4(),
             "TableHeader.focusCellBackground", getPrimary4(),
 
             "ToggleButton.gradient", buttonGradient,
@@ -265,8 +270,9 @@ public class LovelyTheme extends OceanTheme {
             "ToolBar.borderColor", getPrimary3(),
             "ToolBar.isRollover", Boolean.TRUE,
 
-            "Tree.closedIcon", directoryIcon,
+            "ToolTip.background", getSecondary3(),
 
+            "Tree.closedIcon", directoryIcon,
             "Tree.collapsedIcon", (UIDefaults.LazyValue) table16 -> new COIcon(
                     getHastenedIcon(COLLAPSED_ICON, table16),
                 getHastenedIcon(COLLAPSED_RTL_ICON, table16)),
@@ -278,16 +284,8 @@ public class LovelyTheme extends OceanTheme {
             "Tree.selectionBorderColor", getPrimary1(),
             "Tree.selectionBackground", getPrimary4(),
             "Tree.dropLineColor", getPrimary1(),
+            "Tree.dropCellBackground", getPrimary2()
 
-            "Table.dropLineColor", getPrimary1(),
-            "Table.dropLineShortColor", getSecondary4(),
-
-            "ToolTip.background", getSecondary3(),
-
-            "Table.dropCellBackground", getSecondary4(),
-            "Tree.dropCellBackground", getSecondary4(),
-            "List.dropCellBackground", getSecondary4(),
-            "List.dropLineColor", getPrimary1()
         };
         table.putDefaults(defaults);
     }
