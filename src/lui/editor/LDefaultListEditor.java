@@ -1,5 +1,6 @@
 package lui.editor;
 
+import lui.base.data.LDataList;
 import lui.container.LContainer;
 import lui.base.data.LDataCollection;
 import lui.base.data.LDataTree;
@@ -25,14 +26,14 @@ public abstract class LDefaultListEditor<T> extends LListEditor<T, T> {
 	}
 	
 	@Override
-	public LDataTree<T> decodeData(String str) {
-		LDataTree<T> node = super.decodeData(str);
+	public LDataList<T> decodeData(String str) {
+		LDataTree<T> node = (LDataTree<T>) super.decodeData(str);
 		if (node == null)
 			return null;
 		for (var child : node.children) {
 			child.children.clear();
 		}
-		return node;
+		return node.toList();
 	}
 
 }

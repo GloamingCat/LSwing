@@ -52,7 +52,7 @@ public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 			}
 			@Override
 			protected LDataTree<T> decodeNode(String str) {
-				return LTreeEditor.this.decodeData(str);
+				return (LDataTree<T>) LTreeEditor.this.decodeData(str);
 			}
 			@Override
 			public boolean canDecode(String str) {

@@ -61,15 +61,14 @@ public abstract class GDefaultListEditor<T> extends LDefaultListEditor<T> {
 
 	@Override
 	public String encodeData(LDataCollection<T> data) {
-		LDataList<T> list = data.toList();
+		LDataList<T> list = (LDataList<T>) data;
 		return GGlobals.encodeJsonList(list, e -> GGlobals.gson.toJson(e, getType()));
 	}
 
 	@Override
-	public LDataTree<T> decodeData(String str) {
+	public LDataList<T> decodeData(String str) {
 		try {
-			LDataList<T> list = GGlobals.decodeJsonList(str, e -> GGlobals.gson.fromJson(e, getType()));
-			return list.toTree();
+			return GGlobals.decodeJsonList(str, e -> GGlobals.gson.fromJson(e, getType()));
 		} catch(JsonParseException e) {
 			return null;
 		}

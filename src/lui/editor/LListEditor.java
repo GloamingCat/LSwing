@@ -53,7 +53,7 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 			}
 			@Override
 			protected LDataTree<T> decodeNode(String str) {
-				return LListEditor.this.decodeData(str);
+				return LListEditor.this.decodeData(str).toTree();
 			}
 			@Override
 			public boolean canDecode(String str) {

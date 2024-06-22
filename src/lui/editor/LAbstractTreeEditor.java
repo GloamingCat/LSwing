@@ -106,7 +106,7 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 	}
 	
 	@Override
-	public LDataTree<T> decodeData(String str) {
+	public LDataCollection<T> decodeData(String str) {
 		return LDataTree.decode(str, this::decodeElement);
 	}
 	
