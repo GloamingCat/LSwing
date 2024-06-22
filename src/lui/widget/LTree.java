@@ -18,8 +18,8 @@ import lui.base.event.LSelectionEvent;
 
 public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 
-	JTree tree;
-	DefaultMutableTreeNode root;
+	protected JTree tree;
+	protected DefaultMutableTreeNode root;
 	protected boolean includeID = false;
 
 	//////////////////////////////////////////////////
@@ -284,8 +284,8 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 		}
 	}
 
-
 	protected void refreshItemData(LDataTree<T> node, ItemData itemData) {
+		itemData.id = node.id;
 		itemData.data = node.data;
 		itemData.name = dataToString(itemData.data);
 		if (includeID)
@@ -306,7 +306,18 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 	}
 
 	public void refreshAll() {
-		((DefaultTreeModel) tree.getModel()).nodeStructureChanged(this.root);
+		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+		model.nodeStructureChanged(this.root);
+		refreshItem(this.root);
+	}
+
+	private void refreshItem(DefaultMutableTreeNode item) {
+		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+		model.nodeChanged(item);
+		System.out.println(item.getUserObject());
+		for (int i = 0; i < item.getChildCount(); i++) {
+			refreshItem((DefaultMutableTreeNode) item.getChildAt(i));
+		}
 	}
 
 	public void refreshAll(LDataTree<T> node) {

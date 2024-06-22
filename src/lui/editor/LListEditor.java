@@ -49,11 +49,11 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 			}
 			@Override
 			protected String encodeNode(LDataTree<T> node) {
-				return LListEditor.this.encodeData(node);
+				return LListEditor.this.encodeElement(node.data);
 			}
 			@Override
 			protected LDataTree<T> decodeNode(String str) {
-				return LListEditor.this.decodeData(str).toTree();
+				return new LDataTree<>(LListEditor.this.decodeElement(str));
 			}
 			@Override
 			public boolean canDecode(String str) {

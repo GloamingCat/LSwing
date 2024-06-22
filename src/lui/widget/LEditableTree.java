@@ -234,7 +234,8 @@ public abstract class LEditableTree<T, ST> extends LTree<T, ST> implements LEdit
 		LPath path = getSelectedPath();
 		if (path != null) {
 			LDataTree<T> node = toNode(path);
-			LGlobals.clipboard.setContents(new StringSelection(encodeNode(node)), null);
+			String str = encodeNode(node);
+			LGlobals.clipboard.setContents(new StringSelection(str), null);
 		}
 	}
 	

@@ -60,7 +60,7 @@ public abstract class GDefaultTreeEditor<T> extends LDefaultTreeEditor<T> {
 
 	@Override
 	public String encodeData(LDataCollection<T> data) {
-		return GGlobals.gson.toJson(data, getType());
+		return GGlobals.gson.toJson(data);
 	}
 
 	@Override
