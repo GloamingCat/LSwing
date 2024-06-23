@@ -86,7 +86,6 @@ public class MyContentTreeEditor extends LView {
 		protected MyContent decodeElement(String str) {
 			return MyContent.decode(str);
 		}
-
 		@Override
 		public boolean canDecode(String str) {
 			return MyContent.canDecode(str);
@@ -101,11 +100,10 @@ public class MyContentTreeEditor extends LView {
 			LDataTree<MyContent> node = getDataCollection().getNode(path);
 			node.data.subContent = data;
 		}
-
+		@Override
 		public boolean isChecked(MyContent data) {
 			return visibility.getOrDefault(data, true);
 		}
-
 		@Override
 		protected void setChecked(MyContent data, boolean checked) {
 			visibility.put(data, checked);

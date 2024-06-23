@@ -1,6 +1,7 @@
 package lui.editor;
 
 import lui.container.LContainer;
+import lui.base.data.LDataCollection;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LEditEvent;
@@ -52,7 +53,7 @@ public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 			}
 			@Override
 			protected LDataTree<T> decodeNode(String str) {
-				return (LDataTree<T>) LTreeEditor.this.decodeData(str);
+				return LTreeEditor.this.decodeData(str);
 			}
 			@Override
 			public boolean canDecode(String str) {
@@ -75,5 +76,26 @@ public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 
 	public abstract LDataTree<T> getDataCollection();
 
+	@Override
+	public LDataTree<T> decodeData(String str) {
+		return LDataTree.decode(str, this::decodeElement);
+	}
+
+	@Override
+	public String encodeData(LDataCollection<T> collection) {
+		LDataTree<T> node = (LDataTree<T>) collection;
+		return node.encode(this::encodeElement);
+	}
+
+	@Override
+	public LDataTree<T> duplicateData(LDataCollection<T> collection) {
+		LDataTree<T> node = (LDataTree<T>) collection;
+		LDataTree<T> copy = new LDataTree<>(duplicateElement(node.data));
+		for(LDataTree<T> child : node.children) {
+			LDataTree<T> childCopy = duplicateData(child);
+			childCopy.setParent(copy);
+		}
+		return copy;
+	}
 
 }

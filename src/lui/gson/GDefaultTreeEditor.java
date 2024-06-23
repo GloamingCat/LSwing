@@ -30,14 +30,6 @@ public abstract class GDefaultTreeEditor<T> extends LDefaultTreeEditor<T> {
 			return GGlobals.gson.fromJson("{}", getType());
 		}
 	}
-
-	@Override
-	public T duplicateElement(T original) {
-		if (getType() != original.getClass())
-			throw new ClassCastException("Object cannot be cast to " + getType().getTypeName());
-		String json = GGlobals.gson.toJson(original, getType());
-		return GGlobals.gson.fromJson(json, getType());
-	}
 	
 	@Override
 	protected String encodeElement(T data) {
@@ -50,13 +42,6 @@ public abstract class GDefaultTreeEditor<T> extends LDefaultTreeEditor<T> {
 	}
 
 	public abstract Type getType();
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public LDataTree<T> duplicateData(LDataCollection<T> original) {
-		String json = GGlobals.gson.toJson(original, original.getClass());
-		return (LDataTree<T>) GGlobals.gson.fromJson(json, original.getClass());
-	}
 
 	@Override
 	public String encodeData(LDataCollection<T> data) {

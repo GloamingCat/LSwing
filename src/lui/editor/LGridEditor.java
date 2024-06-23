@@ -61,11 +61,7 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 	public LEditableGrid<T, ST> getCollectionWidget() {
 		return grid;
 	}
-	
-	protected abstract T createNewElement();
-	protected abstract T duplicateElement(T original);
-	protected abstract String encodeElement(T data);
-	protected abstract T decodeElement(String str);
+
 	protected abstract void setImage(LImage label, int i);
 
 	@Override

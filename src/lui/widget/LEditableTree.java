@@ -249,20 +249,11 @@ public abstract class LEditableTree<T, ST> extends LTree<T, ST> implements LEdit
 			if (str == null)
 				return;
 			LDataTree<T> newNode = decodeNode(str);
-			if (newNode == null)
-				return;
-			LPath parentPath = null;
-			int index = -1;
-			if (tree.getSelectionCount() > 0) {
-				DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-				parentPath = toPath(item.getParent());
-				index = indexOf(item) + 1;
-			}
-			newInsertAction(parentPath, index, newNode);
+			if (newNode != null)
+				newInsertAction(getSelectedPath(), newNode);
 		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
 			System.err.println(e.getMessage());
 		}
-
 	}
 
 	//endregion

@@ -54,9 +54,14 @@ public abstract class LSelectableCollection<T, ST> extends LWidget implements LC
 	}
 	
 	public abstract LSelectionEvent select(LPath path);
-	
-	public abstract T getSelectedObject();
-	
+
+	public T getSelectedObject() {
+		LPath path = getSelectedPath();
+		if (path == null)
+			return null;
+		return toObject(path);
+	}
+
 	public abstract LPath getSelectedPath();
 	
 }

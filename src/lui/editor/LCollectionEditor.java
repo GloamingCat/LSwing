@@ -1,6 +1,5 @@
 package lui.editor;
 
-import lui.LGlobals;
 import lui.LMenuInterface;
 import lui.container.LContainer;
 import lui.base.data.LDataCollection;
@@ -11,12 +10,9 @@ import lui.base.event.LEditEvent;
 import lui.base.event.LInsertEvent;
 import lui.base.event.LMoveEvent;
 import lui.base.event.listener.LCollectionListener;
-import lui.base.gui.LMenu;
 import lui.base.gui.LEditableCollection;
 
 import java.awt.*;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
 
 /**
  * Edits the items in a list.
@@ -102,38 +98,20 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 			obj.set(getCollectionWidget().getDataCollection());
 	}
 	
-	@Override
-	public void onCopyButton(LMenu menu) {
-		String str = encodeObject();
-		LGlobals.clipboard.setContents(new StringSelection(str), null);
-	}
-	
-	@Override
-	public void onPasteButton(LMenu menu) {
-		DataFlavor dataFlavor = DataFlavor.stringFlavor;
-		if (!LGlobals.clipboard.isDataFlavorAvailable(dataFlavor))
-			return;
-		try {
-			String str = (String) LGlobals.clipboard.getData(dataFlavor);
-			if (str == null)
-				return;
-			LDataCollection<T> newValue = decodeData(str);
-			LDataCollection<T> oldValue = getObject();
-			if (newValue != null && !newValue.equals(oldValue)) {
-				oldValue = oldValue.clone();
-				getCollectionWidget().setDataCollection(newValue);
-				newModifyAction(oldValue, newValue);
-			}
-		} catch (Exception e) {
-			System.err.println(e.getMessage());
-		}
-	}
-	
 	// Widget
 	public abstract LEditableCollection<T, ST> getCollectionWidget();
 
 	// Editable Data
 	protected abstract ST getEditableData(LPath path);
 	protected abstract void setEditableData(LPath path, ST newData);
+
+	// Elements
+	protected abstract T createNewElement();
+	protected T duplicateElement(T original) {
+		String json = encodeElement(original);
+		return decodeElement(json);
+	}
+	protected abstract String encodeElement(T data);
+	protected abstract T decodeElement(String str);
 	
 }

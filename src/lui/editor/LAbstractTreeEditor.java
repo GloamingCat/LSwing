@@ -79,37 +79,12 @@ public abstract class LAbstractTreeEditor<T, ST> extends LCollectionEditor<T, ST
 		contentEditors.add(editor);
 		addChild((LView) editor);
 	}
-	
+
 	public abstract LEditableTree<T, ST> getCollectionWidget();
-	protected abstract T createNewElement();
-	protected abstract T duplicateElement(T original);
-	protected abstract String encodeElement(T data);
-	protected abstract T decodeElement(String str);
 
 	protected void setChecked(T data, boolean checked) {}
 
 	@Override
-	public LDataTree<T> duplicateData(LDataCollection<T> collection) {
-		LDataTree<T> node = (LDataTree<T>) collection;
-		LDataTree<T> copy = new LDataTree<>(duplicateElement(node.data));
-		for(LDataTree<T> child : node.children) {
-			LDataTree<T> childCopy = duplicateData(child);
-			childCopy.setParent(copy);
-		}
-		return copy;
-	}
-	
-	@Override
-	public String encodeData(LDataCollection<T> collection) {
-		LDataTree<T> node = (LDataTree<T>) collection;
-		return node.encode(this::encodeElement);
-	}
-	
-	@Override
-	public LDataCollection<T> decodeData(String str) {
-		return LDataTree.decode(str, this::decodeElement);
-	}
-	
 	public void setObject(Object obj) {
 		LPath selectedPath = getCollectionWidget().getSelectedPath();
 		super.setObject(obj);

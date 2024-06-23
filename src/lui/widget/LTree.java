@@ -357,11 +357,6 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 		forceSelection(parent);
 	}
 
-	public T getSelectedObject() {
-		LPath path = getSelectedPath();
-		return toObject(path);
-	}
-
 	public LPath getSelectedPath() {
 		if (tree.getSelectionCount() > 0) {
 			DefaultMutableTreeNode item = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();

@@ -19,21 +19,5 @@ public abstract class LDefaultListEditor<T> extends LListEditor<T, T> {
 	public void setEditableData(LPath path, T data) {
 		getDataCollection().set(path.index, data);
 	}
-	
-	@Override
-	public String encodeData(LDataCollection<T> collection) {
-		return super.encodeData(collection.toTree());
-	}
-	
-	@Override
-	public LDataList<T> decodeData(String str) {
-		LDataTree<T> node = (LDataTree<T>) super.decodeData(str);
-		if (node == null)
-			return null;
-		for (var child : node.children) {
-			child.children.clear();
-		}
-		return node.toList();
-	}
 
 }

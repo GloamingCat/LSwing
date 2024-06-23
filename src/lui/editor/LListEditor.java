@@ -1,5 +1,6 @@
 package lui.editor;
 
+import lui.base.data.LDataCollection;
 import lui.container.LContainer;
 import lui.base.data.LDataList;
 import lui.base.data.LDataTree;
@@ -79,5 +80,23 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 	}
 
 	protected abstract LDataList<T> getDataCollection();
-	
+
+	@Override
+	public LDataList<T> decodeData(String str) {
+		LDataTree<T> tree = LDataTree.decode(str, this::decodeElement);
+		return tree == null ? null : tree.toList();
+	}
+
+	@Override
+	public String encodeData(LDataCollection<T> collection) {
+		LDataList<T> list = (LDataList<T>) collection;
+		return list.toTree().encode(this::encodeElement);
+	}
+
+	@Override
+	public LDataList<T> duplicateData(LDataCollection<T> original) {
+		String json = encodeData(original);
+		return decodeData(json);
+	}
+
 }
