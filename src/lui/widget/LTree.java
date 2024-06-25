@@ -15,6 +15,7 @@ import lui.base.data.LDataCollection;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LSelectionEvent;
+import lui.graphics.LColor;
 
 public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 
@@ -30,6 +31,7 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 		public int id;
 		public String name = "";
 		public boolean checked = false;
+		public Color color = null;
 		public ItemData (int id) {
 			this.id = id;
 		}
@@ -57,6 +59,7 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 		root.setUserObject(new ItemData(-1));
 		tree = new JTree(root);
 		tree.setRootVisible(false);
+		tree.setShowsRootHandles(false);
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		if (flags == 1) { // Check
@@ -73,12 +76,7 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 				}
 			});
 		} else {
-			DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();
-			renderer.setIcon(null);
-			renderer.setOpenIcon(null);
-			renderer.setClosedIcon(null);
-			renderer.setLeafIcon(null);
-			renderer.setDisabledIcon(null);
+			DefaultTreeCellRenderer renderer = getCellRenderer();
 			tree.setCellRenderer(renderer);
 		}
 		JScrollPane scroll = new JScrollPane(tree);
@@ -94,7 +92,31 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 			}
 		});
 	}
-	
+
+	private DefaultTreeCellRenderer getCellRenderer() {
+		DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer() {
+			@Override
+			public Component getTreeCellRendererComponent(JTree tree, Object value,
+					boolean sel, boolean exp, boolean leaf, int row, boolean hasFocus) {
+				super.getTreeCellRendererComponent(tree, value, sel, exp, leaf, row, hasFocus);
+				@SuppressWarnings("unchecked")
+				ItemData itemData = (ItemData) ((DefaultMutableTreeNode) value).getUserObject();
+				// If the node is a leaf and ends with "xxx"
+				if (itemData.color != null) {
+					// Paint the node in blue
+					setForeground(itemData.color);
+				}
+				return this;
+			}
+		};
+		renderer.setIcon(null);
+		renderer.setOpenIcon(null);
+		renderer.setClosedIcon(null);
+		renderer.setLeafIcon(null);
+		renderer.setDisabledIcon(null);
+		return renderer;
+	}
+
 	@Override
 	public void setHoverText(String text) {
 		tree.setToolTipText("<html>" + text.replace("\n", "<br>") + "</html>");
@@ -291,6 +313,8 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 		if (includeID)
 			itemData.name = stringID(node.id) + itemData.name;
 		itemData.checked = isDataChecked(itemData.data);
+		LColor color = dataColor(itemData.data);
+		itemData.color = color == null ? null : color.convert();
 	}
 
 	protected String stringID(int i) {
@@ -299,6 +323,10 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 
 	protected String dataToString(T data) {
 		return data.toString();
+	}
+
+	protected LColor dataColor(T data) {
+		return null;
 	}
 
 	protected boolean isDataChecked(T data) {

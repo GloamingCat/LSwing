@@ -10,14 +10,14 @@ public class LColor implements Cloneable {
 	public int blue;
 	public int alpha;
 	
-	public LColor(int r, int b, int g, int a) {
+	public LColor(int r, int g, int b, int a) {
 		red = r;
 		green = g;
 		blue = b;
 		alpha = a;
 	}
 	
-	public LColor(int r, int b, int g) {
+	public LColor(int r, int g, int b) {
 		this(r, g, b, 255);
 	}
 	

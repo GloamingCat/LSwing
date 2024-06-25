@@ -250,7 +250,7 @@ public abstract class LEditableTree<T, ST> extends LTree<T, ST> implements LEdit
 				return;
 			LDataTree<T> newNode = decodeNode(str);
 			if (newNode != null)
-				newInsertAction(getSelectedPath(), newNode);
+				newInsertAction(null, newNode);
 		} catch (ClassCastException | UnsupportedFlavorException | IOException e) {
 			System.err.println(e.getMessage());
 		}
