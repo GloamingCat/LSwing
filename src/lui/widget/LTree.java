@@ -34,7 +34,7 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 			this.id = id;
 		}
 		public String toString() {
-			return name;
+			return name.isEmpty() ? "      " : name;
 		}
 	}
 

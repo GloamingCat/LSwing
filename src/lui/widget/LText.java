@@ -39,6 +39,8 @@ public class LText extends LControlWidget<String> {
 			if (bg == null)
 				bg = UIManager.getColor("MenuItem.disabledBackground");
 			text.setBackground(bg);
+		} else {
+			text.setEnabled(true);
 		}
 	}
 	
@@ -55,13 +57,12 @@ public class LText extends LControlWidget<String> {
 	@Override
 	public void setValue(Object value) {
 		currentValue = (String) value;
+		setEnabled(value != null);
 		if (text.getText().equals(value))
 			return;
 		if (value != null) {
-			text.setEnabled(true);
 			text.setText(currentValue);
 		} else {
-			text.setEnabled(false);
 			text.setText("");
 		}
 	}
