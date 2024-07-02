@@ -322,7 +322,7 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 	}
 
 	protected String dataToString(T data) {
-		return data.toString();
+		return data == null ? "NULL" : data.toString();
 	}
 
 	protected LColor dataColor(T data) {
@@ -342,7 +342,6 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 	private void refreshItem(DefaultMutableTreeNode item) {
 		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
 		model.nodeChanged(item);
-		System.out.println(item.getUserObject());
 		for (int i = 0; i < item.getChildCount(); i++) {
 			refreshItem((DefaultMutableTreeNode) item.getChildAt(i));
 		}
