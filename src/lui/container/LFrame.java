@@ -27,11 +27,14 @@ public class LFrame extends LPanel {
 		setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
 	}
 
-	/** No layout.
-	 */
 	public LFrame(LContainer parent, String title) {
 		this(parent.getContentComposite());
 		titledBorder.setTitle(title);
+	}
+
+	public LFrame(LContainer parent, String title, String tooltip) {
+		this(parent, title);
+		setHoverText(tooltip);
 	}
 
 	//////////////////////////////////////////////////

@@ -6,7 +6,6 @@ import com.google.gson.JsonParseException;
 import gson.GGlobals;
 import lui.base.data.LDataCollection;
 import lui.base.data.LDataList;
-import lui.base.data.LDataTree;
 import lui.base.data.LInitializable;
 import lui.container.LContainer;
 import lui.editor.LDefaultListEditor;

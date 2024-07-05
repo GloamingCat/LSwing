@@ -6,6 +6,7 @@ import com.google.gson.JsonParseException;
 import gson.GGlobals;
 import lui.base.data.LDataCollection;
 import lui.base.data.LDataTree;
+import lui.base.data.LInitializable;
 import lui.container.LContainer;
 import lui.editor.LDefaultTreeEditor;
 
@@ -27,7 +28,10 @@ public abstract class GDefaultTreeEditor<T> extends LDefaultTreeEditor<T> {
 		} else if (getType() == Integer.class) {
 			return (T) (Integer) 0;
 		} else {
-			return GGlobals.gson.fromJson("{}", getType());
+			T data = GGlobals.gson.fromJson("{}", getType());
+			if (data instanceof LInitializable i)
+				i.initialize();
+			return data;
 		}
 	}
 	
