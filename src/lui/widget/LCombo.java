@@ -41,6 +41,10 @@ public class LCombo extends LControlWidget<Integer> {
 		});
 	}
 
+	public int getMaximumValue() {
+		return combo.getItemCount();
+	}
+
 	protected int getSelectionIndex() {
 		int i = combo.getSelectedItem() == null ? 0 : combo.getSelectedIndex();
 		if (optional) {

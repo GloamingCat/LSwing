@@ -59,7 +59,7 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 		root.setUserObject(new ItemData(-1));
 		tree = new JTree(root);
 		tree.setRootVisible(false);
-		tree.setShowsRootHandles(false);
+		tree.setShowsRootHandles(true);
 		tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.SINGLE_TREE_SELECTION);
 		if (flags == 1) { // Check

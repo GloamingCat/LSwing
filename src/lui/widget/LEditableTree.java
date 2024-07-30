@@ -63,7 +63,6 @@ public abstract class LEditableTree<T, ST> extends LTree<T, ST> implements LEdit
 			@Override
 			public void mouseExited(MouseEvent e) {}
 		});
-		tree.setShowsRootHandles(true);
 		this.menu = new LPopupMenu(tree);
 		this.menu.addListener(e -> {
 				TreePath path = tree.getPathForLocation(e.x, e.y);
