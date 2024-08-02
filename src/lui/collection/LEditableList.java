@@ -1,4 +1,4 @@
-package lui.widget;
+package lui.collection;
 
 import lui.base.data.LDataTree;
 import lui.base.event.LDeleteEvent;

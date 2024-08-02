@@ -7,7 +7,7 @@ import lui.base.data.LDataList;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LEditEvent;
-import lui.widget.LEditableGrid;
+import lui.collection.LEditableGrid;
 
 public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 
@@ -40,16 +40,12 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 				return new LDataTree<> (duplicateElement(getDataCollection().get(path.index)));
 			}
 			@Override
-			protected void setImage(LImage img, int i) {
-				LGridEditor.this.setImage(img, i);
-			}
-			@Override
-			public boolean canDecode(String str) {
-				return true;
+			protected void refreshImage(LCell<T> img, T data) {
+				LGridEditor.this.setImage(img, data);
 			}
 		};
 	}
-	
+
 	protected abstract LDataList<T> getDataCollection();
 	
 	public void onVisible() {
@@ -62,37 +58,18 @@ public abstract class LGridEditor<T, ST> extends LCollectionEditor<T, ST> {
 		return grid;
 	}
 
-	protected abstract void setImage(LImage label, int i);
+	protected abstract void setImage(LImage label, T data);
 
 	@Override
-	public LDataList<T> duplicateData(LDataCollection<T> collection) {
-		LDataList<T> list = (LDataList<T>) collection;
-		LDataList<T> copy = new LDataList<>();
-		for(T child : list) {
-			T childCopy = duplicateElement(child);
-			copy.add(childCopy);
-		}
-		return copy;
+	public LDataList<T> decodeData(String str) {
+		LDataTree<T> tree = LDataTree.decode(str, this::decodeElement);
+		return tree == null ? null : tree.toList();
 	}
-	
+
 	@Override
 	public String encodeData(LDataCollection<T> collection) {
 		LDataList<T> list = (LDataList<T>) collection;
-		LDataList<String> text = new LDataList<>();
-		for (T obj : list)
-			text.add(obj.toString());
-        return String.join( " | ", text);
-	}
-	
-	@Override
-	public LDataList<T> decodeData(String str) {
-		String[] elements = str.split(" \\| ");
-		// Get children
-		LDataList<T> list = new LDataList<>();
-		for (String element : elements) {
-			list.add(decodeElement(element));
-		}
-		return list;
+		return list.toTree().encode(this::encodeElement);
 	}
 
 }

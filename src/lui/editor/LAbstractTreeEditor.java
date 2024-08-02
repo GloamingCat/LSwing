@@ -14,7 +14,7 @@ import lui.base.event.LInsertEvent;
 import lui.base.event.LMoveEvent;
 import lui.base.event.LSelectionEvent;
 import lui.base.event.listener.LCollectionListener;
-import lui.widget.LEditableTree;
+import lui.collection.LEditableTree;
 
 /**
  * Holds common functionalities for LTreeEditor and LListEditor.

@@ -1,6 +1,7 @@
 package lui.widget;
 
 import lui.base.LPrefs;
+import lui.collection.LTree;
 import lui.container.LContainer;
 import lui.base.LVocab;
 import lui.base.data.LDataTree;

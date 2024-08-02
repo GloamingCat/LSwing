@@ -198,6 +198,12 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		selectionListeners.add(listener);
 	}
 
+	@Override
+	public T getValue() {
+		return currentObject;
+	}
+
+	@Override
 	public void setValue(Object value) {
 		T oldValue = currentObject;
 		setObject(value);

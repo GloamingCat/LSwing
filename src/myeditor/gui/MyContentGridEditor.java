@@ -19,7 +19,7 @@ public class MyContentGridEditor extends LView {
 
 		LFlexPanel sashForm = new LFlexPanel(this, true);
 
-        LDefaultGridEditor<MyContent> gridEditor = new MyContentGrid(sashForm);
+        LDefaultGridEditor<MyContent> gridEditor = new MyContentImageGrid(sashForm);
 		gridEditor.getCollectionWidget().setCellSize(40, 40);
 		gridEditor.getCollectionWidget().setColumns(0);
 		addChild(gridEditor);
@@ -32,8 +32,8 @@ public class MyContentGridEditor extends LView {
 
 	}
 
-	private static class MyContentGrid extends LDefaultGridEditor<MyContent> {
-		public MyContentGrid(LContainer parent) {
+	private static class MyContentImageGrid extends LDefaultGridEditor<MyContent> {
+		public MyContentImageGrid(LContainer parent) {
 			super(parent);
 		}
 		@Override

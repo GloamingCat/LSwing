@@ -19,8 +19,8 @@ public abstract class LDefaultGridEditor<T extends LGraphical> extends LGridEdit
 		getDataCollection().set(path.index, data);
 	}
 
-	protected void setImage(LImage img, int i) {
-		img.setImage(getDataCollection().get(i).toImage());
+	protected void setImage(LImage img, T data) {
+		img.setImage(data.toImage());
 	}
 
 }

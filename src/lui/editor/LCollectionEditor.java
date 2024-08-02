@@ -113,5 +113,11 @@ public abstract class LCollectionEditor<T, ST> extends LObjectEditor<LDataCollec
 	}
 	protected abstract String encodeElement(T data);
 	protected abstract T decodeElement(String str);
-	
+
+	@Override
+	public LDataCollection<T> duplicateData(LDataCollection<T> original) {
+		String json = encodeData(original);
+		return decodeData(json);
+	}
+
 }

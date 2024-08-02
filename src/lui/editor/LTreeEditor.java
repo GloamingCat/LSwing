@@ -5,7 +5,7 @@ import lui.base.data.LDataCollection;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LEditEvent;
-import lui.widget.LEditableTree;
+import lui.collection.LEditableTree;
 
 public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 	

@@ -1,4 +1,4 @@
-package lui.widget;
+package lui.collection;
 
 import java.util.ArrayList;
 
@@ -7,6 +7,7 @@ import lui.container.LContainer;
 import lui.base.data.LPath;
 import lui.base.event.LSelectionEvent;
 import lui.base.event.listener.LSelectionListener;
+import lui.widget.LWidget;
 
 public abstract class LSelectableCollection<T, ST> extends LWidget implements LCollection<T, ST> {
 
@@ -44,6 +45,9 @@ public abstract class LSelectableCollection<T, ST> extends LWidget implements LC
 	// Selection
 	//-------------------------------------------------------------------------------------
 	
+	public abstract LPath getSelectedPath();
+	public abstract LSelectionEvent select(LPath path);
+
 	public LSelectionEvent select(LPath parent, int index) {
 		if (parent == null) {
 			parent = new LPath(index);
@@ -52,8 +56,6 @@ public abstract class LSelectableCollection<T, ST> extends LWidget implements LC
 		}
 		return select(parent);
 	}
-	
-	public abstract LSelectionEvent select(LPath path);
 
 	public T getSelectedObject() {
 		LPath path = getSelectedPath();
@@ -62,6 +64,18 @@ public abstract class LSelectableCollection<T, ST> extends LWidget implements LC
 		return toObject(path);
 	}
 
-	public abstract LPath getSelectedPath();
-	
+	public void forceSelection(LPath path) {
+		LSelectionEvent e = select(path);
+		notifySelectionListeners(e);
+	}
+
+	public void forceSelection(LPath parent, int index) {
+		if (parent == null) {
+			parent = new LPath(index);
+		} else {
+			parent = parent.addLast(index);
+		}
+		forceSelection(parent);
+	}
+
 }

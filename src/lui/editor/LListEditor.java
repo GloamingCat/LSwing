@@ -6,7 +6,7 @@ import lui.base.data.LDataList;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LEditEvent;
-import lui.widget.LEditableList;
+import lui.collection.LEditableList;
 
 public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 	
@@ -91,12 +91,6 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 	public String encodeData(LDataCollection<T> collection) {
 		LDataList<T> list = (LDataList<T>) collection;
 		return list.toTree().encode(this::encodeElement);
-	}
-
-	@Override
-	public LDataList<T> duplicateData(LDataCollection<T> original) {
-		String json = encodeData(original);
-		return decodeData(json);
 	}
 
 }

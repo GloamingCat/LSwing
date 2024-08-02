@@ -1,4 +1,4 @@
-package lui.widget;
+package lui.collection;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -373,15 +373,6 @@ public abstract class LTree<T, ST> extends LSelectableCollection<T, ST> {
 			ItemData data = (ItemData) item.getUserObject();
 			notifySelectionListeners(new LSelectionEvent(path, data.data, data.id, data.checked));
 		}
-	}
-
-	public void forceSelection(LPath parent, int index) {
-		if (parent == null) {
-			parent = new LPath(index);
-		} else {
-			parent = parent.addLast(index);
-		}
-		forceSelection(parent);
 	}
 
 	public LPath getSelectedPath() {

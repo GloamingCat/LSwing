@@ -1,4 +1,4 @@
-package lui.widget;
+package lui.collection;
 
 import lui.LGlobals;
 import lui.base.action.collection.LMoveAction;
@@ -301,13 +301,8 @@ public abstract class LEditableTree<T, ST> extends LTree<T, ST> implements LEdit
 		if (targetIndex == -1)
 			targetIndex = targetParent.getChildCount();
 		LMoveEvent<T> e = reinsert(dragData, dragParent, dragIndex, targetParent, targetIndex);
-		if (e == null)
-			return null;
-		if (menuInterface != null) {
-			LMoveAction<T> action = new LMoveAction<>(this, e.sourceParent, e.sourceIndex, e.destParent, e.destIndex);
-			menuInterface.actionStack.newAction(action);
-		}
-		notifyMoveListeners(e);
+		if (e != null)
+			newMoveAction(e);
 		return e;
 	}
 
