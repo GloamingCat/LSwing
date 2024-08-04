@@ -5,6 +5,7 @@ import java.awt.*;
 import lui.base.LFlags;
 import lui.base.data.*;
 import lui.base.event.LControlEvent;
+import lui.base.event.listener.LControlListener;
 import lui.base.gui.LControl;
 import lui.base.gui.LMenu;
 import lui.container.LContainer;
@@ -55,11 +56,10 @@ public abstract class LGrid<T, ST> extends LControlList<T, ST, LGrid.LCell<T>> {
 		public void forceModification(T newValue) {}
 		@Override
 		public void notifyListeners(LControlEvent<T> event) {}
-
 		@Override
-		public boolean canDecode(String str) {
-			return false;
-		}
+		public void addModifyListener(LControlListener<T> listener) {}
+		@Override
+		public boolean canDecode(String str) { return false; }
 		@Override
 		public void onPasteButton(LMenu object) {}
 		@Override

@@ -18,6 +18,10 @@ public class LActionButton extends LControlWidget<Object> {
 		button.onClick = arg0 -> notifyEmpty();
 	}
 
+	public void setIcon(String key) {
+		button.setIcon(key);
+	}
+
 	@Override
 	protected void createContent(int flags) {
 		button = new LButton(this, "");
@@ -25,7 +29,7 @@ public class LActionButton extends LControlWidget<Object> {
 
 	@Override
 	public void onCopyButton(LMenu menu) {}
-	
+
 	@Override
 	public void onPasteButton(LMenu menu) {}
 	

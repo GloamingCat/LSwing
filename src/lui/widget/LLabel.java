@@ -82,6 +82,10 @@ public class LLabel extends LWidget {
 		}
 	}
 
+	public String getText() {
+		return label.getText();
+	}
+
 	public void setText(String text) {
 		label.setText(text);
 		refreshLayout();

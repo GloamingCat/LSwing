@@ -93,7 +93,7 @@ public abstract class LControlList<T, ST, C extends LPanel & LControl<T>> extend
 		this.defaultList = list;
 		if (defaultList == null)
 			return;
-		updateWidgets();
+		updateWidgets(list);
 	}
 
 	@Override
@@ -131,17 +131,23 @@ public abstract class LControlList<T, ST, C extends LPanel & LControl<T>> extend
 		return controls.getChildCount();
 	}
 
-	protected void updateWidgets() {
+	protected void updateWidgets(LDataList<T> list) {
 		// Update children
 		int nChildren = getControlCount();
-		for (int i = 0; i < nChildren; i++)
-			refreshControl(getControl(i), i);
+		for (int i = 0; i < nChildren; i++) {
+			C control = getControl(i);
+			refreshControl(control, i);
+			control.setValue(list.get(i));
+		}
 		// Add missing controls for exceeding attributes
-		for (int i = nChildren; i < defaultList.size(); i ++)
-			refreshControl(createControl(), i);
+		for (int i = nChildren; i < list.size(); i ++) {
+			C control = createControl();
+			refreshControl(control, i);
+			control.setValue(list.get(i));
+		}
 		// Remove exceeding controls
-		boolean refresh = nChildren != defaultList.size();
-		nChildren = defaultList.size();
+		boolean refresh = nChildren != list.size();
+		nChildren = list.size();
 		while (getControlCount() > nChildren)
 			getControl(nChildren).dispose();
 		// Fix layout
@@ -172,9 +178,10 @@ public abstract class LControlList<T, ST, C extends LPanel & LControl<T>> extend
 		} else {
 			clear();
 			if (list != null) {
-				for (T data : list) {
+				for (int i = 0; i < list.size(); i++) {
 					C control = createControl();
-					control.setValue(data);
+					refreshControl(control, i);
+					control.setValue(list.get(i));
 				}
 			}
 			controls.refreshLayout();
@@ -202,6 +209,12 @@ public abstract class LControlList<T, ST, C extends LPanel & LControl<T>> extend
 		LPath p = new LPath(0);
 		for (p.index = 0; p.index < getChildCount(); p.index++) {
 			refreshObject(p);
+		}
+	}
+
+	public void refreshControls() {
+		for (int i = 0; i < getControlCount(); i++) {
+			refreshControl(getControl(i), i);
 		}
 	}
 

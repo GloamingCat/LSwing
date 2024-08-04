@@ -41,28 +41,38 @@ public class LovelyTheme extends OceanTheme {
     public String FILE_ICON = "icons/file.gif";
     public String HOME_ICON = "icons/homeFolder.gif";
     public String NEW_ICON = "icons/newFolder.gif";
-    public String UP_ICON = "icons/upFolder.gif";
+    public String RETURN_ICON = "icons/upFolder.gif";
     public String COMPUTER_ICON = "icons/computer.gif";
     public String HD_ICON = "icons/hardDrive.gif";
     public String FLOPPY_ICON = "icons/floppy.gif";
-    public static String MENU_ICON = "icons/menu.gif";
-    public static String CLOSE_ICON = "icons/close.gif";
-    public static String CLOSE_PRESSED_ICON = "icons/close-pressed.gif";
-    public static String ICONIFY_ICON = "icons/iconify.gif";
-    public static String ICONIFY_PRESSED_ICON = "icons/iconify-pressed.gif";
-    public static String MAXIMIZE_ICON = "icons/maximize.gif";
-    public static String MAXIMIZE_PRESSED_ICON = "icons/maximize-pressed.gif";
-    public static String MINIMIZE_ICON = "icons/minimize.gif";
-    public static String MINIMIZE_PRESSED_ICON = "icons/minimize-pressed.gif";
-    public static String PALETTE_ICON = "icons/paletteClose.gif";
-    public static String PALETTE_PRESSED_ICON = "icons/paletteClose-pressed.gif";
-    public static String ERROR_ICON = "icons/error.gif";
-    public static String INFO_ICON = "icons/info.gif";
-    public static String QUESTION_ICON = "icons/question.gif";
-    public static String WARNING_ICON = "icons/warning.gif";
-    public static String EXPANDED_ICON = "icons/expanded.gif";
-    public static String COLLAPSED_ICON = "icons/collapsed.gif";
-    public static String COLLAPSED_RTL_ICON = "icons/collapsed-rtl.gif";
+    public String MENU_ICON = "icons/menu.gif";
+    public String CLOSE_ICON = "icons/close.gif";
+    public String CLOSE_PRESSED_ICON = "icons/close-pressed.gif";
+    public String ICONIFY_ICON = "icons/iconify.gif";
+    public String ICONIFY_PRESSED_ICON = "icons/iconify-pressed.gif";
+    public String MAXIMIZE_ICON = "icons/maximize.gif";
+    public String MAXIMIZE_PRESSED_ICON = "icons/maximize-pressed.gif";
+    public String MINIMIZE_ICON = "icons/minimize.gif";
+    public String MINIMIZE_PRESSED_ICON = "icons/minimize-pressed.gif";
+    public String PALETTE_ICON = "icons/paletteClose.gif";
+    public String PALETTE_PRESSED_ICON = "icons/paletteClose-pressed.gif";
+    public String ERROR_ICON = "icons/error.gif";
+    public String INFO_ICON = "icons/info.gif";
+    public String QUESTION_ICON = "icons/question.gif";
+    public String WARNING_ICON = "icons/warning.gif";
+    public String EXPANDED_ICON = "icons/expanded.gif";
+    public String COLLAPSED_ICON = "icons/collapsed.gif";
+    public String COLLAPSED_RTL_ICON = "icons/collapsed-rtl.gif";
+    public String ADD_ICON = "img/add.png";
+    public String DELETE_ICON = "img/delete.png";
+    public String UP_ICON = "img/up.png";
+    public String DOWN_ICON = "img/down.png";
+    public String RIGHT_ICON = "img/right.png";
+    public String LEFT_ICON = "img/left.png";
+    public String TOP_ICON = "img/top.png";
+    public String BOTTOM_ICON = "img/bottom.png";
+    public String COPY_ICON = "img/duplicate.png";
+    public String REPLACE_ICON = "img/replace.png";
 
     private static class COIcon extends IconUIResource {
         private final Icon rtl;
@@ -178,7 +188,7 @@ public class LovelyTheme extends OceanTheme {
             // directory2
             "FileChooser.newFolderIcon", getIconResource(NEW_ICON),
             // updir2
-            "FileChooser.upFolderIcon", getIconResource(UP_ICON),
+            "FileChooser.upFolderIcon", getIconResource(RETURN_ICON),
 
             // computer2
             "FileView.computerIcon", getIconResource(COMPUTER_ICON),
@@ -284,7 +294,18 @@ public class LovelyTheme extends OceanTheme {
             "Tree.selectionBorderColor", getPrimary1(),
             "Tree.selectionBackground", getPrimary4(),
             "Tree.dropLineColor", getPrimary1(),
-            "Tree.dropCellBackground", getPrimary2()
+            "Tree.dropCellBackground", getPrimary2(),
+
+            "Form.addIcon", getIconResource(ADD_ICON),
+            "Form.duplicateIcon", getIconResource(COPY_ICON),
+            "Form.editIcon", getIconResource(REPLACE_ICON),
+            "Form.deleteIcon", getIconResource(DELETE_ICON),
+            "Form.copyIcon", getIconResource(COPY_ICON),
+            "Form.pasteIcon", getIconResource(REPLACE_ICON),
+            "Form.upIcon", getIconResource(UP_ICON),
+            "Form.downIcon", getIconResource(DOWN_ICON),
+            "Form.topIcon", getIconResource(TOP_ICON),
+            "Form.bottomIcon", getIconResource(BOTTOM_ICON)
 
         };
         table.putDefaults(defaults);

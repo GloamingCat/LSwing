@@ -2,7 +2,7 @@ package lui.widget;
 
 import java.awt.*;
 
-import javax.swing.JButton;
+import javax.swing.*;
 
 import lui.base.LPrefs;
 import lui.container.LContainer;
@@ -43,6 +43,11 @@ public class LButton extends LWidget {
 
 	public void setText(String text) {
 		button.setText(text);
+	}
+
+	public void setIcon(String key) {
+		button.setText(null);
+		button.setIcon(UIManager.getIcon(key));
 	}
 
 	//////////////////////////////////////////////////

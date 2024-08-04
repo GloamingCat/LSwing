@@ -98,7 +98,7 @@ public class LCombo extends LControlWidget<Integer> {
 			combo.addItem(item + obj.toString());
 			id++;
 		}
-		currentValue = oldValue;
+		setValue(oldValue);
 	}
 	
 	@Override

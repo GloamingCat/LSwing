@@ -4,13 +4,16 @@ import com.google.gson.JsonParseException;
 import gson.GGlobals;
 import lui.base.data.LDataCollection;
 import lui.base.data.LInitializable;
+import lui.base.gui.LControl;
 import lui.container.LContainer;
 import lui.base.data.LDataList;
+import lui.container.LPanel;
 import lui.editor.LFormEditor;
 
 import java.lang.reflect.Type;
 
-public abstract class GFormEditor<T> extends LFormEditor<T, T> {
+public abstract class GFormEditor<T, ST, W extends LPanel & LControl<T>>
+		extends LFormEditor<T, ST, W> {
 
 	public GFormEditor(LContainer parent, int style) {
 		super(parent, style);

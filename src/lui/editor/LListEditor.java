@@ -1,5 +1,6 @@
 package lui.editor;
 
+import lui.base.LMenuInterface;
 import lui.base.data.LDataCollection;
 import lui.container.LContainer;
 import lui.base.data.LDataList;
@@ -66,7 +67,13 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 			}
 		};
 	}
-	
+
+	@Override
+	public void setMenuInterface(LMenuInterface mi) {
+		super.setMenuInterface(mi);
+		list.setMenuInterface(mi);
+	}
+
 	public LEditableList<T, ST> getCollectionWidget() {
 		return list;
 	}

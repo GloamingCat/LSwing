@@ -6,7 +6,6 @@ import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 import javax.swing.JPopupMenu;
 
-import lui.base.gui.LMenu;
 import lui.container.LContainer;
 import lui.container.LPanel;
 import lui.container.LView;
@@ -40,7 +39,7 @@ public abstract class LEditor extends LView implements LPastable {
 	
 	//////////////////////////////////////////////////
 	//region Menu
-	
+
 	private void addHeaderButtons(LContainer parent) {
 		LButton copyButton = new LButton(parent, LVocab.instance.COPY);
 		copyButton.onClick = event -> onCopyButton(null);
@@ -107,14 +106,10 @@ public abstract class LEditor extends LView implements LPastable {
 		addHeaderButtons(header);
 	}
 	
-	public void setCopyEnabled(LMenu menu, boolean value) {
-		menu.setMenuButton(value, LVocab.instance.COPY, "copy", (d) -> onCopyButton(menu), "Ctrl+&C");
-	}
-
-	public void setPasteEnabled(LMenu menu, boolean value) {
-		menu.setMenuButton(value, LVocab.instance.PASTE, "paste", (d) -> onPasteButton(menu), "Ctrl+&V");
-	}
-	
 	//endregion
-	
+
+	@Override
+	public boolean canDecode(String str) {
+		return true;
+	}
 }

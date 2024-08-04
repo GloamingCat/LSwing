@@ -20,7 +20,14 @@ public class LColor implements Cloneable {
 	public LColor(int r, int g, int b) {
 		this(r, g, b, 255);
 	}
-	
+
+	public LColor(double red, double green, double blue, double alpha) {
+		this.red = (int) Math.round(red);
+		this.green = (int) Math.round(green);
+		this.blue = (int) Math.round(blue);
+		this.alpha = (int) Math.round(alpha);
+	}
+
 	public LColor() {
 		red = 255;
 		green = 255;
@@ -52,4 +59,5 @@ public class LColor implements Cloneable {
             throw new AssertionError();
         }
     }
+
 }

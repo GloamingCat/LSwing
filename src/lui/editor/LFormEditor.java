@@ -1,26 +1,31 @@
 package lui.editor;
 
+import lui.base.LMenuInterface;
 import lui.base.data.LDataCollection;
 import lui.base.data.LDataList;
 import lui.base.data.LDataTree;
 import lui.base.data.LPath;
 import lui.base.event.LEditEvent;
+import lui.base.gui.LControl;
 import lui.container.LContainer;
-import lui.widget.LControlWidget;
+import lui.container.LPanel;
 import lui.collection.LForm;
 
 import java.awt.*;
 
-public abstract class LFormEditor<T, ST> extends LCollectionEditor<T, ST> {
+public abstract class LFormEditor<T, ST, W extends LPanel & LControl<T>>
+		extends LCollectionEditor<T, ST> {
 
 	protected LDataList<T> values;
-	protected LForm<T, ST> form;
+	protected LForm<T, ST, W> form;
 
 	//////////////////////////////////////////////////
 	//region Constructor
 
+	@SuppressWarnings("DataFlowIssue")
 	public LFormEditor(LContainer parent, int flags) {
 		super(parent, flags);
+		form.setMenuInterface(getMenuInterface());
 	}
 
 	@Override
@@ -46,27 +51,36 @@ public abstract class LFormEditor<T, ST> extends LCollectionEditor<T, ST> {
 				return new LDataTree<> (duplicateElement(getDataCollection().get(path.index)));
 			}
 			@Override
-			protected LControlWidget<T> createControlWidget(LContainer parent) {
-				return LFormEditor.this.createControlWidget(parent);
+			protected W createControlWidget(LContainer parent) {
+				W widget = LFormEditor.this.createControlWidget(parent);
+				widget.setMenuInterface(getMenuInterface());
+				return widget;
 			}
 			@Override
 			protected String getLabelText(int i) {
 				return LFormEditor.this.getLabelText(i);
 			}
 			@Override
-			protected void disposeControlWidget(LControlWidget<T> control) {
-				LFormEditor.this.disposeControlWidget(control);
-			}
-			@Override
 			public boolean canDecode(String str) {
 				return true;
+			}
+			@Override
+			public void refreshControl(LFormRow<T, W> control, int i) {
+				super.refreshControl(control, i);
+				refreshControlWidget(control.widget, i);
 			}
 		};
 	}
 
 	@Override
-	public LForm<T, ST> getCollectionWidget() {
+	public LForm<T, ST, W> getCollectionWidget() {
 		return form;
+	}
+
+	@Override
+	public void setMenuInterface(LMenuInterface mi) {
+		super.setMenuInterface(mi);
+		form.setMenuInterface(mi);
 	}
 
 	//endregion
@@ -103,21 +117,21 @@ public abstract class LFormEditor<T, ST> extends LCollectionEditor<T, ST> {
 	//////////////////////////////////////////////////
 	//region Widgets
 
-	@Override
-	public void onVisible() {
-		LDataList<?> data = getFormList();
-		LDataList<T> defaultList = new LDataList<>();
-		for (Object obj : data) {
-			defaultList.add(createNewElement());
+	public void setFormList(LDataList<?> list) {
+		if (list != null) {
+			LDataList<T> defaultList = new LDataList<>();
+			for (Object obj : list) {
+				defaultList.add(createNewElement());
+			}
+			form.setDefaultList(defaultList);
+		} else {
+			form.setDefaultList(null);
 		}
-		form.setDefaultList(defaultList);
-		super.onVisible();
 	}
 
-	protected abstract LDataList<?> getFormList();
 	protected abstract String getLabelText(final int i);
-	protected abstract LControlWidget<T> createControlWidget(LContainer parent);
-	protected abstract void disposeControlWidget(LControlWidget<T> widget);
+	protected void refreshControlWidget(LControl<T> widget, final int i) {}
+	protected abstract W createControlWidget(LContainer parent);
 
 	//endregion
 

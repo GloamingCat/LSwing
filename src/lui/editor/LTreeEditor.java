@@ -1,5 +1,6 @@
 package lui.editor;
 
+import lui.base.LMenuInterface;
 import lui.container.LContainer;
 import lui.base.data.LDataCollection;
 import lui.base.data.LDataTree;
@@ -64,6 +65,12 @@ public abstract class LTreeEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 				return LTreeEditor.this.isChecked(data);
 			}
 		};
+	}
+
+	@Override
+	public void setMenuInterface(LMenuInterface mi) {
+		super.setMenuInterface(mi);
+		tree.setMenuInterface(mi);
 	}
 
 	public LEditableTree<T, ST> getCollectionWidget() {

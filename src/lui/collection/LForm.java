@@ -1,6 +1,8 @@
 package lui.collection;
 
+import lui.base.LMenuInterface;
 import lui.base.LPrefs;
+import lui.base.LVocab;
 import lui.base.data.LDataList;
 import lui.base.data.LPath;
 import lui.base.event.LControlEvent;
@@ -12,32 +14,34 @@ import lui.base.gui.LMenu;
 import lui.container.LContainer;
 import lui.container.LPanel;
 import lui.editor.LPopupMenu;
-import lui.widget.LControlWidget;
+import lui.widget.LActionButton;
 import lui.widget.LLabel;
 
 import java.util.ArrayList;
 
-public abstract class LForm<T, ST> extends LControlList<T, ST, LForm.LFormRow<T>> implements LEditableControlList<T, ST, LForm.LFormRow<T>> {
+public abstract class LForm<T, ST, W extends LPanel & LControl<T>>
+		extends LControlList<T, ST, LForm.LFormRow<T, W>>
+		implements LEditableControlList<T, ST, LForm.LFormRow<T, W>> {
 
 	protected LDataList<T> values;
 	protected int labelWidth = LPrefs.LABELWIDTH;
-	protected int controlWidth = LPrefs.BUTTONWIDTH;
-
 	private boolean editEnabled = false;
 	private boolean insertEnabled = false;
 	private boolean duplicateEnabled = false;
 	private boolean deleteEnabled = false;
+	private boolean moveEnabled = false;
 
 	protected ArrayList<LCollectionListener<T>> insertListeners = new ArrayList<>();
 	protected ArrayList<LCollectionListener<T>> moveListeners = new ArrayList<>();
 	protected ArrayList<LCollectionListener<T>> deleteListeners = new ArrayList<>();
 	protected ArrayList<LCollectionListener<ST>> editListeners = new ArrayList<>();
 
-	public static class LFormRow<T> extends LPanel implements LControl<T> {
-		private final LControlWidget<T> widget;
-		private final LLabel label;
+	public static class LFormRow<T, W extends LPanel & LControl<T>>
+			extends LPanel implements LControl<T> {
+		public final W widget;
+		public final LLabel label;
 
-		public LFormRow(LForm<T, ?> form, int labelWidth, int controlWidth) {
+		public LFormRow(LForm<T, ?, W> form, int labelWidth) {
 			super(form.controls);
 			getCellData().setExpand(true, false);
 			setGridLayout(2);
@@ -45,11 +49,15 @@ public abstract class LForm<T, ST> extends LControlList<T, ST, LForm.LFormRow<T>
 			label.getCellData().setRequiredSize(labelWidth, LPrefs.WIDGETHEIGHT);
 			label.getCellData().setTargetSize(labelWidth, LPrefs.WIDGETHEIGHT);
 			widget = form.createControlWidget(this);
-			widget.getCellData().setRequiredSize(controlWidth, LPrefs.WIDGETHEIGHT);
-			widget.getCellData().setTargetSize(controlWidth, LPrefs.WIDGETHEIGHT);
-			widget.getCellData().setExpand(true, false);
 			widget.setMenuInterface(form.getMenuInterface());
-			widget.addModifyListener(e -> LFormRow.this.setValue(e.newValue));
+		}
+		@Override
+		public void setMenuInterface(LMenuInterface mi) {
+			widget.setMenuInterface(mi);
+		}
+		@Override
+		public LMenuInterface getMenuInterface() {
+			return widget.getMenuInterface();
 		}
 		@Override
 		public void forceModification(T newValue) {
@@ -96,6 +104,7 @@ public abstract class LForm<T, ST> extends LControlList<T, ST, LForm.LFormRow<T>
 	public static final int BUTTONS = 2;
 
 	private final boolean popupMenu;
+	private LPanel buttonPanel;
 
 	public LForm(LContainer parent) {
 		this(parent, 0);
@@ -110,21 +119,11 @@ public abstract class LForm<T, ST> extends LControlList<T, ST, LForm.LFormRow<T>
 	protected void createContent(int flags) {
 		super.createContent(flags);
 		if ((flags & BUTTONS) > 0) {
-
+			setGridLayout(1);
+			buttonPanel = new LPanel(this);
+			buttonPanel.setSequentialLayout(true);
+			buttonPanel.getCellData().setExpand(true, false);
 		}
-	}
-
-	//endregion
-
-	//////////////////////////////////////////////////
-	//region Layout
-
-	public void setLabelWidth(int w) {
-		labelWidth = w;
-	}
-
-	public void setControlWidth(int w) {
-		controlWidth = w;
 	}
 
 	//endregion
@@ -132,9 +131,13 @@ public abstract class LForm<T, ST> extends LControlList<T, ST, LForm.LFormRow<T>
 	//////////////////////////////////////////////////
 	//region Controls
 
+	public void setLabelWidth(int w) {
+		labelWidth = w;
+	}
+
 	@Override
-	public LFormRow<T> createControl() {
-		LFormRow<T> row = new LFormRow<>(this, labelWidth, controlWidth);
+	public LFormRow<T, W> createControl() {
+		LFormRow<T, W> row = new LFormRow<>(this, labelWidth);
 		row.addModifyListener(e -> {
 			LEditEvent<T> event = new LEditEvent<>(new LPath(indexOf(row)), e.oldValue, e.newValue);
 
@@ -147,11 +150,50 @@ public abstract class LForm<T, ST> extends LControlList<T, ST, LForm.LFormRow<T>
 			setDuplicateEnabled(menu, duplicateEnabled);
 			setDeleteEnabled(menu, deleteEnabled);
 		}
+		if (buttonPanel != null) {
+			int cols = 2;
+			if (editEnabled) {
+				LActionButton button = new LActionButton(row, LVocab.instance.EDIT);
+				button.setIcon("Form.editIcon");
+				button.addModifyListener(e -> newEditAction(new LPath(indexOf(row))));
+				cols++;
+			}
+			if (duplicateEnabled) {
+				LActionButton button = new LActionButton(row, null);
+				button.setIcon("Form.duplicateIcon");
+				button.addModifyListener(e -> {
+					LPath path = new LPath(indexOf(row));
+					newInsertAction(path, duplicateNode(path));
+				});
+				cols++;
+			}
+			if (deleteEnabled) {
+				LActionButton button = new LActionButton(row, null);
+				button.setIcon("Form.deleteIcon");
+				button.addModifyListener(e -> newDeleteAction(null, indexOf(row)));
+				cols++;
+			}
+			if (moveEnabled) {
+				LActionButton moveup = new LActionButton(row, null);
+				moveup.setIcon("Form.upIcon");
+				moveup.addModifyListener(e -> {
+					int i = indexOf(row);
+					newMoveAction(null, i, null, i+1);
+				});
+				LActionButton movedown = new LActionButton(row, null);
+				movedown.setIcon("Form.downIcon");
+				movedown.addModifyListener(e -> {
+					int i = indexOf(row);
+					newMoveAction(null, i, null, i-1);
+				});
+				cols+=2;
+			}
+			row.setGridLayout(cols);
+		}
 		return row;
 	}
 
-	protected abstract LControlWidget<T> createControlWidget(LContainer parent);
-	protected abstract void disposeControlWidget(LControlWidget<T> widget);
+	protected abstract W createControlWidget(LContainer parent);
 
 	//endregion
 
@@ -159,8 +201,11 @@ public abstract class LForm<T, ST> extends LControlList<T, ST, LForm.LFormRow<T>
 	//region Refresh
 
 	@Override
-	public void refreshControl(LFormRow<T> control, int i) {
-		control.label.setText(getLabelText(i));
+	public void refreshControl(LFormRow<T, W> control, int i) {
+		String text = getLabelText(i);
+		control.label.setText(text);
+		control.label.setHoverText(text);
+		control.refreshLayout();
 	}
 
 	protected abstract String getLabelText(final int i);
@@ -210,11 +255,18 @@ public abstract class LForm<T, ST> extends LControlList<T, ST, LForm.LFormRow<T>
 	public void setInsertNewEnabled(boolean value) {
 		if (insertEnabled != value) {
 			insertEnabled = value;
-			if (value) {
-				LPopupMenu menu = new LPopupMenu(filler);
-				setInsertNewEnabled(menu, true);
-			} else {
-				filler.setComponentPopupMenu(null);
+			if (popupMenu) {
+				if (value) {
+					LPopupMenu menu = new LPopupMenu(filler);
+					setInsertNewEnabled(menu, true);
+				} else {
+					filler.setComponentPopupMenu(null);
+				}
+			}
+			if (buttonPanel != null) {
+				LActionButton button = new LActionButton(buttonPanel, null);
+				button.setIcon("Form.addIcon");
+				button.addModifyListener(e -> newInsertAction(null, emptyNode()));
 			}
 		}
 	}
@@ -225,6 +277,10 @@ public abstract class LForm<T, ST> extends LControlList<T, ST, LForm.LFormRow<T>
 
 	public void setDeleteEnabled(boolean value) {
 		deleteEnabled = value;
+	}
+
+	public void setMoveEnabled(boolean value) {
+		moveEnabled = value;
 	}
 
 	@Override

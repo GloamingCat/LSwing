@@ -111,6 +111,10 @@ public class LView extends LPanel implements lui.base.gui.LView {
 	public void createMenuInterface() {
 		menuInterface = new LMenuInterface(this);
 	}
+
+	public void setMenuInterface(lui.base.LMenuInterface mi) {
+		menuInterface = (LMenuInterface) mi;
+	}
 	
 	public void setMenuInterface(LMenuInterface mi) {
 		this.menuInterface = mi;

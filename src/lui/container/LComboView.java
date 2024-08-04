@@ -13,6 +13,11 @@ public class LComboView extends LControlView<Integer> {
 		super(parent);
 		combo = new LCombo(this, flags);
 	}
+
+	public LComboView(LContainer parent) {
+		super(parent);
+		combo = new LCombo(this, LCombo.READONLY);
+	}
 	
 	public void onVisible() {
 		combo.setItems(getArray());

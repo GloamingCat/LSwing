@@ -64,7 +64,7 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 
 	//////////////////////////////////////////////////
 	//region Children
-	
+
 	public void addChild(LEditor editor, String key) {
 		if (key.isEmpty()) {
 			addChild(editor);
@@ -122,10 +122,14 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 	public void refresh() {}
 	
 	public void setMenuInterface(LMenuInterface mi) {
-		super.setMenuInterface(mi);
-		for(LControlWidget<?> control : controlMap.keySet()) {
+		for (LEditor editor : editorMap.keySet()) {
+			if (editor.getMenuInterface() == menuInterface)
+				editor.setMenuInterface(mi);
+		}
+		for (LControlWidget<?> control : controlMap.keySet()) {
 			control.setMenuInterface(mi);
 		}
+		super.setMenuInterface(mi);
 	}
 	
 	//////////////////////////////////////////////////
@@ -205,6 +209,10 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 
 	@Override
 	public void setValue(Object value) {
+		setObject(value);
+	}
+
+	public void setValues(Object value) {
 		T oldValue = currentObject;
 		setObject(value);
 		currentObject = oldValue;
@@ -291,7 +299,7 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 
 	public void forceModification(T newValue) {
 		T oldValue = duplicateData(currentObject);
-		setValue(newValue);
+		setValues(newValue);
 		newModifyAction(oldValue, newValue);
 	}
 	
@@ -321,9 +329,24 @@ public abstract class LObjectEditor<T> extends LEditor implements LControl<T> {
 		}
 	}
 	
-	public abstract T duplicateData(T obj);
+	public T duplicateData(T obj) {
+		String str = encodeData(obj);
+		return decodeData(str);
+	}
+
 	public abstract T decodeData(String str);
 	public abstract String encodeData(T obj);
+
+	@Override
+	public boolean canDecode(String str) {
+		try {
+			decodeData(str);
+			return true;
+		} catch(Exception e) {
+			return false;
+		}
+	}
+
 	public String encodeObject() {
 		if (currentObject == null)
 			return null;
