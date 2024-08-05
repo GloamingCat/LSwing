@@ -14,13 +14,13 @@ public abstract class LControlList<T, ST, C extends LPanel & LControl<T>> extend
 	protected T selectedObj = null;
 
 	protected int columns = 0;
-	protected boolean fixedSize = false;
 
     protected LPanel controls;
 	protected LScrollPanel scroll;
 	protected LLabel filler;
 
-	protected LDataList<T> defaultList = null;
+	protected int fixedControlCount = -1;
+
 
 	//////////////////////////////////////////////////
 	//region Constructor
@@ -90,13 +90,6 @@ public abstract class LControlList<T, ST, C extends LPanel & LControl<T>> extend
 		controls.setEqualCells(true, true);
 	}
 
-	public void setDefaultList(LDataList<T> list) {
-		this.defaultList = list;
-		if (defaultList == null)
-			return;
-		updateWidgets(list);
-	}
-
 	@Override
 	public void refreshLayout() {
 		super.refreshLayout();
@@ -132,42 +125,33 @@ public abstract class LControlList<T, ST, C extends LPanel & LControl<T>> extend
 		return controls.getChildCount();
 	}
 
-	protected void updateWidgets(LDataList<T> list) {
+	public void setControlCount(int n) {
+		fixedControlCount = n;
 		// Update children
 		int nChildren = getControlCount();
 		for (int i = 0; i < nChildren; i++) {
 			C control = getControl(i);
 			refreshControl(control, i);
-			control.setValue(list.get(i));
 		}
 		// Add missing controls for exceeding attributes
-		for (int i = nChildren; i < list.size(); i ++) {
+		for (int i = nChildren; i < n; i ++) {
 			C control = createControl();
 			refreshControl(control, i);
-			control.setValue(list.get(i));
 		}
 		// Remove exceeding controls
-		boolean refresh = nChildren != list.size();
-		nChildren = list.size();
-		while (getControlCount() > nChildren)
-			getControl(nChildren).dispose();
+		while (getControlCount() > n)
+			getControl(n).dispose();
 		// Fix layout
-		if (refresh)
+		if (nChildren != n)
 			controls.refreshLayout();
 	}
 
 	protected void setList(LDataList<T> list) {
-		if (defaultList != null) {
+		if (fixedControlCount != -1) {
 			if (list != null) {
 				for (int i = 0; i < getControlCount(); i++) {
 					C control = getControl(i);
-					if (i < list.size()) {
-						control.setValue(list.get(i));
-					} else {
-						T value = defaultList.get(i);
-						list.add(value);
-						control.setValue(value);
-					}
+					control.setValue(list.get(i));
 				}
 			} else {
 				for (int i = 0; i < getControlCount(); i++) {

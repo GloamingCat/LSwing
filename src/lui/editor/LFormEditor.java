@@ -40,7 +40,10 @@ public abstract class LFormEditor<T, ST, W extends LPanel & LControl<T>>
 			public T toObject(LPath path) {
 				if (path == null)
 					return null;
-				return LFormEditor.this.getDataCollection().get(path.index);
+				if (path.index < LFormEditor.this.getDataCollection().size())
+					return LFormEditor.this.getDataCollection().get(path.index);
+				else
+					return createNewElement();
 			}
 			@Override
 			public LDataTree<T> emptyNode() {
@@ -116,18 +119,6 @@ public abstract class LFormEditor<T, ST, W extends LPanel & LControl<T>>
 
 	//////////////////////////////////////////////////
 	//region Widgets
-
-	public void setFormList(LDataList<?> list) {
-		if (list != null) {
-			LDataList<T> defaultList = new LDataList<>();
-			for (Object obj : list) {
-				defaultList.add(createNewElement());
-			}
-			form.setDefaultList(defaultList);
-		} else {
-			form.setDefaultList(null);
-		}
-	}
 
 	protected abstract String getLabelText(final int i);
 	protected void refreshControlWidget(LControl<T> widget, final int i) {}

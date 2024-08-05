@@ -23,7 +23,6 @@ public abstract class LForm<T, ST, W extends LPanel & LControl<T>>
 		extends LControlList<T, ST, LForm.LFormRow<T, W>>
 		implements LEditableControlList<T, ST, LForm.LFormRow<T, W>> {
 
-	protected LDataList<T> values;
 	protected int labelWidth = LPrefs.LABELWIDTH;
 	private boolean editEnabled = false;
 	private boolean insertEnabled = false;
@@ -120,7 +119,6 @@ public abstract class LForm<T, ST, W extends LPanel & LControl<T>>
 		super.createContent(flags);
 		if ((flags & BUTTONS) > 0) {
 			setGridLayout(1);
-
 			buttonPanel = new LPanel(this);
 			buttonPanel.setSequentialLayout(true);
 			buttonPanel.getCellData().setExpand(true, false);
