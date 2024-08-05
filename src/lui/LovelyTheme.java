@@ -23,19 +23,19 @@ public class LovelyTheme extends OceanTheme {
     public static LColor LIGHT = new LColor(new Color(252, 225, 240));
     public static LColor WHITE = new LColor(new Color(255, 245, 250));
 
-    protected static final ColorUIResource PRIMARY1 = MEDIUM_DARK.convert(); // Tree Selection border
-    protected static final ColorUIResource PRIMARY2 = MEDIUM_LIGHT.convert(); // Scrollbar BG, button/label selection border
-    protected static final ColorUIResource PRIMARY3 = MEDIUM.convert(); // Tree Selection BG, tree branch lines, slider/divider
-    protected static final ColorUIResource PRIMARY4 = LIGHT.convert(); // Tree selection border, tab selection border
-    protected static final ColorUIResource SECONDARY1 = MEDIUM_DARK.convert(); // Frame border, inner border, checkbox border, editable textfield border
-    protected static final ColorUIResource SECONDARY2 = MEDIUM_LIGHT.convert(); // gradient button bottom, scrollbar outer border, menu border, static textfield border
-    protected static final ColorUIResource SECONDARY3 = WHITE.convert(); // default BG, spinner arrow BG, static textfield BG
-    protected static final ColorUIResource SECONDARY4 = DARK.convert(); // Combo BG
+    protected static final ColorUIResource PRIMARY1 = new ColorUIResource(MEDIUM_DARK.convert()); // Tree Selection border
+    protected static final ColorUIResource PRIMARY2 = new ColorUIResource(MEDIUM_LIGHT.convert()); // Scrollbar BG, button/label selection border
+    protected static final ColorUIResource PRIMARY3 = new ColorUIResource(MEDIUM.convert()); // Tree Selection BG, tree branch lines, slider/divider
+    protected static final ColorUIResource PRIMARY4 = new ColorUIResource(LIGHT.convert()); // Tree selection border, tab selection border
+    protected static final ColorUIResource SECONDARY1 = new ColorUIResource(MEDIUM_DARK.convert()); // Frame border, inner border, checkbox border, editable textfield border
+    protected static final ColorUIResource SECONDARY2 = new ColorUIResource(MEDIUM_LIGHT.convert()); // gradient button bottom, scrollbar outer border, menu border, static textfield border
+    protected static final ColorUIResource SECONDARY3 = new ColorUIResource(WHITE.convert()); // default BG, spinner arrow BG, static textfield BG
+    protected static final ColorUIResource SECONDARY4 = new ColorUIResource(DARK.convert()); // Combo BG
 
-    protected static final ColorUIResource CONTROL_TEXT_COLOR = BLACK.convert();
-    protected static final ColorUIResource INACTIVE_CONTROL_TEXT_COLOR = MEDIUM.convert();
-    protected static final ColorUIResource MENU_DISABLED_FOREGROUND = MEDIUM_LIGHT.convert();
-    protected static final ColorUIResource DESKTOP_COLOR = WHITE.convert();
+    protected static final ColorUIResource CONTROL_TEXT_COLOR = new ColorUIResource(BLACK.convert());
+    protected static final ColorUIResource INACTIVE_CONTROL_TEXT_COLOR = new ColorUIResource(MEDIUM.convert());
+    protected static final ColorUIResource MENU_DISABLED_FOREGROUND = new ColorUIResource(MEDIUM_LIGHT.convert());
+    protected static final ColorUIResource DESKTOP_COLOR = new ColorUIResource(WHITE.convert());
 
     public String DIRECTORY_ICON = "icons/directory.gif";
     public String FILE_ICON = "icons/file.gif";

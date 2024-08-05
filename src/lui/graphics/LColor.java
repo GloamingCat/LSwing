@@ -1,6 +1,5 @@
 package lui.graphics;
 
-import javax.swing.plaf.ColorUIResource;
 import java.awt.Color;
 
 public class LColor implements Cloneable {
@@ -42,8 +41,8 @@ public class LColor implements Cloneable {
 		alpha = c.getAlpha();
 	}
 	
-	public ColorUIResource convert() {
-		return new ColorUIResource(red, green, blue);
+	public Color convert() {
+		return new Color(red, green, blue, alpha);
 	}
 
     @Override
