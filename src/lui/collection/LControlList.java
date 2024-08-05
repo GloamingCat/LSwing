@@ -38,6 +38,7 @@ public abstract class LControlList<T, ST, C extends LPanel & LControl<T>> extend
 		setFillLayout(false);
 		scroll = new LScrollPanel(this);
 		scroll.setBorder(null);
+		scroll.getCellData().setExpand(true, true);
 
         LPanel content = new LPanel(scroll);
 		content.setGridLayout(1);
@@ -202,12 +203,13 @@ public abstract class LControlList<T, ST, C extends LPanel & LControl<T>> extend
 		C control = getControl(path.index);
 		T data = toObject(path);
 		control.setValue(data);
+		refreshControl(control, path.index);
 	}
 
 	@Override
 	public void refreshAll() {
 		LPath p = new LPath(0);
-		for (p.index = 0; p.index < getChildCount(); p.index++) {
+		for (p.index = 0; p.index < getControlCount(); p.index++) {
 			refreshObject(p);
 		}
 	}

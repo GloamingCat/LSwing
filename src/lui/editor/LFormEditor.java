@@ -22,9 +22,9 @@ public abstract class LFormEditor<T, ST, W extends LPanel & LControl<T>>
 	//////////////////////////////////////////////////
 	//region Constructor
 
-	@SuppressWarnings("DataFlowIssue")
 	public LFormEditor(LContainer parent, int flags) {
 		super(parent, flags);
+		setListeners();
 		form.setMenuInterface(getMenuInterface());
 	}
 
@@ -61,13 +61,13 @@ public abstract class LFormEditor<T, ST, W extends LPanel & LControl<T>>
 				return LFormEditor.this.getLabelText(i);
 			}
 			@Override
-			public boolean canDecode(String str) {
-				return true;
-			}
-			@Override
 			public void refreshControl(LFormRow<T, W> control, int i) {
 				super.refreshControl(control, i);
 				refreshControlWidget(control.widget, i);
+			}
+			@Override
+			public boolean canDecode(String str) {
+				return true;
 			}
 		};
 	}

@@ -26,7 +26,7 @@ public class LImageDialog extends LObjectDialog<String> {
 	 * @wbp.eval.method.parameter rootPath ""
 	 */
 	public LImageDialog(LWindow parent, int style) {
-		super(parent, style, LVocab.instance.IMAGESHELL);
+		super(parent, style, LVocab.instance.IMAGEDIALOG);
 	}
 
 	public void createContent(int style) {

@@ -1,8 +1,8 @@
 package lui.collection;
 
+import lui.base.LFlags;
 import lui.base.LMenuInterface;
 import lui.base.LPrefs;
-import lui.base.LVocab;
 import lui.base.data.LDataList;
 import lui.base.data.LPath;
 import lui.base.event.LControlEvent;
@@ -120,6 +120,7 @@ public abstract class LForm<T, ST, W extends LPanel & LControl<T>>
 		super.createContent(flags);
 		if ((flags & BUTTONS) > 0) {
 			setGridLayout(1);
+
 			buttonPanel = new LPanel(this);
 			buttonPanel.setSequentialLayout(true);
 			buttonPanel.getCellData().setExpand(true, false);
@@ -138,10 +139,6 @@ public abstract class LForm<T, ST, W extends LPanel & LControl<T>>
 	@Override
 	public LFormRow<T, W> createControl() {
 		LFormRow<T, W> row = new LFormRow<>(this, labelWidth);
-		row.addModifyListener(e -> {
-			LEditEvent<T> event = new LEditEvent<>(new LPath(indexOf(row)), e.oldValue, e.newValue);
-
-		});
 		if (popupMenu) {
 			LPopupMenu menu = new LPopupMenu(row);
 			menu.putClientProperty("control", row);
@@ -153,10 +150,10 @@ public abstract class LForm<T, ST, W extends LPanel & LControl<T>>
 		if (buttonPanel != null) {
 			int cols = 2;
 			if (editEnabled) {
-				LActionButton button = new LActionButton(row, LVocab.instance.EDIT);
-				button.setIcon("Form.editIcon");
-				button.addModifyListener(e -> newEditAction(new LPath(indexOf(row))));
-				cols++;
+				row.label.addMouseListener(e -> {
+                    if (e.type == LFlags.DOUBLEPRESS)
+                        newEditAction(new LPath(indexOf(row)));
+                });
 			}
 			if (duplicateEnabled) {
 				LActionButton button = new LActionButton(row, null);
@@ -169,6 +166,7 @@ public abstract class LForm<T, ST, W extends LPanel & LControl<T>>
 			}
 			if (deleteEnabled) {
 				LActionButton button = new LActionButton(row, null);
+				button.getCellData().setTargetSize(LPrefs.WIDGETHEIGHT, LPrefs.WIDGETHEIGHT);
 				button.setIcon("Form.deleteIcon");
 				button.addModifyListener(e -> newDeleteAction(null, indexOf(row)));
 				cols++;
@@ -235,17 +233,14 @@ public abstract class LForm<T, ST, W extends LPanel & LControl<T>>
 		return editListeners;
 	}
 
-
 	@Override
 	public void onCopyButton(LMenu menu) {
-		// TODO Auto-generated method stub
-
+		// TODO Copy selected element
 	}
 
 	@Override
 	public void onPasteButton(LMenu menu) {
-		// TODO Auto-generated method stub
-
+		// TODO Paste new element
 	}
 
 	public void setEditEnabled(boolean value) {

@@ -33,7 +33,8 @@ public interface LEditableControlList<T, ST, C extends LPanel & LControl<T>> ext
 
 	default void insertControl(int index, T data) {
 		createControl().setValue(data);
-		moveData(getControlCount() - 1, index);
+		if (index != -1)
+			moveData(getControlCount() - 1, index);
 	}
 
 	default void deleteControl(int i) {

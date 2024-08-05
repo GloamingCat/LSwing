@@ -1,7 +1,6 @@
 package lui.collection;
 
 import lui.LGlobals;
-import lui.base.action.collection.LMoveAction;
 import lui.base.event.LMoveEvent;
 import lui.base.event.listener.LCollectionListener;
 import lui.base.gui.LEditableCollection;
@@ -124,6 +123,10 @@ public abstract class LEditableTree<T, ST> extends LTree<T, ST> implements LEdit
 	protected abstract LDataTree<T> duplicateNode(LDataTree<T> node);
 	protected abstract String encodeNode(LDataTree<T> node);
 	protected abstract LDataTree<T> decodeNode(String node);
+	@Override
+	public boolean canDecode(String str) {
+		return true;
+	}
 
 	//endregion
 	

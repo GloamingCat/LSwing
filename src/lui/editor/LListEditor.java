@@ -58,10 +58,6 @@ public abstract class LListEditor<T, ST> extends LAbstractTreeEditor<T, ST> {
 				return new LDataTree<>(LListEditor.this.decodeElement(str));
 			}
 			@Override
-			public boolean canDecode(String str) {
-				return true;
-			}
-			@Override
 			public boolean isDataChecked(T data) {
 				return LListEditor.this.isChecked(data);
 			}
