@@ -12,6 +12,7 @@ public class LButton extends LWidget {
 	
 	public LSelectionListener onClick = null;
 	JButton button;
+	private Icon icon;
 
 	public LButton(LContainer parent, String text) {
 		super(parent);
@@ -46,8 +47,9 @@ public class LButton extends LWidget {
 	}
 
 	public void setIcon(String key) {
+		icon = UIManager.getIcon(key);
 		button.setText(null);
-		button.setIcon(UIManager.getIcon(key));
+		button.setIcon(icon);
 	}
 
 	//////////////////////////////////////////////////
@@ -55,7 +57,8 @@ public class LButton extends LWidget {
 
 	@Override
 	public Dimension getMinimumSize() {
-		Dimension size = new Dimension(LPrefs.BUTTONWIDTH, LPrefs.WIDGETHEIGHT);
+		Dimension size = icon == null ? new Dimension(LPrefs.BUTTONWIDTH, LPrefs.WIDGETHEIGHT)
+				: new Dimension(icon.getIconWidth(), icon.getIconHeight());
 		if (gridData != null)
 			gridData.storeMinimumSize(size);
 		return size;
@@ -64,8 +67,8 @@ public class LButton extends LWidget {
 	@Override
 	public Dimension getPreferredSize() {
 		Dimension size = button.getPreferredSize();
-		size.width = Math.max(size.width, LPrefs.BUTTONWIDTH);
-		size.height = LPrefs.WIDGETHEIGHT;
+		size.width = icon == null ? Math.max(size.width, LPrefs.BUTTONWIDTH) : icon.getIconWidth();
+		size.height = icon == null ? LPrefs.WIDGETHEIGHT : icon.getIconHeight();
 		if (gridData != null)
 			gridData.storePreferredSize(size);
 		return size;
