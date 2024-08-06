@@ -3,7 +3,6 @@ package lui.collection;
 import lui.base.LFlags;
 import lui.base.LMenuInterface;
 import lui.base.LPrefs;
-import lui.base.data.LDataList;
 import lui.base.data.LPath;
 import lui.base.event.LControlEvent;
 import lui.base.event.LEditEvent;
@@ -44,6 +43,7 @@ public abstract class LForm<T, ST, W extends LPanel & LControl<T>>
 			super(form.controls);
 			getCellData().setExpand(true, false);
 			setGridLayout(2);
+			setMargins(LPrefs.FRAMEMARGIN, 0);
 			label = new LLabel(this, "");
 			label.getCellData().setRequiredSize(labelWidth, LPrefs.WIDGETHEIGHT);
 			label.getCellData().setTargetSize(labelWidth, LPrefs.WIDGETHEIGHT);
@@ -174,13 +174,13 @@ public abstract class LForm<T, ST, W extends LPanel & LControl<T>>
 				moveup.setIcon("Form.upIcon");
 				moveup.addModifyListener(e -> {
 					int i = indexOf(row);
-					newMoveAction(null, i, null, i+1);
+					newMoveAction(null, i, null, i-1);
 				});
 				LActionButton movedown = new LActionButton(row, null);
 				movedown.setIcon("Form.downIcon");
 				movedown.addModifyListener(e -> {
 					int i = indexOf(row);
-					newMoveAction(null, i, null, i-1);
+					newMoveAction(null, i, null, i+1);
 				});
 				cols+=2;
 			}
