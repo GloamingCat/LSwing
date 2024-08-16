@@ -17,6 +17,8 @@ public class LLabel extends LWidget {
 	public LLabel(LContainer parent, int hFill, int vFill) {
 		this(parent, LFlags.FILL);
 		getCellData().setSpread(hFill, vFill);
+		getCellData().setRequiredSize(-1, -1);
+		getCellData().setTargetSize(0, 0);
 		setEnabled(false);
 	}
 
