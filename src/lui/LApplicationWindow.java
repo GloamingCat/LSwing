@@ -23,13 +23,15 @@ import lui.base.LVocab;
 import lui.base.action.LActionManager;
 import lui.base.gui.LMenu;
 import lui.base.serialization.LSerializer;
+import org.ini4j.Ini;
 
 public abstract class LApplicationWindow extends LWindow implements lui.base.gui.LApplicationWindow {
 
+	protected Ini preferences;
 	protected LSerializer project = null;
 	protected ArrayList<LView> views = new ArrayList<>();
 	protected LView defaultView = null;
-	protected LView currentView;
+	protected LView currentView, emptyView;
 	protected LStack stack;
 
 	protected LMenuBar menuBar;
@@ -69,11 +71,20 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 		});
 		createMenu();
 		createViews();
+		emptyView = new LView(stack, false);
+		emptyView.createMenuInterface();
+		views.add(emptyView);
+
+		preferences = loadPreferences();
+
 		String folder = args.length > 0 ? args[0] : null;
-		if (folder != null) {
+		if (folder != null)
 			System.out.println(folder);
-		}
+
 		loadDefault(folder);
+		if (project == null)
+			setCurrentView(emptyView);
+
 		setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
 		refreshLayout();
 		pack();
@@ -113,13 +124,17 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 	public LMenu getEditMenu() {
 		return menuEdit;
 	}
+
+	@Override
+	public Ini getPreferences() {
+		return preferences;
+	}
 	
 	public void run() {
 		javax.swing.SwingUtilities.invokeLater(this::open);
 	}
 
 	protected void addView(final LView view, String name, String shortcut) {
-		menuBar.setMenuEnabled("view", true);
 		menuView.addMenuButton(name, name, (d) -> setCurrentView(view), shortcut);
 		views.add(view);
 	}
@@ -167,7 +182,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 				LVocab.instance.OPENPROJECT,
 				getProjectExtension(),
 				false);
-		return dialog.open(defaultProjectPath());
+		return dialog.open(getLatestProject());
 	}
 
 	@Override
@@ -207,7 +222,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 				LVocab.instance.NEWPROJECT,
 				getProjectExtension(),
 				true);
-		return dialog.open(defaultProjectPath());
+		return dialog.open(getLatestProject());
 	}
 	
 	@Override

@@ -80,10 +80,9 @@ public class LSubMenu extends JMenu implements LMenu {
 	}
 	
 	static void setMenuEnabled(JComponent c, String key, boolean value) {
-		if (c.getClientProperty(key) != null) {
-			LSubMenu item = (LSubMenu) c.getClientProperty(key);
-			item.getParent().setEnabled(value);
-		}
+		LSubMenu item = (LSubMenu) c.getClientProperty(key);
+		if (item != null)
+			item.setEnabled(value);
 	}
 
 }
