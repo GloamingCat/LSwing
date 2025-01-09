@@ -17,7 +17,7 @@ public class MyApplicationWindow extends LApplicationWindow {
 	public static void main(String[] args) {
 		try {
 			MyApplicationWindow shell = new MyApplicationWindow(args);
-			shell.run();
+			shell.run(args);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -27,7 +27,7 @@ public class MyApplicationWindow extends LApplicationWindow {
 	 * Create the shell.
 	 */
 	public MyApplicationWindow(String... args) {
-		super(450, 300, null, args);
+		super(450, 300, null);
 	}
 
 	@Override

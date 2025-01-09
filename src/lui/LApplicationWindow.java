@@ -54,7 +54,7 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 	 * @wbp.eval.method.parameter initialWidth 800
 	 * @wbp.eval.method.parameter initialHeight 600
 	 */
-	public LApplicationWindow(int minWidth, int minHeight, String icon, String... args) {
+	public LApplicationWindow(int minWidth, int minHeight, String icon) {
 		super(minWidth, minHeight);
 		LTexture.rootClass = getClass();
 		if (icon != null) {
@@ -74,20 +74,8 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 		emptyView = new LView(stack, false);
 		emptyView.createMenuInterface();
 		views.add(emptyView);
-
 		preferences = loadPreferences();
-
-		String folder = args.length > 0 ? args[0] : null;
-		if (folder != null)
-			System.out.println(folder);
-
-		loadDefault(folder);
-		if (project == null)
-			setCurrentView(emptyView);
-
 		setMargins(LPrefs.FRAMEMARGIN, LPrefs.FRAMEMARGIN);
-		refreshLayout();
-		pack();
 	}
 
 	protected void createMenu() {
@@ -130,7 +118,15 @@ public abstract class LApplicationWindow extends LWindow implements lui.base.gui
 		return preferences;
 	}
 	
-	public void run() {
+	public void run(String... args) {
+		String folder = args.length > 0 ? args[0] : null;
+		if (folder != null)
+			System.out.println(folder);
+		loadDefault(folder);
+		if (project == null)
+			setCurrentView(emptyView);
+		refreshLayout();
+		//pack();
 		javax.swing.SwingUtilities.invokeLater(this::open);
 	}
 
