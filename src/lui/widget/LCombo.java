@@ -1,5 +1,6 @@
 package lui.widget;
 
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -10,6 +11,8 @@ import lui.container.LContainer;
 public class LCombo extends LControlWidget<Integer> {
 
 	private JComboBox<String> combo;
+	private ActionListener listener;
+
 	private boolean includeId;
 	protected boolean optional;
 
@@ -32,13 +35,14 @@ public class LCombo extends LControlWidget<Integer> {
 		combo = new JComboBox<>();
 		combo.setEditable((flags & READONLY) == 0);
 		add(combo);
-		combo.addActionListener(e -> {
+		listener = e -> {
 			Integer oldValue = currentValue;
-            currentValue = getSelectionIndex();
+			currentValue = getSelectionIndex();
 			if (oldValue == null || oldValue.equals(currentValue))
 				return;
-            newModifyAction(oldValue, currentValue);
-		});
+			newModifyAction(oldValue, currentValue);
+		};
+		combo.addActionListener(listener);
 	}
 
 	public int getMaximumValue() {
@@ -65,16 +69,18 @@ public class LCombo extends LControlWidget<Integer> {
 	}
 
 	public void setValue(Object obj) {
-		currentValue = null;
+		combo.removeActionListener(listener);
 		if (obj != null) {
 			Integer i = (Integer) obj;
 			combo.setEnabled(true);
 			currentValue = i;
 			setSelectionIndex(i);
 		} else {
+			currentValue = null;
 			combo.setEnabled(false);
 			combo.setSelectedItem(null);
 		}
+		combo.addActionListener(listener);
 	}
 	
 	public void setItems(Object[] items) {
